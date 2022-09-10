@@ -1,0 +1,30 @@
+{
+  "replays": [{
+    "players": [
+      {
+        "1": {
+          "name": "Player 1",
+          "race": "Protoss"
+        }
+      },
+      {
+        "2": {
+          "name": "Player 2",
+          "race": "Zerg"
+        }
+      }
+    ],
+    "winner": 1,
+    "game_length": 960,
+    "map": "Dream LE",
+    "played_at": "2022-09-11",
+    "summary_stats": {
+      "avg_collection_rate": 0,
+      "resources_collected": 0,
+      "resources_lost": 0,
+      "avg_unspent_resources": 0,
+      "workers_produced": 0,
+      "workers_lost": 0
+    }
+  }]
+}
