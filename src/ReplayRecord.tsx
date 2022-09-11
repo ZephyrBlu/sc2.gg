@@ -18,7 +18,7 @@ export function ReplayRecord({ replay }: Props) {
           >
             <img
               key={`${player.name}-${player.race}-${player.id}`}
-              src={`/icons/${player.race}-logo.svg`}
+              src={`/icons/${player.race.toLowerCase()}-logo.svg`}
               className={`ReplayRecord__matchup-race-icon ReplayRecord__race-icon--player-${player.id}`}
               alt={player.race}
             />
