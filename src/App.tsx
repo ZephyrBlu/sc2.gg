@@ -1,21 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
 import { ReplayList } from './ReplayList'
 
 function App() {
   return (
     <div className="App">
-      {/* <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div> */}
       <header>
         StarCraft II Tournament Replays
+        <span className="App__sub-heading">
+          This site is built with&nbsp;
+          <a href="https://reactjs.org/" target="_blank">React</a>,
+          hosted on&nbsp;
+          <a href="https://pages.cloudflare.com/" target="_blank">Cloudflare Pages</a>
+          &nbsp;and&nbsp;
+          <a href="https://github.com/ZephyrBlu/sc2.gg" target="_blank">Open Source on GitHub</a>
+        </span>
       </header>
       <ReplayList />
     </div>

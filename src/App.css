@@ -4,11 +4,19 @@
 
 header {
   background-color: var(--secondary-dark-3);
-  border: 1px solid var(--primary-blue);
+  border: 2px solid var(--primary-blue);
   margin-bottom: 30px;
   border-radius: 10px;
-  padding: 10px;
+  padding: 15px;
   font-weight: 700;
-  font-size: 26px;
+  font-size: 32px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.App__sub-heading {
+  font-weight: 400;
+  font-size: 12px;
 }

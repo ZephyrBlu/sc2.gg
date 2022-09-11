@@ -1,12 +1,24 @@
 .ReplayRecord {
   padding: 20px;
-  border-bottom: 2px solid var(--primary-light-3);
+  background-color: var(--secondary-dark-3);
+  border-bottom: 3px solid var(--primary-light-2);
   display: flex;
   column-gap: 30px;
+  transition: 0.2s;
+}
+
+.ReplayRecord:first-child {
+  border-radius: 8px 8px 0 0;
 }
 
 .ReplayRecord:last-child {
-  border: none;
+  border-radius: 0 0 8px 8px;
+  border-bottom: none;
+}
+
+.ReplayRecord:hover {
+  background-color: var(--primary-light-2);
+  cursor: pointer;
 }
 
 .ReplayRecord__players {
@@ -69,13 +81,13 @@
   grid-template-areas:
     'map game-length'
     'tournament-info played-at';
-  align-items: center;
   width: 100%;
+  align-items: flex-end;
 }
 
 .ReplayRecord__map {
   grid-area: map;
-  font-size: 28px;
+  font-size: 24px;
 }
 
 .ReplayRecord__game-length {
