@@ -10,7 +10,10 @@ export function ReplayList() {
   return (
     <div className="ReplayList">
       {orderedReplays.map((replay) => (
-        <ReplayRecord replay={replay} />
+        <ReplayRecord
+          key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
+          replay={replay}
+        />
       ))}
     </div>
   );
