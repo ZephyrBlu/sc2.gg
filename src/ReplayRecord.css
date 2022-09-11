@@ -1,0 +1,94 @@
+.ReplayRecord {
+  padding: 20px;
+  border-bottom: 2px solid var(--primary-light-3);
+  display: flex;
+  column-gap: 30px;
+}
+
+.ReplayRecord:last-child {
+  border: none;
+}
+
+.ReplayRecord__players {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.ReplayRecord__player-info {
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
+  padding-left: 5px;
+  width: max-content;
+}
+
+.ReplayRecord__player-info--win {
+  box-shadow: 0 0 0 2px var(--green-highlight) inset;
+  background-color: var(--green-background);
+  padding: 8px;
+  padding-left: 5px;
+  border-radius: 8px;
+}
+
+/* .ReplayRecord__player-info--loss {
+  box-shadow: 0 0 0 2px var(--red-highlight) inset;
+  background-color: var(--red-background);
+} */
+
+.ReplayRecord__matchup-race-icon {
+  height: 25px;
+  margin-right: -5px;
+  width: 25px;
+}
+
+.ReplayRecord__player-name {
+  width: 90px;
+}
+
+.ReplayRecord__player-result {
+  justify-self: flex-end;
+  font-size: 14px;
+  border-radius: 5px;
+  padding: 4px 8px;
+  width: 30px;
+  text-align: center;
+}
+
+.ReplayRecord__player-result--win {
+  background-color: var(--green-highlight);
+}
+
+/* .ReplayRecord__player-result--loss {
+  background-color: var(--red-highlight);
+} */
+
+.ReplayRecord__match-info {
+  display: grid;
+  grid-template: max-content 1fr / max-content 1fr;
+  grid-template-areas:
+    'map game-length'
+    'tournament-info played-at';
+  align-items: center;
+  width: 100%;
+}
+
+.ReplayRecord__map {
+  grid-area: map;
+  font-size: 28px;
+}
+
+.ReplayRecord__game-length {
+  grid-area: game-length;
+  font-size: 24px;
+  justify-self:flex-end
+}
+
+.ReplayRecord__tournament-info {
+  grid-area: tournament-info;
+}
+
+.ReplayRecord__played-at {
+  grid-area: played-at;
+  justify-self: flex-end;
+}

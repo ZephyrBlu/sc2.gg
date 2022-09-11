@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
-import { Replays } from './Replays'
+import { ReplayList } from './ReplayList'
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
       <header>
         StarCraft II Tournament Replays
       </header>
-      <Replays />
+      <ReplayList />
     </div>
   )
 }

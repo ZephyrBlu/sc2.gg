@@ -1,30 +1,85 @@
 {
-  "replays": [{
-    "players": [
-      {
-        "1": {
+  "replays": [
+    {
+      "players": [
+        {
+          "id": 1,
           "name": "Player 1",
           "race": "Protoss"
-        }
-      },
-      {
-        "2": {
+        },
+        {
+          "id": 2,
           "name": "Player 2",
           "race": "Zerg"
         }
-      }
-    ],
-    "winner": 1,
-    "game_length": 960,
-    "map": "Dream LE",
-    "played_at": "2022-09-11",
-    "summary_stats": {
-      "avg_collection_rate": 0,
-      "resources_collected": 0,
-      "resources_lost": 0,
-      "avg_unspent_resources": 0,
-      "workers_produced": 0,
-      "workers_lost": 0
+      ],
+      "winner": 1,
+      "game_length": 960,
+      "map": "Dream LE",
+      "played_at": 1662856972,
+      "summary_stats": {
+        "avg_collection_rate": 0,
+        "resources_collected": 0,
+        "resources_lost": 0,
+        "avg_unspent_resources": 0,
+        "workers_produced": 0,
+        "workers_lost": 0
+      },
+      "metadata": "ASUS ROG, RO16"
+    },
+    {
+      "players": [
+        {
+          "id": 1,
+          "name": "Player 4",
+          "race": "Terran"
+        },
+        {
+          "id": 2,
+          "name": "Player 7",
+          "race": "Protoss"
+        }
+      ],
+      "winner": 2,
+      "game_length": 960,
+      "map": "New LE",
+      "played_at": 1522853952,
+      "summary_stats": {
+        "avg_collection_rate": 0,
+        "resources_collected": 0,
+        "resources_lost": 0,
+        "avg_unspent_resources": 0,
+        "workers_produced": 0,
+        "workers_lost": 0
+      },
+      "metadata": "Blizzcon 2022, Finals"
+    },
+    {
+      "players": [
+        {
+          "id": 1,
+          "name": "Player 10",
+          "race": "Zerg"
+        },
+        {
+          "id": 2,
+          "name": "Player -3",
+          "race": "Terran"
+        }
+      ],
+      "winner": 1,
+      "game_length": 960,
+      "map": "Blowout LE",
+      "played_at": 1642856672,
+      "summary_stats": {
+        "avg_collection_rate": 0,
+        "resources_collected": 0,
+        "resources_lost": 0,
+        "avg_unspent_resources": 0,
+        "workers_produced": 0,
+        "workers_lost": 0
+      },
+      "metadata": "WCS Valencia, RO8"
     }
-  }]
+  ]
 }

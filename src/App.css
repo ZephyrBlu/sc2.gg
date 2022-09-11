@@ -1,129 +1,14 @@
-:root {
-  --text: hsl(0, 0%, 85%);
-  --light-grey: hsl(0, 0%, 70%);
-  --grey: hsl(0, 0%, 47%);
-  --dark-grey: hsl(0, 0%, 40%);
-  --purple: hsl(270, 80%, 30%);
-  --green: hsl(120, 100%, 40%);
-  --green-desat: hsl(120, 80%, 25%);
-  --green-highlight: hsla(120, 80%, 25%, 0.6);
-  --green-background: hsla(120, 80%, 25%, 0.15);
-  --red: hsl(0, 100%, 30%);
-  --red-desat: hsl(0, 70%, 25%);
-  --red-highlight: hsla(0, 70%, 25%, 0.6);
-  --red-background: hsla(0, 70%, 25%, 0.15);
-
-  --protoss: hsl(51, 80%, 50%);
-  --zerg: hsl(274, 100%, 30%);
-  --terran: hsl(27, 80%, 41%);
-
-  --protoss-background: hsla(51, 100%, 50%, 0.08);
-  --zerg-background: hsla(274, 100%, 25%, 0.15);
-  --terran-background: hsla(27, 95%, 41%, 0.15);
-
-  --primary-blue: hsl(210, 68%, 47%);
-  --primary-blue-hover: hsl(210, 85%, 60%);
-
-  --primary-dark-1: hsl(230, 70%, 6%);
-  --primary-dark-2: hsl(230, 60%, 8%);
-  --primary-light-1: hsl(210, 70%, 16%);
-  --primary-light-2: hsl(210, 65%, 20%);
-  --primary-light-3: hsl(210, 60%, 24%);
-  --secondary-dark-1: hsl(210, 90%, 8%);
-  --secondary-dark-2: hsl(210, 85%, 10%);
-  --secondary-dark-3: hsl(210, 80%, 12%);
-
-  --error: hsl(0, 100%, 30%);
-  --info: hsl(210, 75%, 35%);
-  --success: hsl(120, 80%, 20%);
-
-  --line-shade-1: hsl(208, 77%, 10%);
-  --line-shade-2: hsl(208, 80%, 25%);
-  --line-shade-3: hsl(208, 83%, 40%);
-  --line-shade-4: hsl(208, 86%, 55%);
-  --line-shade-5: hsl(208, 89%, 70%);
-  --line-shade-6: hsl(180, 25%, 15%);
-  --line-shade-7: hsl(180, 25%, 30%);
-  --line-shade-8: hsl(180, 25%, 45%);
-  --line-shade-9: hsl(180, 25%, 60%);
+.App {
+  margin-top: 30px;
 }
 
-html, body, #root, .App {
-  height: 100%;
-  overflow-x: hidden;
-}
-
-body {
-  font-family: 'Roboto', sans-serif;
-  font-weight: 300;
-  background-color: var(--primary-dark-1);
-  color: hsl(0, 0%, 85%);
-  margin: 0;
-  overflow-x: hidden;
-}
-
-.nav {
-  width: max-content;
-  margin: 0 auto;
-  padding-top: 25px;
-  border-radius: 25px;
-  transition: 0.8s;
-  position: relative;
-}
-
-a, a:visited {
-  color: var(--text);
-}
-
-h1, h2, h3, h4, h5 {
-  font-weight: 300;
-}
-
-::-webkit-scrollbar {
-  width: 18px;
-  visibility: hidden;
-  opacity: 1;
-}
-
-::-webkit-scrollbar-button,
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-track-piece,
-::-webkit-scrollbar-resizer {
-  display: none;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: hsla(0, 0%, 20%, 0.6);
+header {
+  background-color: var(--secondary-dark-3);
+  border: 1px solid var(--primary-blue);
+  margin-bottom: 30px;
   border-radius: 10px;
-  border: 5px solid var(--primary-dark-1);
+  padding: 10px;
+  font-weight: 700;
+  font-size: 26px;
+  text-align: center;
 }
-
-.main-content::-webkit-scrollbar,
-.content-sidebar__content::-webkit-scrollbar {
-  width: 18px;
-  visibility: hidden;
-  opacity: 1;
-}
-
-.main-content::-webkit-scrollbar-button,
-.main-content::-webkit-scrollbar-track,
-.main-content::-webkit-scrollbar-track-piece,
-.main-content::-webkit-scrollbar-resizer,
-.content-sidebar__content::-webkit-scrollbar-button,
-.content-sidebar__content::-webkit-scrollbar-track,
-.content-sidebar__content::-webkit-scrollbar-track-piece,
-.content-sidebar__content::-webkit-scrollbar-resizer {
-  display: none;
-}
-
-.main-content::-webkit-scrollbar-thumb,
-.content-sidebar__content::-webkit-scrollbar-thumb {
-  background-color: hsla(0, 0%, 20%, 0.6);
-  border-radius: 10px;
-  border: 5px solid var(--primary-dark-1);
-}
-
-.ReplayList::-webkit-scrollbar-thumb {
-  border: 5px solid var(--primary-dark-2);
-}
-
