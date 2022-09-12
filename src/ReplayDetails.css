@@ -1,0 +1,54 @@
+.ReplayDetails {
+  margin-top: 40px;
+}
+
+.ReplayDetails__header {
+  display: flex;
+}
+
+.ReplayDetails__player-info {
+  display: grid;
+  grid-template-columns: repeat(2, 140px);
+  align-items: flex-end;
+  margin-bottom: 8px;
+}
+
+.ReplayDetails__player {
+  display: flex;
+  justify-content: center;
+  margin-left: -10px;
+}
+
+.ReplayDetails__player-icon {
+  height: 20px;
+  margin-right: 5px;
+}
+
+.ReplayDetails__player-name {
+  margin: 3px 0 0;
+  font-size: 14px;
+}
+
+.ReplayDetails__download {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 500;
+  background-color: var(--secondary-dark-1);
+  border: 2px solid var(--primary-blue);
+  border-radius: 8px;
+  color: white;
+  padding: 8px 12px;
+}
+
+.ReplayDetails__download:hover {
+  cursor: pointer;
+}
+
+.ReplayDetails__stats {
+  border-radius: 25px;
+  width: 500px;
+  margin: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background-color: var(--secondary-dark-3);
+}

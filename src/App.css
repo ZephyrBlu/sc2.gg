@@ -4,7 +4,7 @@
 
 header {
   background-color: var(--secondary-dark-3);
-  border: 2px solid var(--primary-blue);
+  border: 3px solid var(--primary-blue);
   margin-bottom: 30px;
   border-radius: 10px;
   padding: 15px;
@@ -19,4 +19,10 @@ header {
 .App__sub-heading {
   font-weight: 400;
   font-size: 12px;
+}
+
+.App__replay-list {
+  background-color: var(--secondary-dark-3);
+  border-radius: 8px;
+  box-shadow: 0 0 0 3px var(--primary-blue);
 }

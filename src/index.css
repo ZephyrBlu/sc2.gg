@@ -74,10 +74,6 @@ a, a:visited {
   color: var(--text);
 }
 
-h1, h2, h3, h4, h5 {
-  font-weight: 300;
-}
-
 ::-webkit-scrollbar {
   width: 18px;
   visibility: hidden;

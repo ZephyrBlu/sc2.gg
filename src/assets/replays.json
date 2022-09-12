@@ -18,12 +18,22 @@
       "map": "Dream LE",
       "played_at": 1662856972,
       "summary_stats": {
-        "avg_collection_rate": 0,
-        "resources_collected": 0,
-        "resources_lost": 0,
-        "avg_unspent_resources": 0,
-        "workers_produced": 0,
-        "workers_lost": 0
+        "1": {
+          "avg_collection_rate": 0,
+          "resources_collected": 0,
+          "resources_lost": 0,
+          "avg_unspent_resources": 0,
+          "workers_produced": 0,
+          "workers_lost": 0
+        },
+        "2": {
+          "avg_collection_rate": 0,
+          "resources_collected": 0,
+          "resources_lost": 0,
+          "avg_unspent_resources": 0,
+          "workers_produced": 0,
+          "workers_lost": 0
+        }
       },
       "metadata": "ASUS ROG, RO16"
     },
@@ -45,12 +55,22 @@
       "map": "New LE",
       "played_at": 1522853952,
       "summary_stats": {
-        "avg_collection_rate": 0,
-        "resources_collected": 0,
-        "resources_lost": 0,
-        "avg_unspent_resources": 0,
-        "workers_produced": 0,
-        "workers_lost": 0
+        "1": {
+          "avg_collection_rate": 0,
+          "resources_collected": 0,
+          "resources_lost": 0,
+          "avg_unspent_resources": 0,
+          "workers_produced": 0,
+          "workers_lost": 0
+        },
+        "2": {
+          "avg_collection_rate": 0,
+          "resources_collected": 0,
+          "resources_lost": 0,
+          "avg_unspent_resources": 0,
+          "workers_produced": 0,
+          "workers_lost": 0
+        }
       },
       "metadata": "Blizzcon 2022, Finals"
     },
@@ -72,12 +92,22 @@
       "map": "Blowout LE",
       "played_at": 1642856672,
       "summary_stats": {
-        "avg_collection_rate": 0,
-        "resources_collected": 0,
-        "resources_lost": 0,
-        "avg_unspent_resources": 0,
-        "workers_produced": 0,
-        "workers_lost": 0
+        "1": {
+          "avg_collection_rate": 0,
+          "resources_collected": 0,
+          "resources_lost": 0,
+          "avg_unspent_resources": 0,
+          "workers_produced": 0,
+          "workers_lost": 0
+        },
+        "2": {
+          "avg_collection_rate": 0,
+          "resources_collected": 0,
+          "resources_lost": 0,
+          "avg_unspent_resources": 0,
+          "workers_produced": 0,
+          "workers_lost": 0
+        }
       },
       "metadata": "WCS Valencia, RO8"
     }

@@ -1,14 +1,14 @@
 .ReplayRecord {
   padding: 20px;
   background-color: var(--secondary-dark-3);
-  border-bottom: 3px solid var(--primary-light-2);
-  display: flex;
-  column-gap: 30px;
-  transition: 0.2s;
+  border-top: 4px solid var(--primary-light-2);
+  transition: background-color 0.2s;
 }
 
 .ReplayRecord:first-child {
+  padding: 20px;
   border-radius: 8px 8px 0 0;
+  border-top: none;
 }
 
 .ReplayRecord:last-child {
@@ -19,6 +19,23 @@
 .ReplayRecord:hover {
   background-color: var(--primary-light-2);
   cursor: pointer;
+}
+
+.ReplayRecord--selected {
+  background-color: var(--primary-light-2);
+  border-top: 3px solid var(--primary-blue);
+  border-bottom: 3px solid var(--primary-blue);
+  padding-top: 21px;
+}
+
+.ReplayRecord--selected + .ReplayRecord {
+  border-top: 3px solid transparent;
+  padding-top: 20px;
+}
+
+.ReplayRecord__preview {
+  display: flex;
+  column-gap: 30px;
 }
 
 .ReplayRecord__players {
