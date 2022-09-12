@@ -1,35 +1,44 @@
-/* .ReplayStat__stat:first-child .ReplayStat__value-wrapper {
+/* .ReplaySummaryStat__stat:first-child .ReplaySummaryStat__value-wrapper {
   margin-top: 15px;
 }
 
-.ReplayStat__stat:last-child .ReplayStat__value-wrapper {
+.ReplaySummaryStat__stat:last-child .ReplaySummaryStat__value-wrapper {
   margin-bottom: 15px;
 } */
 
-.ReplayStat__stat-title {
+.ReplaySummaryStat__stat-title {
   grid-area: replay-stat-title;
   font-size: 16px;
   padding-left: 20px;
+  background-color: var(--secondary-dark-1);
 }
 
-.ReplayStat__player-header {
+.ReplaySummaryStat__stat:first-child .ReplaySummaryStat__stat-title {
+  border-radius: 8px 0 0 0;
+}
+
+.ReplaySummaryStat__stat:last-child .ReplaySummaryStat__stat-title {
+  border-radius: 0 0 0 8px;
+}
+
+.ReplaySummaryStat__player-header {
   width: 40px;
   height: 40px;
   text-align: center;
 }
 
-.ReplayStat__stat-value {
+.ReplaySummaryStat__stat-value {
   grid-area: replay-stat-info;
   width: 140px;
   height: 40px;
   padding: 0;
 }
 
-.ReplayStat__stat-value:nth-child(2) {
+/* .ReplaySummaryStat__stat-value:nth-child(2) {
   background-color: var(--secondary-dark-1);
-}
+} */
 
-.ReplayStat__value-wrapper {
+.ReplaySummaryStat__value-wrapper {
   width: max-content;
   min-width: 20px;
   margin: 5px auto;
@@ -38,43 +47,43 @@
   text-align: center;
 }
 
-.ReplayStat__value-wrapper--win {
+.ReplaySummaryStat__value-wrapper--win {
   border-radius: 10px;
   box-shadow: 0 0 0 2px var(--green-highlight) inset;
 }
 
-.ReplayStat__value-wrapper--avg_pac_action_latency-win,
-.ReplayStat__value-wrapper--avg_pac_gap-win,
-.ReplayStat__value-wrapper--workers_lost-win,
-.ReplayStat__value-wrapper--avg_unspent_resources-win,
-.ReplayStat__value-wrapper--resources_lost-win,
-.ReplayStat__value-wrapper--supply_block-win {
+.ReplaySummaryStat__value-wrapper--avg_pac_action_latency-win,
+.ReplaySummaryStat__value-wrapper--avg_pac_gap-win,
+.ReplaySummaryStat__value-wrapper--workers_lost-win,
+.ReplaySummaryStat__value-wrapper--avg_unspent_resources-win,
+.ReplaySummaryStat__value-wrapper--resources_lost-win,
+.ReplaySummaryStat__value-wrapper--supply_block-win {
   border-radius: 10px;
   box-shadow: 0 0 0 2px transparent inset;
 }
 
-.ReplayStat__value-wrapper--avg_pac_action_latency-loss,
-.ReplayStat__value-wrapper--avg_pac_gap-loss,
-.ReplayStat__value-wrapper--workers_lost-loss,
-.ReplayStat__value-wrapper--avg_unspent_resources-loss,
-.ReplayStat__value-wrapper--resources_lost-loss,
-.ReplayStat__value-wrapper--supply_block-loss {
+.ReplaySummaryStat__value-wrapper--avg_pac_action_latency-loss,
+.ReplaySummaryStat__value-wrapper--avg_pac_gap-loss,
+.ReplaySummaryStat__value-wrapper--workers_lost-loss,
+.ReplaySummaryStat__value-wrapper--avg_unspent_resources-loss,
+.ReplaySummaryStat__value-wrapper--resources_lost-loss,
+.ReplaySummaryStat__value-wrapper--supply_block-loss {
   border-radius: 10px;
   box-shadow: 0 0 0 2px var(--green-highlight) inset;
 }
 
 @media(max-width: 700px) {
-  .ReplayStat__stat-title {
+  .ReplaySummaryStat__stat-title {
     font-size: 12px;
     padding: 0 10px;
   }
 
-  .ReplayStat__value-wrapper {
+  .ReplaySummaryStat__value-wrapper {
     font-size: 12px;
     font-weight: 400;
   }
 
-  .ReplayStat__stat-value {
+  .ReplaySummaryStat__stat-value {
     grid-area: replay-stat-info;
     width: 80px;
     height: 20px;

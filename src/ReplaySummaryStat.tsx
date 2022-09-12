@@ -71,26 +71,26 @@ export function ReplaySummaryStat({ replay, statKey, statName }: Props) {
   return (
     <tr
       key={statKey}
-      className="ReplayStat__stat"
+      className="ReplaySummaryStat__stat"
     >
-      <td className="ReplayStat__stat-title">{statName}</td>
-      <td className="ReplayStat__stat-value">
+      <td className="ReplaySummaryStat__stat-title">{statName}</td>
+      <td className="ReplaySummaryStat__stat-value">
         <div
           className={`
-            ReplayStat__value-wrapper
-            ReplayStat__value-wrapper--${player1Highlight}
-            ReplayStat__value-wrapper--${statKey}-${player1Highlight}
+            ReplaySummaryStat__value-wrapper
+            ReplaySummaryStat__value-wrapper--${player1Highlight}
+            ReplaySummaryStat__value-wrapper--${statKey}-${player1Highlight}
           `}
         >
           {renderValues(replay.summary_stats[1][statKey])}
         </div>
       </td>
-      <td className="ReplayStat__stat-value">
+      <td className="ReplaySummaryStat__stat-value">
         <div
           className={`
-            ReplayStat__value-wrapper
-            ReplayStat__value-wrapper--${player2Highlight}
-            ReplayStat__value-wrapper--${statKey}-${player2Highlight}
+            ReplaySummaryStat__value-wrapper
+            ReplaySummaryStat__value-wrapper--${player2Highlight}
+            ReplaySummaryStat__value-wrapper--${statKey}-${player2Highlight}
           `}
         >
           {renderValues(replay.summary_stats[2][statKey])}
