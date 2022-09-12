@@ -43,14 +43,14 @@ export function ReplaySummaryStat({ replay, statKey, statName }: Props) {
     };
   };
 
-  const statValues = generateComparisonValues(statInfo);
-  if (statValues[1] > statValues[2]) {
-    player1Highlight = 'win';
-    player2Highlight = 'loss';
-  } else {
-    player1Highlight = 'loss';
-    player2Highlight = 'win';
-  }
+  // const statValues = generateComparisonValues(statInfo);
+  // if (statValues[1] > statValues[2]) {
+  //   player1Highlight = 'win';
+  //   player2Highlight = 'loss';
+  // } else {
+  //   player1Highlight = 'loss';
+  //   player2Highlight = 'win';
+  // }
 
   const renderValues = (values) => {
     if (!Array.isArray(values)) {

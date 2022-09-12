@@ -41,7 +41,7 @@ export function ReplayDetails({ replay }: Props) {
           ))}
         </div>
       </div>
-      {/* <table className="ReplayDetails__stats">
+      <table className="ReplayDetails__stats">
         <tbody>
           {Object.entries(orderedStatMapping).map(([key, name]) => (
             <ReplaySummaryStat
@@ -52,7 +52,7 @@ export function ReplayDetails({ replay }: Props) {
             />
           ))}
         </tbody>
-      </table> */}
+      </table>
     </div>
   );
 }

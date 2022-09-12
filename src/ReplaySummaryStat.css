@@ -1,10 +1,10 @@
-.ReplayStat__stat:first-child .ReplayStat__value-wrapper {
+/* .ReplayStat__stat:first-child .ReplayStat__value-wrapper {
   margin-top: 15px;
 }
 
 .ReplayStat__stat:last-child .ReplayStat__value-wrapper {
   margin-bottom: 15px;
-}
+} */
 
 .ReplayStat__stat-title {
   grid-area: replay-stat-title;
@@ -61,4 +61,23 @@
 .ReplayStat__value-wrapper--supply_block-loss {
   border-radius: 10px;
   box-shadow: 0 0 0 2px var(--green-highlight) inset;
+}
+
+@media(max-width: 700px) {
+  .ReplayStat__stat-title {
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .ReplayStat__value-wrapper {
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .ReplayStat__stat-value {
+    grid-area: replay-stat-info;
+    width: 80px;
+    height: 20px;
+    padding: 0;
+  }
 }

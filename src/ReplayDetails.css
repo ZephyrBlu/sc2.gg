@@ -1,16 +1,23 @@
 .ReplayDetails {
-  margin-top: 40px;
+  margin: -20px;
+  padding: 20px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 3px solid var(--primary-light-3);
+  background-color: var(--secondary-dark-3);
 }
 
 .ReplayDetails__header {
   display: flex;
+  margin-bottom: 15px;
 }
 
 .ReplayDetails__player-info {
+  flex-grow: 1;
   display: grid;
   grid-template-columns: repeat(2, 140px);
-  align-items: flex-end;
-  margin-bottom: 8px;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .ReplayDetails__player {
@@ -34,7 +41,7 @@
   font-size: inherit;
   font-weight: 500;
   background-color: var(--secondary-dark-1);
-  border: 2px solid var(--primary-blue);
+  border: 2px solid var(--primary-light-3);
   border-radius: 8px;
   color: white;
   padding: 8px 12px;
@@ -45,10 +52,51 @@
 }
 
 .ReplayDetails__stats {
-  border-radius: 25px;
-  width: 500px;
+  border-radius: 8px;
+  width: 100%;
   margin: 0;
   table-layout: fixed;
   border-collapse: collapse;
-  background-color: var(--secondary-dark-3);
+  background-color: var(--primary-light-1);
+  box-shadow: 0 0 0 2px var(--primary-light-3);
+  border-radius: 8px;
+}
+
+
+@media(max-width: 700px) {
+  .ReplayDetails {
+    margin: -8px;
+    padding: 15px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 3px solid var(--primary-light-3);
+    background-color: var(--secondary-dark-3);
+  }
+
+  .ReplayDetails__stats {
+    font-size: 14px;
+  }
+
+  .ReplayDetails__download {
+    font-size: 12px;
+    padding: 6px 8px;
+    border-width: 2px;
+  }
+
+  .ReplayDetails__player-info {
+    grid-template-columns: repeat(2, 80px);
+  }
+
+  .ReplayDetails__player {
+    margin: 0;
+  }
+
+  .ReplayDetails__player-name {
+    display: none;
+  }
+
+  .ReplayDetails__player-icon {
+    margin: 0;
+    height: 25px;
+  }
 }

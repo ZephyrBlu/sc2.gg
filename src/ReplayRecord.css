@@ -1,7 +1,7 @@
 .ReplayRecord {
   padding: 20px;
-  background-color: var(--secondary-dark-3);
-  border-top: 4px solid var(--primary-light-2);
+  background-color: var(--secondary-dark-2);
+  border-top: 4px solid var(--primary-light-1);
   transition: background-color 0.2s;
 }
 
@@ -17,12 +17,12 @@
 }
 
 .ReplayRecord:hover {
-  background-color: var(--primary-light-2);
+  background-color: var(--primary-light-1);
   cursor: pointer;
 }
 
 .ReplayRecord--selected {
-  background-color: var(--primary-light-2);
+  background-color: var(--primary-light-1);
   border-top: 3px solid var(--primary-blue);
   border-bottom: 3px solid var(--primary-blue);
   padding-top: 21px;
@@ -132,12 +132,12 @@
   }
 
   .ReplayRecord--selected {
-    padding-top: 11px;
+    padding-top: 9px;
   }
 
   .ReplayRecord--selected + .ReplayRecord {
     border-top: 3px solid transparent;
-    padding-top: 10px;
+    padding-top: 8px;
   }
 
   .ReplayRecord__preview {

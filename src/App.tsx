@@ -11,7 +11,7 @@ export function App() {
   return (
     <div className="App">
       <header className="App__header">
-        StarCraft II Tournament Replays
+        StarCraft II Tournament Games
         <span className="App__sub-heading">
           This site is built with&nbsp;
           <a href="https://reactjs.org/" target="_blank">React</a>,
