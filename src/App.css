@@ -2,7 +2,7 @@
   margin-top: 30px;
 }
 
-header {
+.App__header {
   background-color: var(--secondary-dark-3);
   border: 3px solid var(--primary-blue);
   margin-bottom: 30px;
@@ -25,4 +25,14 @@ header {
   background-color: var(--secondary-dark-3);
   border-radius: 8px;
   box-shadow: 0 0 0 3px var(--primary-blue);
+}
+
+@media(max-width: 500px) {
+  .App {
+    margin-top: 20px;
+  }
+
+  .App__header {
+    font-size: 24px;
+  }
 }

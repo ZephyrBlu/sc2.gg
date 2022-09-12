@@ -10,7 +10,7 @@ export function App() {
 
   return (
     <div className="App">
-      <header>
+      <header className="App__header">
         StarCraft II Tournament Replays
         <span className="App__sub-heading">
           This site is built with&nbsp;

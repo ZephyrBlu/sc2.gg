@@ -10,6 +10,15 @@ interface Props {
 export function ReplayRecord({ replay }: Props) {
   const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
 
+  const stripMapSuffix = (name: string) => {
+    const separatedName = name.split(' ');
+
+    if (separatedName[separatedName.length - 1] === 'LE') {
+      return separatedName.slice(0, -1).join(' ');
+    }
+    return name;
+  };
+
   return (
     <div
       className={`
@@ -49,7 +58,7 @@ export function ReplayRecord({ replay }: Props) {
         </div>
         <div className="ReplayRecord__match-info">
           <span className="ReplayRecord__map">
-            {replay.map}
+            {stripMapSuffix(replay.map)}
           </span>
           <span className="ReplayRecord__game-length">
             {Math.ceil(replay.game_length / 60)}min

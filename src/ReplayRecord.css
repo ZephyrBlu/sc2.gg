@@ -72,7 +72,7 @@
 }
 
 .ReplayRecord__player-name {
-  width: 90px;
+  width: 100px;
 }
 
 .ReplayRecord__player-result {
@@ -121,3 +121,86 @@
   grid-area: played-at;
   justify-self: flex-end;
 }
+
+@media(max-width: 700px) {
+  .ReplayRecord {
+    padding: 8px;
+  }
+
+  .ReplayRecord:first-child {
+    padding: 8px;
+  }
+
+  .ReplayRecord--selected {
+    padding-top: 11px;
+  }
+
+  .ReplayRecord--selected + .ReplayRecord {
+    border-top: 3px solid transparent;
+    padding-top: 10px;
+  }
+
+  .ReplayRecord__preview {
+    column-gap: 10px;
+  }
+
+  .ReplayRecord__players {
+    font-size: 12px;
+  }
+
+  .ReplayRecord__player-info {
+    column-gap: 8px;
+  }
+
+  .ReplayRecord__player-info--win {
+    /* padding: 6px; */
+  }
+
+  .ReplayRecord__player-name {
+    width: 75px;
+  }
+
+  .ReplayRecord__player-result {
+    font-size: 12px;
+    border-radius: 5px;
+    padding: 3px 6px;
+    width: 24px;
+  }
+
+  .ReplayRecord__match-info {
+    grid-template: 1fr 1fr / 1fr 1fr;
+    grid-template-areas:
+      'map game-length'
+      'tournament-info played-at';
+    align-items: center;
+  }
+
+  .ReplayRecord__map {
+    font-size: 14px;
+    width: 140%;
+  }
+
+  .ReplayRecord__game-length {
+    font-size: 14px;
+  }
+
+  .ReplayRecord__tournament-info {
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  .ReplayRecord__played-at {
+    font-size: 11px;
+    font-weight: 400;
+  }
+}
+
+/* @media(max-width: 700px) {
+  .ReplayRecord__preview {
+    flex-direction: column;
+  }
+
+  .ReplayRecord__players {
+    flex-direction: row;
+  }
+} */

@@ -93,6 +93,12 @@ a, a:visited {
   border: 5px solid var(--primary-dark-1);
 }
 
+@media(max-width: 700px) {
+  #root {
+    width: 90%;
+  }
+}
+
 
 /* :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
