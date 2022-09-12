@@ -1,5 +1,5 @@
 :root {
-  --text: hsl(0, 0%, 85%);
+  --text: hsl(0, 0%, 80%);
   --light-grey: hsl(0, 0%, 70%);
   --grey: hsl(0, 0%, 47%);
   --dark-grey: hsl(0, 0%, 40%);
@@ -25,13 +25,15 @@
   --primary-blue-hover: hsl(210, 85%, 60%);
 
   --primary-dark-1: hsl(230, 70%, 6%);
-  --primary-dark-2: hsl(230, 60%, 8%);
-  --primary-light-1: hsl(210, 70%, 16%);
-  --primary-light-2: hsl(210, 65%, 20%);
-  --primary-light-3: hsl(210, 60%, 24%);
-  --secondary-dark-1: hsl(210, 90%, 8%);
-  --secondary-dark-2: hsl(210, 85%, 10%);
-  --secondary-dark-3: hsl(210, 80%, 12%);
+  --primary-dark-2: hsl(215, 60%, 10%);
+  --primary-light-1: hsl(205, 70%, 16%);
+  --primary-light-2: hsl(205, 75%, 20%);
+  --primary-light-3: hsl(205, 80%, 24%);
+  --secondary-dark-1: hsl(210, 60%, 8%);
+  --secondary-dark-2: hsl(210, 70%, 10%);
+  --secondary-dark-3: hsl(205, 80%, 12%);
+
+  --secondary-light-1: hsl(210, 65%, 14%);
 
   --error: hsl(0, 100%, 30%);
   --info: hsl(210, 75%, 35%);
@@ -59,7 +61,7 @@ body {
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   background-color: var(--primary-dark-1);
-  color: hsl(0, 0%, 85%);
+  color: var(--text);
   margin: 0;
   display: flex;
   justify-content: center;
@@ -102,9 +104,10 @@ a, a:visited {
   }
 }
 
-@media(max-width: 500px) {
+@media(max-width: 650px) {
   #root {
     width: 90%;
+    min-width: 0;
   }
 }
 

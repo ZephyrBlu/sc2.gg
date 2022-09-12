@@ -1,14 +1,18 @@
 .ReplayDetails {
+  /* margin: -15px;
+  margin-bottom: -11px; */
   margin: -20px;
+  margin-bottom: -16px;
+  margin-top: 20px;
   padding: 20px;
-  margin-top: 15px;
   padding-top: 20px;
-  border-top: 3px solid var(--primary-light-3);
-  background-color: var(--secondary-dark-3);
+  background-color: var(--secondary-dark-2);
 }
 
 .ReplayRecord:last-child .ReplayDetails {
   border-radius: 0 0 8px 8px;
+  margin-top: 24px;
+  margin-bottom: -20px;
 }
 
 .ReplayDetails__header {
@@ -44,15 +48,17 @@
   font-family: inherit;
   font-size: inherit;
   font-weight: 500;
-  background-color: var(--secondary-dark-1);
-  border: 2px solid var(--primary-light-3);
+  background-color: var(--primary-light-1);
+  border: none;
   border-radius: 8px;
-  color: white;
+  color: var(--text);
   padding: 8px 12px;
+  transition: 0.2s;
 }
 
 .ReplayDetails__download:hover {
   cursor: pointer;
+  background-color: var(--primary-light-2);
 }
 
 .ReplayDetails__stats {
@@ -61,8 +67,8 @@
   margin: 0;
   table-layout: fixed;
   border-collapse: collapse;
-  background-color: var(--primary-light-1);
-  box-shadow: 0 0 0 2px var(--primary-light-3);
+  background-color: var(--secondary-dark-3);
+  box-shadow: 0 0 0 3px var(--primary-light-3);
   border-radius: 8px;
 }
 
@@ -70,11 +76,20 @@
 @media(max-width: 700px) {
   .ReplayDetails {
     margin: -8px;
+    margin-top: 8px;
+    margin-bottom: -4px;
     padding: 15px;
-    margin-top: 10px;
     padding-top: 10px;
-    border-top: 3px solid var(--primary-light-3);
-    background-color: var(--secondary-dark-3);
+  }
+
+  .ReplayRecord:last-child .ReplayDetails {
+    border-radius: 0 0 8px 8px;
+    margin-top: 12px;
+    margin-bottom: -8px;
+  }
+
+  .ReplayDetails__header {
+    margin-bottom: 15px;
   }
 
   .ReplayDetails__stats {

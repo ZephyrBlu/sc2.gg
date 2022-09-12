@@ -3,7 +3,7 @@
 }
 
 .App__header {
-  background-color: var(--secondary-dark-2);
+  background-color: var(--primary-dark-2);
   border: 3px solid var(--primary-blue);
   margin: 30px 0;
   border-radius: 10px;
@@ -22,9 +22,8 @@
 }
 
 .App__replay-list {
-  background-color: var(--secondary-dark-3);
   border-radius: 8px;
-  box-shadow: 0 0 0 3px var(--primary-blue);
+  /* box-shadow: 0 0 0 3px var(--primary-blue); */
 }
 
 @media(max-width: 500px) {

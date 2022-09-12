@@ -11,6 +11,7 @@
   font-size: 16px;
   padding-left: 20px;
   background-color: var(--secondary-dark-1);
+  border-right: 3px solid var(--primary-light-3);
 }
 
 .ReplaySummaryStat__stat:first-child .ReplaySummaryStat__stat-title {
@@ -34,9 +35,9 @@
   padding: 0;
 }
 
-/* .ReplaySummaryStat__stat-value:nth-child(2) {
-  background-color: var(--secondary-dark-1);
-} */
+.ReplaySummaryStat__stat-value:nth-child(2) {
+  border-right: 3px solid var(--primary-light-3);
+}
 
 .ReplaySummaryStat__value-wrapper {
   width: max-content;
