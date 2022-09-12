@@ -7,6 +7,10 @@
   background-color: var(--secondary-dark-3);
 }
 
+.ReplayRecord:last-child .ReplayDetails {
+  border-radius: 0 0 8px 8px;
+}
+
 .ReplayDetails__header {
   display: flex;
   margin-bottom: 15px;

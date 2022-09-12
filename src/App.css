@@ -1,3 +1,7 @@
+.App {
+  padding-bottom: 30px;
+}
+
 .App__header {
   background-color: var(--secondary-dark-3);
   border: 3px solid var(--primary-blue);

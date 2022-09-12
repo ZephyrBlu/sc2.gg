@@ -41,13 +41,13 @@
 .ReplayRecord__players {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
 }
 
 .ReplayRecord__player-info {
   display: flex;
   align-items: center;
   column-gap: 20px;
+  padding: 8px;
   padding-left: 5px;
   width: max-content;
 }
@@ -94,7 +94,7 @@
 
 .ReplayRecord__match-info {
   display: grid;
-  grid-template: max-content 1fr / max-content 1fr;
+  grid-template: 1fr 1fr / max-content 1fr;
   grid-template-areas:
     'map game-length'
     'tournament-info played-at';
@@ -104,13 +104,15 @@
 
 .ReplayRecord__map {
   grid-area: map;
+  align-self: center;
   font-size: 24px;
 }
 
 .ReplayRecord__game-length {
   grid-area: game-length;
   font-size: 24px;
-  justify-self:flex-end
+  justify-self: flex-end;
+  align-self: center;
 }
 
 .ReplayRecord__tournament-info {
