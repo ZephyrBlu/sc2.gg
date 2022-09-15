@@ -141,30 +141,30 @@
 
 @media(max-width: 700px) {
   .ReplayRecord {
-    padding: 8px;
-    padding-bottom: 4px;
+    padding: 6px;
+    padding-bottom: 2px;
   }
 
   .ReplayRecord:first-child {
-    padding: 8px;
-    padding-bottom: 4px;
+    padding: 6px;
+    padding-bottom: 2px;
   }
 
   .ReplayRecord:last-child {
-    padding-bottom: 8px;
+    padding-bottom: 6px;
   }
 
   .ReplayRecord--selected {
-    padding-top: 12px;
+    padding-top: 10px;
   }
 
   .ReplayRecord--selected + .ReplayRecord {
-    border-top: 3px solid transparent;
-    padding-top: 8px;
+    border-top: none;
+    padding-top: 6px;
   }
 
   .ReplayRecord__preview {
-    column-gap: 10px;
+    column-gap: 8px;
   }
 
   .ReplayRecord__players {
@@ -188,7 +188,7 @@
   }
 
   .ReplayRecord__match-info {
-    grid-template: 1fr 1fr / 1fr 1fr;
+    grid-template: 1fr 1fr / 6fr 4fr;
     grid-template-areas:
       'map game-length'
       'tournament-info played-at';
