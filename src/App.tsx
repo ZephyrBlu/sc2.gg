@@ -12,12 +12,14 @@ export function App() {
   ), []);
 
   const playedAtSort = (a: any, b: any) => b.played_at - a.played_at;
-  const mapToReplayComponent = (replay: any) => (
+  const mapToReplayComponent = (replay: any) => {
+    // console.log('replay rendering', replay)
+    return (
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
     />
-  );
+  );};
 
   const orderedReplays = useMemo(() => (
     [...serialized_replays.replays]
@@ -40,6 +42,9 @@ export function App() {
           references.forEach(id => {
             if (!seenReferences.has(id)) {
               seenReferences.add(id);
+              if (indexOrderedReplays[id] === undefined) {
+                console.error('something went wrong', id, indexOrderedReplays.length, input);
+              }
               results.push(indexOrderedReplays[id]);
             }
           });
