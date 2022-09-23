@@ -32,7 +32,7 @@
 }
 
 .App__search {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .App__search-input {
@@ -42,6 +42,11 @@
   color: var(--text);
   border: 2px solid var(--primary-light-3);
   padding: 4px;
+  margin-bottom: 20px;
+}
+
+.App__search-results {
+  font-size: 16px;
 }
 
 @media(max-width: 500px) {

@@ -1,11 +1,12 @@
-import {useState, useMemo, useCallback} from 'react';
+import {useState, useMemo, useCallback, useRef} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import serialized_replays from './assets/replays.json';
 import indexes from './assets/indexes.json';
 import './App.css';
 
 export function App() {
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState<string>('');
+  const numResults = useRef<number>(0);
 
   const indexOrderedReplays = useMemo(() => (
     [...serialized_replays.replays].sort((a, b) => a.id - b.id)
@@ -69,6 +70,8 @@ export function App() {
       return current.filter(value => next.includes(value))
     }, results[0]);
 
+    numResults.current = results.length;
+
     return results.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
   }, []);
 
@@ -90,9 +93,13 @@ export function App() {
           type="search"
           className="App__search-input"
           value={searchInput}
-          placeholder="Search for any player, race, map or tournament"
+          placeholder="Search 7000+ replays for any player, race, map or tournament"
           onChange={(e) => setSearchInput(e.target.value)}
         />
+        {searchInput &&
+          <span className="App__search-results">
+            {numResults.current} replays found
+          </span>}
       </div>
       <div className="App__replay-list">
         {searchIndexes(searchInput)}
