@@ -29,7 +29,7 @@ export function App() {
 
   const searchIndexes = useCallback((input: string) => {
     if (!input) {
-      return orderedReplays;
+      return orderedReplays.slice(0, 100);
     }
 
     console.log('index ordered replays', indexOrderedReplays);
@@ -42,9 +42,6 @@ export function App() {
           references.forEach(id => {
             if (!seenReferences.has(id)) {
               seenReferences.add(id);
-              if (indexOrderedReplays[id] === undefined) {
-                console.error('something went wrong', id, indexOrderedReplays.length, input);
-              }
               results.push(indexOrderedReplays[id]);
             }
           });
@@ -52,8 +49,7 @@ export function App() {
       });
     });
 
-    console.log('found matches for input', results.length, results);
-    return results.sort(playedAtSort).map(mapToReplayComponent);
+    return results.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
   }, []);
 
   return (
