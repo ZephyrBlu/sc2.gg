@@ -12,14 +12,12 @@ export function App() {
   ), []);
 
   const playedAtSort = (a: any, b: any) => b.played_at - a.played_at;
-  const mapToReplayComponent = (replay: any) => {
-    // console.log('replay rendering', replay)
-    return (
+  const mapToReplayComponent = (replay: any) => (
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
     />
-  );};
+  );
 
   const orderedReplays = useMemo(() => (
     [...serialized_replays.replays]
@@ -32,22 +30,44 @@ export function App() {
       return orderedReplays.slice(0, 100);
     }
 
-    console.log('index ordered replays', indexOrderedReplays);
+    const searchTerms = input.split(" ");
+    const searchTermResults: {[k: string]: any[]} = {};
+    const searchTermReferences: {[k: string]: Set<number>} = {};
 
-    const results: any = [];
-    const seenReferences = new Set();
     Object.entries(indexes).forEach(([name, index]) => {
       Object.entries(index.entries).forEach(([value, references]) => {
-        if (value.toLowerCase().includes(input.toLowerCase())) {
-          references.forEach(id => {
-            if (!seenReferences.has(id)) {
-              seenReferences.add(id);
-              results.push(indexOrderedReplays[id]);
-            }
-          });
-        }
+        searchTerms.forEach((term) => {
+          if (!term) {
+            return;
+          }
+
+          if (!(term in searchTermResults)) {
+            searchTermResults[term] = [];
+          }
+
+          if (!(term in searchTermReferences)) {
+            searchTermReferences[term] = new Set();
+          }
+
+          if (value.toLowerCase().includes(term.toLowerCase())) {
+            references.forEach(id => {
+              if (!searchTermReferences[term].has(id)) {
+                searchTermReferences[term].add(id);
+                searchTermResults[term].push(indexOrderedReplays[id]);
+              }
+            });
+          }
+        });
       });
     });
+
+    // https://stackoverflow.com/a/1885569
+    // progressively applying this intersection logic to each search term results
+    // creates intersection of all terms
+    let results = Object.values(searchTermResults);
+    results = results.reduce((current, next) => {
+      return current.filter(value => next.includes(value))
+    }, results[0]);
 
     return results.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
   }, []);
@@ -61,8 +81,8 @@ export function App() {
           <a href="https://reactjs.org/" target="_blank">React</a>,
           hosted on&nbsp;
           <a href="https://pages.cloudflare.com/" target="_blank">Cloudflare Pages</a>
-          &nbsp;and&nbsp;
-          <a href="https://github.com/ZephyrBlu/sc2.gg" target="_blank">Open Source on GitHub</a>
+          {/* &nbsp;and&nbsp;
+          <a href="https://github.com/ZephyrBlu/sc2.gg" target="_blank">Open Source on GitHub</a> */}
         </span>
       </header>
       <div className="App__search">
@@ -70,6 +90,7 @@ export function App() {
           type="search"
           className="App__search-input"
           value={searchInput}
+          placeholder="Search for any player, race, map or tournament"
           onChange={(e) => setSearchInput(e.target.value)}
         />
       </div>

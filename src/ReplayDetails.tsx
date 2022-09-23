@@ -23,9 +23,9 @@ export function ReplayDetails({ replay }: Props) {
   return (
     <div className="ReplayDetails">
       <div className="ReplayDetails__header">
-        <button className="ReplayDetails__download">
+        {/* <button className="ReplayDetails__download">
           Download
-        </button>
+        </button> */}
         <div className="ReplayDetails__player-info">
           {replay.players.map((player) => (
             <div key={player.id} className="ReplayDetails__player">

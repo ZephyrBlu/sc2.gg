@@ -26,6 +26,24 @@
   /* box-shadow: 0 0 0 3px var(--primary-blue); */
 }
 
+.App__search,
+.App__search-input {
+  width: 100%;
+}
+
+.App__search {
+  margin-bottom: 20px;
+}
+
+.App__search-input {
+  background-color: var(--primary-light-1);
+  border-radius: 8px;
+  font-size: 18px;
+  color: var(--text);
+  border: 2px solid var(--primary-light-3);
+  padding: 4px;
+}
+
 @media(max-width: 500px) {
   .App {
     margin-top: 20px;
