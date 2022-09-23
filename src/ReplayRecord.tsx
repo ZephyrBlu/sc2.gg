@@ -19,6 +19,10 @@ export function ReplayRecord({ replay }: Props) {
     return name;
   };
 
+  const clanTagIndex = (name: string) => (
+    name.indexOf('>') === -1 ? 0 : name.indexOf('>') + 1
+  );
+
   return (
     <div
       className={`
@@ -43,7 +47,7 @@ export function ReplayRecord({ replay }: Props) {
                 alt={player.race}
               />
               <span className="ReplayRecord__player-name">
-                {player.name}
+                {player.name.slice(clanTagIndex(player.name))}
               </span>
               <span
                 className={`

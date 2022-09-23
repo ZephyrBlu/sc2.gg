@@ -1,6 +1,5 @@
 .ReplayRecord {
   padding: 20px;
-  padding-bottom: 16px;
   background-color: var(--primary-dark-2);
   border: 4px solid var(--secondary-light-1);
   border-bottom: none;
@@ -9,9 +8,7 @@
 
 .ReplayRecord:first-child {
   padding: 20px;
-  padding-bottom: 16px;
   border-radius: 8px 8px 0 0;
-  /* border-top: none; */
 }
 
 .ReplayRecord:last-child {
@@ -142,12 +139,10 @@
 @media(max-width: 700px) {
   .ReplayRecord {
     padding: 6px;
-    padding-bottom: 2px;
   }
 
   .ReplayRecord:first-child {
     padding: 6px;
-    padding-bottom: 2px;
   }
 
   .ReplayRecord:last-child {
