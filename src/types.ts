@@ -5,11 +5,13 @@ export type Player = {
 }
 
 export type Replay = {
+  id: number,
+  content_hash: string,
   players: Player[],
   winner: number,
   game_length: number,
   map: string,
   played_at: number,
   summary_stats: any,
-  metadata: any,
+  metadata: string,
 }

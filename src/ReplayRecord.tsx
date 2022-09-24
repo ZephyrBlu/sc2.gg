@@ -35,13 +35,13 @@ export function ReplayRecord({ replay }: Props) {
         <div className="ReplayRecord__players">
           {replay.players.map((player) => (
             <div
+              key={`${player.name}-${player.race}-${player.id}`}
               className={`
                 ReplayRecord__player-info
                 ReplayRecord__player-info--${replay.winner === player.id ? 'win' : 'loss'}
               `}
             >
               <img
-                key={`${player.name}-${player.race}-${player.id}`}
                 src={`/icons/${player.race.toLowerCase()}-logo.svg`}
                 className={`ReplayRecord__matchup-race-icon ReplayRecord__race-icon--player-${player.id}`}
                 alt={player.race}

@@ -1,5 +1,6 @@
 import {useState, useMemo, useCallback, useRef} from 'react';
 import {ReplayRecord} from './ReplayRecord';
+import {Replay} from "./types";
 import serialized_replays from './assets/replays.json';
 import indexes from './assets/indexes.json';
 import './App.css';
@@ -12,8 +13,8 @@ export function App() {
     [...serialized_replays.replays].sort((a, b) => a.id - b.id)
   ), []);
 
-  const playedAtSort = (a: any, b: any) => b.played_at - a.played_at;
-  const mapToReplayComponent = (replay: any) => (
+  const playedAtSort = (a: Replay, b: Replay) => b.played_at - a.played_at;
+  const mapToReplayComponent = (replay: Replay) => (
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
@@ -65,14 +66,13 @@ export function App() {
     // https://stackoverflow.com/a/1885569
     // progressively applying this intersection logic to each search term results
     // creates intersection of all terms
-    let results = Object.values(searchTermResults);
-    results = results.reduce((current, next) => {
+    let raw_results = Object.values(searchTermResults);
+    let intersection_results: Replay[] = raw_results.reduce((current, next) => {
       return current.filter(value => next.includes(value))
-    }, results[0]);
+    }, raw_results[0]);
+    numResults.current = intersection_results.length;
 
-    numResults.current = results.length;
-
-    return results.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
+    return intersection_results.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
   }, []);
 
   return (
