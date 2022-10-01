@@ -26,7 +26,6 @@ export function ReplayDetails({ replay }: Props) {
         <a
           className="ReplayDetails__download"
           href={`https://pub-4349e9f678544230a1638c4806d981e9.r2.dev/${replay.content_hash}.SC2Replay`}
-          download
         >
           Download
         </a>

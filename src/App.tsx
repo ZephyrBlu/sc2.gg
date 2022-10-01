@@ -32,12 +32,45 @@ export function App() {
       return orderedReplays.slice(0, 100);
     }
 
+    // builds
+    if (input.includes("(")) {
+      const buildSearchTokens = input
+        .replace(/[()]/g, "")
+        .split(",")
+        .map(building => building.trim());
+
+      if (buildSearchTokens.length < 3) {
+        return orderedReplays.slice(0, 100);
+      }
+
+      const searchTrigrams = [];
+      for (let i = 0; i < buildSearchTokens.length - 2; i++) {
+        searchTrigrams.push(buildSearchTokens.slice(i, i + 3).join(","));
+      }
+
+      const buildIndex: {[k: string]: number[]} = indexes.build.entries;
+      const buildSearchResults: Set<number> = new Set();
+      searchTrigrams.forEach((key: string) => {
+        if (buildIndex[key]) {
+          buildIndex[key].forEach((id) => {
+            buildSearchResults.add(id);
+          });
+        }
+      });
+      numResults.current = Array.from(buildSearchResults).length;
+
+      return Array.from(buildSearchResults)
+        .map(id => indexOrderedReplays[id])
+        .slice(0, 100)
+        .sort(playedAtSort).map(mapToReplayComponent);
+    }
+
     const searchTerms = input.split(" ");
     const searchTermResults: {[k: string]: any[]} = {};
     const searchTermReferences: {[k: string]: Set<number>} = {};
 
     Object.entries(indexes).forEach(([name, index]) => {
-      Object.entries(index.entries).forEach(([value, references]) => {
+      Object.entries(index.entries).forEach(([key, references]) => {
         searchTerms.forEach((term) => {
           if (!term) {
             return;
@@ -51,7 +84,7 @@ export function App() {
             searchTermReferences[term] = new Set();
           }
 
-          if (value.toLowerCase().includes(term.toLowerCase())) {
+          if (key.toLowerCase().includes(term.toLowerCase())) {
             references.forEach(id => {
               if (!searchTermReferences[term].has(id)) {
                 searchTermReferences[term].add(id);
@@ -66,13 +99,13 @@ export function App() {
     // https://stackoverflow.com/a/1885569
     // progressively applying this intersection logic to each search term results
     // creates intersection of all terms
-    let raw_results = Object.values(searchTermResults);
-    let intersection_results: Replay[] = raw_results.reduce((current, next) => {
+    let rawResults = Object.values(searchTermResults);
+    let intersectionResults: Replay[] = rawResults.reduce((current, next) => {
       return current.filter(value => next.includes(value))
-    }, raw_results[0]);
-    numResults.current = intersection_results.length;
+    }, rawResults[0]);
+    numResults.current = intersectionResults.length;
 
-    return intersection_results.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
+    return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
   }, []);
 
   return (
