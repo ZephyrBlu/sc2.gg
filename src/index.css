@@ -74,7 +74,7 @@ body {
 #root {
   width: 60%;
   max-width: 800px;
-  min-width: 600px;
+  min-width: 620px;
 }
 
 a, a:visited {
@@ -108,7 +108,7 @@ a, a:visited {
 
 @media(max-width: 650px) {
   #root {
-    width: 90%;
+    width: 85%;
     min-width: 0;
   }
 }

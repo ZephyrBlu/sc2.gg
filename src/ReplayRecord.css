@@ -43,17 +43,60 @@
 
 .ReplayRecord__preview {
   display: flex;
-  column-gap: 30px;
+  flex-direction: column;
+  row-gap: 15px;
 }
 
 .ReplayRecord__preview:hover {
   cursor: pointer;
 }
 
+.ReplayRecord__match-info {
+  display: flex;
+  /* grid-template: 1fr 1fr / max-content 1fr;
+  grid-template-areas:
+    'map game-length'
+    'tournament-info played-at'; */
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  /* row-gap: 10px; */
+}
+
+.ReplayRecord__map {
+  grid-area: map;
+  font-size: 24px;
+  display: inline-block;
+  width: 230px;
+  margin-right: 15px;
+}
+
+.ReplayRecord__game-length {
+  grid-area: game-length;
+  font-size: 24px;
+  justify-self: flex-end;
+  display: inline-block;
+}
+
+.ReplayRecord__tournament-info {
+  grid-area: tournament-info;
+  font-size: 14px;
+}
+
+.ReplayRecord__played-at {
+  grid-area: played-at;
+  justify-self: flex-end;
+  font-size: 14px;
+}
+
 .ReplayRecord__players {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
+}
+
+.ReplayRecord__player {
+  display: flex;
 }
 
 .ReplayRecord__player-info {
@@ -63,6 +106,7 @@
   padding: 8px;
   padding-left: 5px;
   width: max-content;
+  margin-right: 10px;
 }
 
 .ReplayRecord__player-info--win {
@@ -104,37 +148,6 @@
 /* .ReplayRecord__player-result--loss {
   background-color: var(--red-highlight);
 } */
-
-.ReplayRecord__match-info {
-  display: grid;
-  grid-template: 1fr 1fr / max-content 1fr;
-  grid-template-areas:
-    'map game-length'
-    'tournament-info played-at';
-  width: 100%;
-  align-items: center;
-  row-gap: 10px;
-}
-
-.ReplayRecord__map {
-  grid-area: map;
-  font-size: 24px;
-}
-
-.ReplayRecord__game-length {
-  grid-area: game-length;
-  font-size: 24px;
-  justify-self: flex-end;
-}
-
-.ReplayRecord__tournament-info {
-  grid-area: tournament-info;
-}
-
-.ReplayRecord__played-at {
-  grid-area: played-at;
-  justify-self: flex-end;
-}
 
 .ReplayRecord__builds {
   margin-top: 10px;
@@ -198,7 +211,7 @@
   }
 
   .ReplayRecord__preview {
-    column-gap: 8px;
+    row-gap: 8px;
   }
 
   .ReplayRecord__players {
@@ -221,17 +234,18 @@
     width: 24px;
   }
 
-  .ReplayRecord__match-info {
+  /* .ReplayRecord__match-info {
     grid-template: 1fr 1fr / 6fr 4fr;
     grid-template-areas:
       'map game-length'
       'tournament-info played-at';
     align-items: center;
-  }
+  } */
 
   .ReplayRecord__map {
     font-size: 14px;
-    width: 140%;
+    width: 140px;
+    margin-right: 10px;
   }
 
   .ReplayRecord__game-length {
