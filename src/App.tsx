@@ -11,11 +11,11 @@ export function App() {
   const numResults = useRef<number>(0);
 
   const calculateBuildSize = () => {
-    if (window.innerWidth < 350) {
-      setBuildSize(4);
-    } else if (window.innerWidth < 410) {
+    if (window.innerWidth < 370) {
+      setBuildSize(5);
+    } else if (window.innerWidth < 430) {
       setBuildSize(6);
-    } else if (window.innerWidth < 460) {
+    } else if (window.innerWidth < 500) {
       setBuildSize(8);
     } else if (window.innerWidth < 560) {
       setBuildSize(10);
