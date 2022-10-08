@@ -108,7 +108,7 @@ a, a:visited {
 
 @media(max-width: 650px) {
   #root {
-    width: 85%;
+    width: 90%;
     min-width: 0;
   }
 }

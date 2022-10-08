@@ -163,8 +163,8 @@
 }
 
 .ReplayRecord__building-icon {
-  height: 25px;
-  width: 25px;
+  height: 30px;
+  width: 30px;
 }
 
 .ReplayRecord__arrow-right {
@@ -186,6 +186,13 @@
 .ReplayRecord__build-recommendation {
   font-size: 12px;
   font-weight: 400;
+}
+
+@media(max-width: 850px) {
+  .ReplayRecord__building-icon {
+    height: 25px;
+    width: 25px;
+  }
 }
 
 @media(max-width: 700px) {
@@ -268,12 +275,36 @@
   }
 }
 
-/* @media(max-width: 700px) {
-  .ReplayRecord__preview {
-    flex-direction: column;
+@media(max-width: 575px) {
+  .ReplayRecord__player-info {
+    column-gap: 5px;
+    margin-right: 5px;
   }
 
-  .ReplayRecord__players {
-    flex-direction: row;
+  .ReplayRecord__player-name {
+    font-size: 11px;
+    width: 70px;
   }
-} */
+
+  .ReplayRecord__matchup-race-icon {
+    height: 15px;
+    width: 15px;
+    margin-right: -2px;
+  }
+
+  .ReplayRecord__player-result {
+    font-size: 11px;
+    border-radius: 5px;
+    padding: 3px 6px;
+    width: 24px;
+  }
+
+  .ReplayRecord__building-icon {
+    height: 15px;
+    width: 15px;
+  }
+
+  .ReplayRecord__arrow-right {
+    margin: 0 -3px;
+  }
+}
