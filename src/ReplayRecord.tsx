@@ -5,9 +5,10 @@ import './ReplayRecord.css';
 
 interface Props {
   replay: Replay;
+  buildSize: number;
 }
 
-export function ReplayRecord({ replay }: Props) {
+export function ReplayRecord({ replay, buildSize }: Props) {
   const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
 
   const stripMapSuffix = (name: string) => {
@@ -75,6 +76,43 @@ export function ReplayRecord({ replay }: Props) {
           </span>
         </div>
       </div>
+      <div className="ReplayRecord__builds">
+        {replay.builds.map((build, index) => (
+          <div key={`${build}-${index}`} className="ReplayRecord__player-build">
+            {build.slice(0, buildSize).map(building => (
+              <>
+                <img
+                  key={`icon-${building}-${build}-${index}`}
+                  alt={building}
+                  title={building}
+                  className="ReplayRecord__building-icon"
+                  src={`/images/buildings/${replay.players[index].race}/${building}.png`}
+                />
+                <svg
+                  key={`arrow-${building}-${build}-${index}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="ReplayRecord__arrow-right">
+                  <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                </svg>
+              </>
+            ))}
+          </div>
+        ))}
+      </div>
+      {/* <div className="ReplayRecord__related-builds">
+          {[0, 1].map(index => (
+            <a
+              key={`build-${index}`}
+              href=""
+              className="ReplayRecord__build-recommendation"
+              onClick={() => null}
+            >
+              See more builds like this
+            </a>
+          ))}
+        </div> */}
       {showReplayDetails &&
         <ReplayDetails replay={replay} />}
     </div>

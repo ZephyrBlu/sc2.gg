@@ -73,7 +73,7 @@ body {
 
 #root {
   width: 60%;
-  max-width: 750px;
+  max-width: 800px;
   min-width: 600px;
 }
 
@@ -100,7 +100,7 @@ a, a:visited {
   border: 5px solid var(--primary-dark-1);
 }
 
-@media(max-width: 1000px) {
+@media(max-width: 1300px) {
   #root {
     width: 80%;
   }

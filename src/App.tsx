@@ -1,4 +1,4 @@
-import {useState, useMemo, useCallback, useRef} from 'react';
+import {useState, useMemo, useCallback, useRef, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import {Replay} from "./types";
 import serialized_replays from './assets/replays.json';
@@ -7,7 +7,27 @@ import './App.css';
 
 export function App() {
   const [searchInput, setSearchInput] = useState<string>('');
+  const [buildSize, setBuildSize] = useState(10);
   const numResults = useRef<number>(0);
+
+  const calculateBuildSize = () => {
+    if (window.innerWidth < 600) {
+      setBuildSize(6);
+    } else if (window.innerWidth < 700) {
+      setBuildSize(8);
+    } else if (window.innerWidth < 800) {
+      setBuildSize(6);
+    } else if (window.innerWidth < 1000) {
+      setBuildSize(8);
+    } else {
+      setBuildSize(10);
+    }
+  };
+
+  useLayoutEffect(() => {
+    window.addEventListener("resize", calculateBuildSize);
+    calculateBuildSize();
+  }, []);
 
   const indexOrderedReplays = useMemo(() => (
     [...serialized_replays.replays].sort((a, b) => a.id - b.id)
@@ -18,6 +38,7 @@ export function App() {
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
+      buildSize={buildSize}
     />
   );
 
@@ -25,7 +46,7 @@ export function App() {
     [...serialized_replays.replays]
       .sort(playedAtSort)
       .map(mapToReplayComponent)
-  ), []);
+  ), [buildSize]);
 
   const searchIndexes = useCallback((input: string) => {
     if (!input) {
@@ -106,7 +127,7 @@ export function App() {
     numResults.current = intersectionResults.length;
 
     return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  }, []);
+  }, [buildSize]);
 
   return (
     <div className="App">
