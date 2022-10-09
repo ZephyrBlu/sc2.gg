@@ -7,8 +7,18 @@ import './App.css';
 
 export function App() {
   const [searchInput, setSearchInput] = useState<string>('');
-  const [buildSize, setBuildSize] = useState(10);
+  const [quickSelectOptions, setquickSelectOptions] = useState<{[option: string]: string}>({});
+  const [buildSize, setBuildSize] = useState<number>(10);
   const numResults = useRef<number>(0);
+
+  const matchupRaceMapping: {[matchup: string]: string[]} = {
+    'PvZ': ['Protoss', 'Zerg'],
+    'ZvT': ['Zerg', 'Terran'],
+    'TvP': ['Terran', 'Protoss'],
+    'PvP': ['Protoss'],
+    'TvT': ['Terran'],
+    'ZvZ': ['Zerg'],
+  }
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -53,7 +63,7 @@ export function App() {
   ), [buildSize]);
 
   const searchIndexes = useCallback((input: string) => {
-    if (!input) {
+    if (!input && !quickSelectOptions.matchup && !quickSelectOptions.player) {
       return orderedReplays.slice(0, 100);
     }
 
@@ -91,6 +101,17 @@ export function App() {
     }
 
     const searchTerms = input.split(" ");
+
+    if (quickSelectOptions.matchup && matchupRaceMapping[quickSelectOptions.matchup]) {
+      searchTerms.push(...matchupRaceMapping[quickSelectOptions.matchup]);
+    }
+
+    if (quickSelectOptions.player) {
+      searchTerms.push(quickSelectOptions.player);
+    }
+
+    console.log('serach terms', searchTerms);
+
     const searchTermResults: {[k: string]: any[]} = {};
     const searchTermReferences: {[k: string]: Set<number>} = {};
 
@@ -131,7 +152,7 @@ export function App() {
     numResults.current = intersectionResults.length;
 
     return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  }, [buildSize]);
+  }, [buildSize, quickSelectOptions]);
 
   return (
     <div className="App">
@@ -154,6 +175,42 @@ export function App() {
           placeholder="Search 7000+ replays for any player, race, map or tournament"
           onChange={(e) => setSearchInput(e.target.value)}
         />
+        <div className="App__quick-search">
+          <div className="App__matchup-quick-select">
+            {Object.keys(matchupRaceMapping).map((option) => (
+              <button
+                className={`
+                  App__quick-option
+                  ${option === quickSelectOptions.matchup ?
+                    'App__quick-option--selected' : ''}
+                `}
+                onClick={() => setquickSelectOptions(prevState => ({
+                  ...prevState,
+                  matchup: option,
+                }))}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <div className="App__player-quick-select">
+            {['Serral', 'ByuN', 'ShoWTimE', 'Maru'].map((option) => (
+              <button
+                className={`
+                  App__quick-option
+                  ${option === quickSelectOptions.player ?
+                    'App__quick-option--selected' : ''}
+                `}
+                onClick={() => setquickSelectOptions(prevState => ({
+                  ...prevState,
+                  player: option,
+                }))}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
         {searchInput &&
           <span className="App__search-results">
             {numResults.current} replays found
