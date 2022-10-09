@@ -7,7 +7,10 @@ import './App.css';
 
 export function App() {
   const [searchInput, setSearchInput] = useState<string>('');
-  const [quickSelectOptions, setquickSelectOptions] = useState<{[option: string]: string}>({});
+  const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
+    matchup: null,
+    player: null,
+  });
   const [buildSize, setBuildSize] = useState<number>(10);
   const numResults = useRef<number>(0);
 
@@ -158,14 +161,14 @@ export function App() {
     <div className="App">
       <header className="App__header">
         StarCraft 2 Tournament Games
-        <span className="App__sub-heading">
+        {/* <span className="App__sub-heading">
           This site is built with&nbsp;
           <a href="https://reactjs.org/" target="_blank">React</a>,
           hosted on&nbsp;
           <a href="https://pages.cloudflare.com/" target="_blank">Cloudflare Pages</a>
-          {/* &nbsp;and&nbsp;
-          <a href="https://github.com/ZephyrBlu/sc2.gg" target="_blank">Open Source on GitHub</a> */}
-        </span>
+          &nbsp;and&nbsp;
+          <a href="https://github.com/ZephyrBlu/sc2.gg" target="_blank">Open Source on GitHub</a>
+        </span> */}
       </header>
       <div className="App__search">
         <input
@@ -184,10 +187,16 @@ export function App() {
                   ${option === quickSelectOptions.matchup ?
                     'App__quick-option--selected' : ''}
                 `}
-                onClick={() => setquickSelectOptions(prevState => ({
-                  ...prevState,
-                  matchup: option,
-                }))}
+                onClick={() => {
+                  let newOption: string | null = option;
+                  if (option === quickSelectOptions.player) {
+                    newOption = null;
+                  }
+                  setQuickSelectOptions(prevState => ({
+                    ...prevState,
+                    player: newOption,
+                  }));
+                }}
               >
                 {option}
               </button>
@@ -201,10 +210,16 @@ export function App() {
                   ${option === quickSelectOptions.player ?
                     'App__quick-option--selected' : ''}
                 `}
-                onClick={() => setquickSelectOptions(prevState => ({
-                  ...prevState,
-                  player: option,
-                }))}
+                onClick={() => {
+                  let newOption: string | null = option;
+                  if (option === quickSelectOptions.player) {
+                    newOption = null;
+                  }
+                  setQuickSelectOptions(prevState => ({
+                    ...prevState,
+                    player: newOption,
+                  }));
+                }}
               >
                 {option}
               </button>
