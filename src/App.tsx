@@ -13,7 +13,7 @@ export function App() {
     player: null,
   });
   const [buildSize, setBuildSize] = useState<number>(10);
-  const numResults = useRef<number>(0);
+  const [numResults, setNumResults] = useState<number>(0);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -57,8 +57,8 @@ export function App() {
       .map(mapToReplayComponent)
   ), [buildSize]);
 
-  const searchIndexes = useCallback((input: string) => {
-    if (!input && !quickSelectOptions.matchup && !quickSelectOptions.player) {
+  const searchResults = useMemo(() => {
+    if (!searchInput && !quickSelectOptions.matchup && !quickSelectOptions.player) {
       return orderedReplays.slice(0, 100);
     }
 
@@ -95,7 +95,7 @@ export function App() {
     //     .sort(playedAtSort).map(mapToReplayComponent);
     // }
 
-    const searchTerms = input.split(" ");
+    const searchTerms = searchInput.split(" ");
 
     const isMatchupSelected = quickSelectOptions.matchup && matchupRaceMapping[quickSelectOptions.matchup];
     if (isMatchupSelected) {
@@ -165,10 +165,10 @@ export function App() {
       }
     }
 
-    numResults.current = intersectionResults.length;
+    setNumResults(intersectionResults.length);
 
     return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  }, [buildSize, quickSelectOptions]);
+  }, [buildSize, quickSelectOptions, setNumResults]);
 
   return (
     <div className="App">
@@ -243,11 +243,11 @@ export function App() {
         </div>
         {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) &&
           <span className="App__search-results">
-            {numResults.current} replays found
+            {numResults} replays found
           </span>}
       </div>
       <div className="App__replay-list">
-        {searchIndexes(searchInput)}
+        {searchResults}
       </div>
     </div>
   )
