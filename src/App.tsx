@@ -113,8 +113,6 @@ export function App() {
       searchTerms.push(quickSelectOptions.player);
     }
 
-    console.log('serach terms', searchTerms);
-
     const searchTermResults: {[k: string]: any[]} = {};
     const searchTermReferences: {[k: string]: Set<number>} = {};
 
@@ -182,6 +180,7 @@ export function App() {
           <div className="App__matchup-quick-select">
             {Object.keys(matchupRaceMapping).map((option) => (
               <button
+                key={option}
                 className={`
                   App__quick-option
                   ${option === quickSelectOptions.matchup ?
@@ -189,12 +188,12 @@ export function App() {
                 `}
                 onClick={() => {
                   let newOption: string | null = option;
-                  if (option === quickSelectOptions.player) {
+                  if (option === quickSelectOptions.matchup) {
                     newOption = null;
                   }
                   setQuickSelectOptions(prevState => ({
                     ...prevState,
-                    player: newOption,
+                    matchup: newOption,
                   }));
                 }}
               >
@@ -205,6 +204,7 @@ export function App() {
           <div className="App__player-quick-select">
             {['Serral', 'ByuN', 'ShoWTimE', 'Maru'].map((option) => (
               <button
+                key={option}
                 className={`
                   App__quick-option
                   ${option === quickSelectOptions.player ?
