@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {Fragment, useState} from 'react';
 import {ReplayDetails} from './ReplayDetails';
 import {Replay} from './types';
 import './ReplayRecord.css';
@@ -62,9 +62,11 @@ export function ReplayRecord({ replay, buildSize }: Props) {
         </div>
         <div className="ReplayRecord__players">
           {replay.players.map((player, index) => (
-            <div className="ReplayRecord__player">
+            <div
+              key={`${replay.id}-${player.name}`}
+              className="ReplayRecord__player"
+            >
               <div
-                key={`${player.name}-${player.race}-${player.id}`}
                 className={`
                   ReplayRecord__player-info
                   ReplayRecord__player-info--${replay.winner === player.id ? 'win' : 'loss'}
@@ -87,25 +89,23 @@ export function ReplayRecord({ replay, buildSize }: Props) {
                   {replay.winner === player.id ? 'Won' : ''}
                 </span>
               </div>
-              <div key={`${player.name}-build`} className="ReplayRecord__player-build">
-                {filterBuild(replay.builds[index]).slice(0, buildSize).map(building => (
-                  <>
+              <div className="ReplayRecord__player-build">
+                {filterBuild(replay.builds[index]).slice(0, buildSize).map((building, buildingIndex) => (
+                  <Fragment key={`${replay.id}-${building}-${buildingIndex}`}>
                     <img
-                      key={`icon-${building}-${index}`}
                       alt={building}
                       title={building}
                       className="ReplayRecord__building-icon"
                       src={`/images/buildings/${replay.players[index].race}/${building}.png`}
                     />
                     <svg
-                      key={`arrow-${building}-${index}`}
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                       className="ReplayRecord__arrow-right">
                       <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
                     </svg>
-                  </>
+                  </Fragment>
                 ))}
               </div>
             </div>

@@ -1,5 +1,6 @@
 import {useState, useMemo, useCallback, useRef, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
+import {matchupRaceMapping, mirrorMatchups} from './constants';
 import {Replay} from "./types";
 import serialized_replays from './assets/replays.json';
 import indexes from './assets/indexes.json';
@@ -13,15 +14,6 @@ export function App() {
   });
   const [buildSize, setBuildSize] = useState<number>(10);
   const numResults = useRef<number>(0);
-
-  const matchupRaceMapping: {[matchup: string]: string[]} = {
-    'PvZ': ['Protoss', 'Zerg'],
-    'ZvT': ['Zerg', 'Terran'],
-    'TvP': ['Terran', 'Protoss'],
-    'PvP': ['Protoss'],
-    'TvT': ['Terran'],
-    'ZvZ': ['Zerg'],
-  }
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -70,43 +62,44 @@ export function App() {
       return orderedReplays.slice(0, 100);
     }
 
-    // builds
-    if (input.includes("(")) {
-      const buildSearchTokens = input
-        .replace(/[()]/g, "")
-        .split(",")
-        .map(building => building.trim());
+    // // builds
+    // if (input.includes("(")) {
+    //   const buildSearchTokens = input
+    //     .replace(/[()]/g, "")
+    //     .split(",")
+    //     .map(building => building.trim());
 
-      if (buildSearchTokens.length < 3) {
-        return orderedReplays.slice(0, 100);
-      }
+    //   if (buildSearchTokens.length < 3) {
+    //     return orderedReplays.slice(0, 100);
+    //   }
 
-      const searchTrigrams = [];
-      for (let i = 0; i < buildSearchTokens.length - 2; i++) {
-        searchTrigrams.push(buildSearchTokens.slice(i, i + 3).join(","));
-      }
+    //   const searchTrigrams = [];
+    //   for (let i = 0; i < buildSearchTokens.length - 2; i++) {
+    //     searchTrigrams.push(buildSearchTokens.slice(i, i + 3).join(","));
+    //   }
 
-      const buildIndex: {[k: string]: number[]} = indexes.build.entries;
-      const buildSearchResults: Set<number> = new Set();
-      searchTrigrams.forEach((key: string) => {
-        if (buildIndex[key]) {
-          buildIndex[key].forEach((id) => {
-            buildSearchResults.add(id);
-          });
-        }
-      });
-      numResults.current = Array.from(buildSearchResults).length;
+    //   const buildIndex: {[k: string]: number[]} = indexes.build.entries;
+    //   const buildSearchResults: Set<number> = new Set();
+    //   searchTrigrams.forEach((key: string) => {
+    //     if (buildIndex[key]) {
+    //       buildIndex[key].forEach((id) => {
+    //         buildSearchResults.add(id);
+    //       });
+    //     }
+    //   });
+    //   numResults.current = Array.from(buildSearchResults).length;
 
-      return Array.from(buildSearchResults)
-        .map(id => indexOrderedReplays[id])
-        .slice(0, 100)
-        .sort(playedAtSort).map(mapToReplayComponent);
-    }
+    //   return Array.from(buildSearchResults)
+    //     .map(id => indexOrderedReplays[id])
+    //     .slice(0, 100)
+    //     .sort(playedAtSort).map(mapToReplayComponent);
+    // }
 
     const searchTerms = input.split(" ");
 
-    if (quickSelectOptions.matchup && matchupRaceMapping[quickSelectOptions.matchup]) {
-      searchTerms.push(...matchupRaceMapping[quickSelectOptions.matchup]);
+    const isMatchupSelected = quickSelectOptions.matchup && matchupRaceMapping[quickSelectOptions.matchup];
+    if (isMatchupSelected) {
+      searchTerms.push(...matchupRaceMapping[quickSelectOptions.matchup!]);
     }
 
     if (quickSelectOptions.player) {
@@ -150,6 +143,28 @@ export function App() {
     let intersectionResults: Replay[] = rawResults.reduce((current, next) => {
       return current.filter(value => next.includes(value))
     }, rawResults[0]);
+
+    if (isMatchupSelected) {
+      let mirrorRace: string | undefined;
+      searchTerms.forEach(() => {
+        if (Object.keys(mirrorMatchups).includes(quickSelectOptions.matchup!)) {
+          mirrorRace = matchupRaceMapping[quickSelectOptions.matchup!][0];
+        }
+      });
+
+      if (mirrorRace) {
+        intersectionResults = intersectionResults.filter((replay) => {
+          let mirror = true;
+          replay.players.forEach((player) => {
+            if (player.race !== mirrorRace) {
+              mirror = false;
+            }
+          });
+          return mirror;
+        });
+      }
+    }
+
     numResults.current = intersectionResults.length;
 
     return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
@@ -226,7 +241,7 @@ export function App() {
             ))}
           </div>
         </div>
-        {searchInput &&
+        {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) &&
           <span className="App__search-results">
             {numResults.current} replays found
           </span>}
