@@ -8,7 +8,7 @@ interface Props {
   buildSize: number;
 }
 
-export function ReplayRecord({ replay, buildSize }: Props) {
+export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props) {
   const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
 
   const stripMap = (name: string) => {
@@ -69,7 +69,10 @@ export function ReplayRecord({ replay, buildSize }: Props) {
               <div
                 className={`
                   ReplayRecord__player-info
-                  ReplayRecord__player-info--${replay.winner === player.id ? 'win' : 'loss'}
+                  ReplayRecord__player-info--${
+                    replay.winner === player.id && showBuildsAndResults ?
+                      'win' : 'loss'
+                  }
                 `}
               >
                 <img
@@ -80,33 +83,39 @@ export function ReplayRecord({ replay, buildSize }: Props) {
                 <span className="ReplayRecord__player-name">
                   {player.name.slice(clanTagIndex(player.name))}
                 </span>
-                <span
-                  className={`
-                    ReplayRecord__player-result
-                    ReplayRecord__player-result--${replay.winner === player.id ? 'win' : 'loss'}
-                  `}
-                >
-                  {replay.winner === player.id ? 'Won' : ''}
-                </span>
+                {showBuildsAndResults &&
+                  <span
+                    className={`
+                      ReplayRecord__player-result
+                      ReplayRecord__player-result--${replay.winner === player.id ? 'win' : 'loss'}
+                    `}
+                  >
+                    {replay.winner === player.id ? 'Won' : ''}
+                  </span>}
               </div>
               <div className="ReplayRecord__player-build">
-                {filterBuild(replay.builds[index]).slice(0, buildSize).map((building, buildingIndex) => (
-                  <Fragment key={`${replay.id}-${building}-${buildingIndex}`}>
-                    <img
-                      alt={building}
-                      title={building}
-                      className="ReplayRecord__building-icon"
-                      src={`/images/buildings/${replay.players[index].race}/${building}.png`}
-                    />
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="ReplayRecord__arrow-right">
-                      <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                    </svg>
-                  </Fragment>
-                ))}
+                {showBuildsAndResults ?
+                  filterBuild(replay.builds[index]).slice(0, buildSize).map((building, buildingIndex) => (
+                    <Fragment key={`${replay.id}-${building}-${buildingIndex}`}>
+                      <img
+                        alt={building}
+                        title={building}
+                        className="ReplayRecord__building-icon"
+                        src={`/images/buildings/${replay.players[index].race}/${building}.png`}
+                      />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="ReplayRecord__arrow-right">
+                        <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                      </svg>
+                    </Fragment>
+                  )) : (
+                    <span className="ReplayRecord__hidden">
+                      Build and results are hidden
+                    </span>
+                  )}
               </div>
             </div>
           ))}

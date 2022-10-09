@@ -188,6 +188,12 @@
   font-weight: 400;
 }
 
+.ReplayRecord__hidden {
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+}
+
 @media(max-width: 850px) {
   .ReplayRecord__building-icon {
     height: 25px;

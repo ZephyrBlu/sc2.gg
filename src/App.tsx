@@ -14,6 +14,7 @@ export function App() {
   });
   const [buildSize, setBuildSize] = useState<number>(10);
   const [numResults, setNumResults] = useState<number>(0);
+  const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -48,6 +49,7 @@ export function App() {
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
       buildSize={buildSize}
+      showBuildsAndResults={showBuildsAndResults}
     />
   );
 
@@ -55,7 +57,7 @@ export function App() {
     [...serialized_replays.replays]
       .sort(playedAtSort)
       .map(mapToReplayComponent)
-  ), [buildSize]);
+  ), [buildSize, showBuildsAndResults]);
 
   const searchResults = useMemo(() => {
     if (!searchInput && !quickSelectOptions.matchup && !quickSelectOptions.player) {
@@ -168,7 +170,7 @@ export function App() {
     setNumResults(intersectionResults.length);
 
     return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  }, [buildSize, quickSelectOptions, setNumResults]);
+  }, [buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
 
   return (
     <div className="App">
@@ -241,10 +243,30 @@ export function App() {
             ))}
           </div>
         </div>
-        {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) &&
-          <span className="App__search-results">
-            {numResults} replays found
-          </span>}
+        <div className="App__search-header">
+            <span className="App__search-results">
+            {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) &&
+              <>
+                {numResults} replays found
+              </>}
+            </span>
+          <span className="App__search-filters">
+            <input
+              className="App__filter-checkbox"
+              type="checkbox"
+              name="search-filter"
+              checked={showBuildsAndResults}
+              onClick={() => setShowBuildsAndResults(prevState => !prevState)}
+            />
+            <label className="App__filter-label" htmlFor="search-filter">
+              Show builds and results
+            </label>
+          </span>
+          {/* <select className="App__search-filters">
+            <option value="results">Show builds and results</option>
+            <option value="builds">Hide builds and results</option>
+          </select> */}
+        </div>
       </div>
       <div className="App__replay-list">
         {searchResults}
