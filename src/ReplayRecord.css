@@ -314,4 +314,8 @@
   .ReplayRecord__arrow-right {
     margin: 0 -3px;
   }
+
+  .ReplayRecord__hidden {
+    font-size: 11px;
+  }
 }

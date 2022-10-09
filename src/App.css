@@ -148,4 +148,8 @@
   .App__search-results {
     font-size: 12px;
   }
+
+  .App__search-filters {
+    font-size: 11px;
+  }
 }
