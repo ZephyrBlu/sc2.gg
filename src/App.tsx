@@ -170,7 +170,7 @@ export function App() {
     setNumResults(intersectionResults.length);
 
     return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  }, [buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
+  }, [searchInput, buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
 
   return (
     <div className="App">
@@ -256,7 +256,7 @@ export function App() {
               type="checkbox"
               name="search-filter"
               checked={showBuildsAndResults}
-              onClick={() => setShowBuildsAndResults(prevState => !prevState)}
+              onChange={() => setShowBuildsAndResults(prevState => !prevState)}
             />
             <label className="App__filter-label" htmlFor="search-filter">
               Show builds and results
