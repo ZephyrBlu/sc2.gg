@@ -88,9 +88,9 @@
 
 .App__search-header {
   display: flex;
-  width: 100%;
   align-items: center;
   justify-content: space-between;
+  margin-top: 5px;
 }
 
 .App__search-filters {

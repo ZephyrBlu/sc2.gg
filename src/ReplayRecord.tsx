@@ -6,6 +6,7 @@ import './ReplayRecord.css';
 interface Props {
   replay: Replay;
   buildSize: number;
+  showBuildsAndResults: boolean;
 }
 
 export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props) {
@@ -41,7 +42,7 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
         ReplayRecord
         ${showReplayDetails ? 'ReplayRecord--selected' : ''}
       `}
-      onClick={() => setShowReplayDetails(prevState => !prevState)}
+      // onClick={() => setShowReplayDetails(prevState => !prevState)}
     >
       <div className="ReplayRecord__preview">
         <div className="ReplayRecord__match-info">
@@ -113,13 +114,33 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
                     </Fragment>
                   )) : (
                     <span className="ReplayRecord__hidden">
-                      Build and results are hidden
+                      Build and result is hidden
                     </span>
                   )}
               </div>
             </div>
           ))}
         </div>
+      </div>
+      <div className="ReplayRecord__footer">
+        <span className="ReplayRecord__tags">
+            {replay.metadata ?
+              replay.metadata.split(",").map((tag) => (
+                <div className="ReplayRecord__tag">
+                  {tag}
+                </div>
+              )) : (
+                <span className="ReplayRecord__no-tags">
+                  No tags
+                </span>
+              )}
+        </span>
+        <a
+          className="ReplayRecord__download"
+          href={`https://pub-4349e9f678544230a1638c4806d981e9.r2.dev/${replay.content_hash}.SC2Replay`}
+        >
+          Download
+        </a>
       </div>
       {/* <div className="ReplayRecord__related-builds">
           {[0, 1].map(index => (
