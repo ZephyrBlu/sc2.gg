@@ -33,7 +33,8 @@
 
   --secondary-dark-1: hsl(210, 70%, 8%);
   --secondary-dark-2: hsl(210, 80%, 10%);
-  --secondary-dark-3: hsl(205, 90%, 12%);
+  --secondary-dark-3: hsl(205, 90%, 10%);
+  --secondary-dark-4: hsl(205, 90%, 12%);
 
   --secondary-light-1: hsl(210, 80%, 14%);
 

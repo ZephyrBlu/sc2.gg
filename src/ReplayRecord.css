@@ -329,7 +329,7 @@
   .ReplayRecord {
     margin-bottom: 8px;
     border: none;
-    background-color: var(--secondary-dark-2);
+    background-color: var(--secondary-dark-3);
     border-radius: 8px;
     padding: 0;
   }
@@ -340,7 +340,8 @@
   }
 
   .ReplayRecord__preview {
-    padding: 5px;
+    padding: 8px;
+    padding-top: 4px;
   }
 
   .ReplayRecord__player-info {
