@@ -65,15 +65,15 @@
   flex-grow: 1;
   border-radius: 15px;
   border: none;
-  padding: 6px 8px;
+  padding: 10px;
   background-color: var(--secondary-dark-3);
   color: var(--text);
   min-width: 40px;
   max-width: 120px;
   transition: background-color 0.2s;
   font-weight: 700;
-  font-size: 12px;
-  margin-bottom: 15px;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
 .App__quick-option:hover {
@@ -143,6 +143,7 @@
     font-size: 11px;
     font-weight: 700;
     margin-bottom: 6px;
+    padding: 6px 8px;
   }
 
   .App__search-results {

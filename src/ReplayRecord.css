@@ -46,9 +46,9 @@
   row-gap: 15px;
 }
 
-.ReplayRecord__preview:hover {
+/* .ReplayRecord__preview:hover {
   cursor: pointer;
-}
+} */
 
 .ReplayRecord__match-info {
   display: flex;
@@ -196,8 +196,8 @@
 .ReplayRecord__footer {
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
-  padding-top: 5px;
+  margin-top: 15px;
+  padding-top: 15px;
   border-top: 2px solid var(--secondary-light-1);
 }
 
@@ -206,11 +206,11 @@
   column-gap: 5px;
   align-items: center;
   font-weight: 400;
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .ReplayRecord__tag {
-  padding: 4px 6px;
+  padding: 6px 8px;
   background-color: var(--primary-light-1);
   border-radius: 4px;
   height: max-content;
@@ -222,13 +222,13 @@
 
 .ReplayRecord__download {
   font-family: inherit;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 400;
   background-color: var(--primary-light-1);
   border: none;
   border-radius: 6px;
   color: var(--text);
-  padding: 4px 6px;
+  padding: 6px 8px;
   transition: 0.2s;
   text-decoration: none;
 }
@@ -361,5 +361,52 @@
 
   .ReplayRecord__hidden {
     font-size: 11px;
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  .ReplayRecord__footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 2px solid var(--secondary-light-1);
+  }
+  
+  .ReplayRecord__tags {
+    display: flex;
+    column-gap: 5px;
+    align-items: center;
+    font-weight: 400;
+    font-size: 11px;
+  }
+  
+  .ReplayRecord__tag {
+    padding: 4px 6px;
+    background-color: var(--primary-light-1);
+    border-radius: 4px;
+    height: max-content;
+  }
+  
+  .ReplayRecord__no-tags {
+    font-style: italic;
+  }
+  
+  .ReplayRecord__download {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 400;
+    background-color: var(--primary-light-1);
+    border: none;
+    border-radius: 6px;
+    color: var(--text);
+    padding: 4px 6px;
+    transition: 0.2s;
+    text-decoration: none;
+  }
+  
+  .ReplayRecord__download:hover {
+    cursor: pointer;
+    background-color: var(--primary-light-2);
   }
 }

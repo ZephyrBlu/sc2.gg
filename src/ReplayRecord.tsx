@@ -1,5 +1,5 @@
 import {Fragment, useState} from 'react';
-import {ReplayDetails} from './ReplayDetails';
+// import {ReplayDetails} from './ReplayDetails';
 import {Replay} from './types';
 import './ReplayRecord.css';
 
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props) {
-  const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
+  // const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
 
   const stripMap = (name: string) => {
     let strippedMapName = name.split(' ');
@@ -38,10 +38,11 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
 
   return (
     <div
-      className={`
-        ReplayRecord
-        ${showReplayDetails ? 'ReplayRecord--selected' : ''}
-      `}
+      className="ReplayRecord"
+      // className={`
+      //   ReplayRecord
+      //   ${showReplayDetails ? 'ReplayRecord--selected' : ''}
+      // `}
       // onClick={() => setShowReplayDetails(prevState => !prevState)}
     >
       <div className="ReplayRecord__preview">
@@ -154,8 +155,8 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
             </a>
           ))}
         </div> */}
-      {showReplayDetails &&
-        <ReplayDetails replay={replay} />}
+      {/* {showReplayDetails &&
+        <ReplayDetails replay={replay} />} */}
     </div>
   );
 }
