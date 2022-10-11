@@ -327,7 +327,7 @@
 
 @media(max-width: 575px) {
   .ReplayRecord {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     border: none;
     background-color: var(--secondary-dark-3);
     border-radius: 8px;
@@ -337,6 +337,12 @@
   .ReplayRecord:first-child {
     padding: 0;
     border-radius: 8px;
+  }
+
+  .ReplayRecord:last-child {
+    padding: 0;
+    border-radius: 8px;
+    border: none;
   }
 
   .ReplayRecord__preview {

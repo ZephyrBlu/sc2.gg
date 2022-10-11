@@ -90,7 +90,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 5px;
+  margin-top: 6px;
 }
 
 .App__search-filters {
@@ -126,7 +126,7 @@
   }
 
   .App__search {
-    margin-bottom: 5px;
+    margin-bottom: 6px;
   }
 
   .App__search-input {
