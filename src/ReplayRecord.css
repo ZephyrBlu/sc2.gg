@@ -326,6 +326,23 @@
 }
 
 @media(max-width: 575px) {
+  .ReplayRecord {
+    margin-bottom: 8px;
+    border: none;
+    background-color: var(--secondary-dark-2);
+    border-radius: 8px;
+    padding: 0;
+  }
+
+  .ReplayRecord:first-child {
+    padding: 0;
+    border-radius: 8px;
+  }
+
+  .ReplayRecord__preview {
+    padding: 5px;
+  }
+
   .ReplayRecord__player-info {
     column-gap: 5px;
     margin-right: 5px;
@@ -368,9 +385,9 @@
   .ReplayRecord__footer {
     display: flex;
     justify-content: space-between;
-    margin-top: 5px;
-    padding-top: 5px;
-    border-top: 2px solid var(--secondary-light-1);
+    margin: 0;
+    padding: 5px;
+    border-top: 2px solid var(--primary-light-1);
   }
   
   .ReplayRecord__tags {
