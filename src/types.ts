@@ -13,6 +13,6 @@ export type Replay = {
   game_length: number,
   map: string,
   played_at: number,
-  summary_stats: any,
+  summary_stats?: any,
   metadata: string,
 }
