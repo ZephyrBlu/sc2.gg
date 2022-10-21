@@ -90,14 +90,16 @@ export function App() {
   );
 
   const orderedReplays = useMemo(() => (
-    replays ? [...replays]
+    replays && builds ? [...replays]
       .sort(playedAtSort)
       .map(mapToReplayComponent) : []
-  ), [replays, buildSize, showBuildsAndResults]);
+  ), [replays, builds, buildSize, showBuildsAndResults]);
 
   const searchResults = useMemo(() => {
     if (
       !searchIndexes ||
+      !replays ||
+      !builds ||
       (!searchInput && !quickSelectOptions.matchup && !quickSelectOptions.player)
     ) {
       return orderedReplays.slice(0, 100);
@@ -209,7 +211,7 @@ export function App() {
     setNumResults(intersectionResults.length);
 
     return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  }, [searchInput, replays, searchIndexes, buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
+  }, [searchInput, replays, searchIndexes, builds, buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
 
   return (
     <div className="App">
