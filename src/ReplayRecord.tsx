@@ -1,15 +1,16 @@
-import {Fragment, useState} from 'react';
+import {Fragment} from 'react';
 // import {ReplayDetails} from './ReplayDetails';
 import {Replay} from './types';
 import './ReplayRecord.css';
 
 interface Props {
   replay: Replay;
+  buildMappings: string[][];
   buildSize: number;
   showBuildsAndResults: boolean;
 }
 
-export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props) {
+export function ReplayRecord({ replay, buildMappings, buildSize, showBuildsAndResults }: Props) {
   // const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
 
   const stripMap = (name: string) => {
@@ -25,16 +26,6 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
 
     return strippedMapName.join(' ');
   };
-
-  const filterBuild = (build: string[]) => (
-    build.filter((building) => !(
-      building.includes('Reactor') || building.includes('TechLab')
-    ))
-  );
-
-  const clanTagIndex = (name: string) => (
-    name.indexOf('>') === -1 ? 0 : name.indexOf('>') + 1
-  );
 
   return (
     <div
@@ -83,7 +74,7 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
                   alt={player.race}
                 />
                 <span className="ReplayRecord__player-name">
-                  {player.name.slice(clanTagIndex(player.name))}
+                  {player.name}
                 </span>
                 {showBuildsAndResults &&
                   <span
@@ -97,23 +88,26 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
               </div>
               <div className="ReplayRecord__player-build">
                 {showBuildsAndResults ?
-                  filterBuild(replay.builds[index]).slice(0, buildSize).map((building, buildingIndex) => (
-                    <Fragment key={`${replay.id}-${building}-${buildingIndex}`}>
-                      <img
-                        alt={building}
-                        title={building}
-                        className="ReplayRecord__building-icon"
-                        src={`/images/buildings/${replay.players[index].race}/${building}.png`}
-                      />
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="ReplayRecord__arrow-right">
-                        <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                      </svg>
-                    </Fragment>
-                  )) : (
+                  buildMappings[replay.builds[index]]
+                    .slice(0, buildSize)
+                    .filter(building => building)
+                    .map((building, buildingIndex) => (
+                      <Fragment key={`${replay.id}-${building}-${buildingIndex}`}>
+                        <img
+                          alt={building}
+                          title={building}
+                          className="ReplayRecord__building-icon"
+                          src={`/images/buildings/${replay.players[index].race}/${building}.png`}
+                        />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="ReplayRecord__arrow-right">
+                          <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                        </svg>
+                      </Fragment>
+                    )) : (
                     <span className="ReplayRecord__hidden">
                       Build and result is hidden
                     </span>
@@ -127,7 +121,7 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
         <span className="ReplayRecord__tags">
             {replay.metadata ?
               replay.metadata.split(",").map((tag) => (
-                <div className="ReplayRecord__tag">
+                <div key={tag} className="ReplayRecord__tag">
                   {tag}
                 </div>
               )) : (

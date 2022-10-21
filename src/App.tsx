@@ -1,13 +1,15 @@
-import {useState, useMemo, useCallback, useRef, useLayoutEffect} from 'react';
+import {useState, useMemo, useEffect, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import {matchupRaceMapping, mirrorMatchups} from './constants';
 import {Replay} from "./types";
-import serialized_replays from './assets/replays.json';
-import indexes from './assets/indexes.json';
+import {LoadingAnimation} from './LoadingAnimation';
 import './App.css';
 
 export function App() {
   const [searchInput, setSearchInput] = useState<string>('');
+  const [searchIndexes, setSearchIndexes] = useState();
+  const [replays, setReplays] = useState<Replay[]>();
+  const [builds, setBuilds] = useState();
   const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
     matchup: null,
     player: null,
@@ -15,6 +17,39 @@ export function App() {
   const [buildSize, setBuildSize] = useState<number>(10);
   const [numResults, setNumResults] = useState<number>(0);
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchIndexes = async () => {
+      const response = await fetch('/data/indexes.json');
+      const data = await response.json();
+      setSearchIndexes(data);
+    };
+
+    const fetchReplays = async () => {
+      const response = await fetch('/data/replays.json');
+      const data = await response.json();
+      setReplays(data.replays);
+    };
+
+    const fetchBuilds = async () => {
+      const response = await fetch('/data/builds.json');
+      const data = await response.json();
+      setBuilds(data);
+    };
+
+    const fetchData = async () => {
+      // fetching essential data
+      await Promise.all([
+        fetchIndexes(),
+        fetchReplays(),
+        fetchBuilds(),
+      ]);
+
+      // fetching secondary data
+    };
+
+    fetchData();
+  }, []);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -40,27 +75,31 @@ export function App() {
   }, []);
 
   const indexOrderedReplays = useMemo(() => (
-    [...serialized_replays.replays].sort((a, b) => a.id - b.id)
-  ), []);
+    replays ? [...replays].sort((a, b) => a.id - b.id) : []
+  ), [replays]);
 
   const playedAtSort = (a: Replay, b: Replay) => b.played_at - a.played_at;
   const mapToReplayComponent = (replay: Replay) => (
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
+      buildMappings={builds!}
       buildSize={buildSize}
       showBuildsAndResults={showBuildsAndResults}
     />
   );
 
   const orderedReplays = useMemo(() => (
-    [...serialized_replays.replays]
+    replays ? [...replays]
       .sort(playedAtSort)
-      .map(mapToReplayComponent)
-  ), [buildSize, showBuildsAndResults]);
+      .map(mapToReplayComponent) : []
+  ), [replays, buildSize, showBuildsAndResults]);
 
   const searchResults = useMemo(() => {
-    if (!searchInput && !quickSelectOptions.matchup && !quickSelectOptions.player) {
+    if (
+      !searchIndexes ||
+      (!searchInput && !quickSelectOptions.matchup && !quickSelectOptions.player)
+    ) {
       return orderedReplays.slice(0, 100);
     }
 
@@ -80,7 +119,7 @@ export function App() {
     //     searchTrigrams.push(buildSearchTokens.slice(i, i + 3).join(","));
     //   }
 
-    //   const buildIndex: {[k: string]: number[]} = indexes.build.entries;
+    //   const buildIndex: {[k: string]: number[]} = searchIndexes.build.entries;
     //   const buildSearchResults: Set<number> = new Set();
     //   searchTrigrams.forEach((key: string) => {
     //     if (buildIndex[key]) {
@@ -111,7 +150,7 @@ export function App() {
     const searchTermResults: {[k: string]: any[]} = {};
     const searchTermReferences: {[k: string]: Set<number>} = {};
 
-    Object.entries(indexes).forEach(([name, index]) => {
+    Object.entries(searchIndexes).forEach(([name, index]) => {
       Object.entries(index.entries).forEach(([key, references]) => {
         searchTerms.forEach((term) => {
           if (!term) {
@@ -170,7 +209,7 @@ export function App() {
     setNumResults(intersectionResults.length);
 
     return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  }, [searchInput, buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
+  }, [searchInput, replays, searchIndexes, buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
 
   return (
     <div className="App">
@@ -269,7 +308,7 @@ export function App() {
         </div>
       </div>
       <div className="App__replay-list">
-        {searchResults}
+        {searchIndexes && replays ? searchResults : <LoadingAnimation />}
       </div>
     </div>
   )
