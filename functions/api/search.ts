@@ -28,6 +28,8 @@ export const onRequest: PagesFunction<{
       ? env.REPLAYS
       : env.REPLAYS_TEST;
 
+    sentry.captureMessage(`context: ${JSON.stringify(context)}, replayIndex: ${replayIndex}, replayData: ${replayData}`);
+
     const url = new URL(request.url);
     const urlParams = new URLSearchParams(url.search);
 
@@ -38,8 +40,6 @@ export const onRequest: PagesFunction<{
     }
 
     const query = urlParams.get('q');
-
-    sentry.captureMessage(query);
 
     // limit to 5 terms
     const searchTerms = query.split(' ').slice(0, 5);
