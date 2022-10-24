@@ -6,6 +6,9 @@ import {LoadingAnimation} from './LoadingAnimation';
 import './App.css';
 
 export function App() {
+  const [serialized] = useState<string | undefined>(
+    document.getElementById('root')!.dataset.replays
+  );
   const [searchInput, setSearchInput] = useState<string>('');
   const [searchIndexes, setSearchIndexes] = useState();
   const [replays, setReplays] = useState<Replay[]>();
@@ -83,7 +86,7 @@ export function App() {
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
-      buildMappings={builds!}
+      builds={builds}
       buildSize={buildSize}
       showBuildsAndResults={showBuildsAndResults}
     />
@@ -310,7 +313,11 @@ export function App() {
         </div>
       </div>
       <div className="App__replay-list">
-        {searchIndexes && replays ? searchResults : <LoadingAnimation />}
+        {searchIndexes && replays
+          ? searchResults
+          : serialized
+            ? JSON.parse(atob(serialized)).map(mapToReplayComponent)
+            : <LoadingAnimation />}
       </div>
     </div>
   )

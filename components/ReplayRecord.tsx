@@ -1,17 +1,31 @@
-import {Fragment} from 'react';
+import {Fragment, useMemo} from 'react';
 // import {ReplayDetails} from './ReplayDetails';
 import {Replay} from './types';
 import './ReplayRecord.css';
 
 interface Props {
   replay: Replay;
-  buildMappings: string[][];
+  builds: string[][] | undefined;
   buildSize: number;
   showBuildsAndResults: boolean;
 }
 
-export function ReplayRecord({ replay, buildMappings, buildSize, showBuildsAndResults }: Props) {
+export function ReplayRecord({ replay, builds, buildSize, showBuildsAndResults }: Props) {
   // const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
+
+  const replayBuilds: string[][] | null = useMemo(() => {
+    // server serialized data
+    if (replay.builds) {
+      return replay.builds;
+    }
+
+    // client side data fetching
+    if (builds) {
+      return [0, 1].map((index) => builds[replay.build_mappings[index]]);
+    }
+
+    return null;
+  }, [builds]);
 
   const stripMap = (name: string) => {
     let strippedMapName = name.split(' ');
@@ -87,8 +101,8 @@ export function ReplayRecord({ replay, buildMappings, buildSize, showBuildsAndRe
                   </span>}
               </div>
               <div className="ReplayRecord__player-build">
-                {showBuildsAndResults ?
-                  buildMappings[replay.builds[index]]
+                {showBuildsAndResults && replayBuilds ?
+                  replayBuilds[index]
                     .slice(0, buildSize)
                     .filter(building => building)
                     .map((building, buildingIndex) => (
