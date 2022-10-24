@@ -29,6 +29,7 @@ function deploy() {
     const kvData = {
       key: contentHash,
       value: JSON.stringify(replayValue),
+      metadata: JSON.stringify(replayValue),
     };
     replaysToSend.push(kvData);
 
@@ -52,6 +53,8 @@ function deploy() {
       replaysToSend = [];
     }
   });
+
+  console.log(`[update_kv] updated KV data for ${replayData.replays.length} replays`);
 }
 
 deploy();
