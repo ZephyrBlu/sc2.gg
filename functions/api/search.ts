@@ -1,4 +1,5 @@
 import {PREFIXES} from '../../constants';
+import Toucan from 'toucan-js';
 
 export const onRequest: PagesFunction<{
   CF_PAGES_BRANCH: string,
@@ -7,6 +8,13 @@ export const onRequest: PagesFunction<{
   REPLAY_INDEX: KVNamespace,
   REPLAY_INDEX_TEST: KVNamespace,
 }> = async (context) => {
+  const sentry = new Toucan({
+    dsn: 'https://897e41e5e6f24829b75be219387dff94@o299086.ingest.sentry.io/4504037385240576',
+    context, // Includes 'waitUntil', which is essential for Sentry logs to be delivered. Also includes 'request' -- no need to set it separately.
+    allowedHeaders: ['user-agent'],
+    allowedSearchParams: /(.*)/,
+  });
+
   try {
     const {
       request,
@@ -31,6 +39,8 @@ export const onRequest: PagesFunction<{
 
     const query = urlParams.get('q');
 
+    sentry.captureMessage(query);
+
     // limit to 5 terms
     const searchTerms = query.split(' ').slice(0, 5);
 
@@ -46,8 +56,12 @@ export const onRequest: PagesFunction<{
       return indexResults as unknown as string[];
     }));
 
+    sentry.captureMessage(`rawPostingLists: ${rawPostingLists}`);
+
     // flatten list of lists, then remove duplicates
     const postingList = Array.from(new Set(rawPostingLists.flat()));
+
+    sentry.captureMessage(`postingList: ${postingList}`);
 
     // const rawPostingLists: string[][] = await Promise.all(searchTerms.map(async (term) => {
     //   const references = await replayIndex.get(term);
@@ -68,9 +82,12 @@ export const onRequest: PagesFunction<{
       return replay;
     }));
 
+    sentry.captureMessage(`replays: ${replays}`);
+
     return new Response(JSON.stringify(replays));
   } catch (e) {
-    return new Response(`Something went wrong: ${JSON.stringify(e)}`, {
+    sentry.captureException(e);
+    return new Response(`Something went wrong: ${e.toString()}`, {
       status: 500,
     });
   }
