@@ -47,13 +47,12 @@ export const onRequest: PagesFunction<{
         searchTerms.some((term) => key.name.includes(term)))
       );
 
-      return matchingIndexKeys.map(async (key) => {
+      const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
         const references = await replayIndex.get(key.name);
+        sentry.captureMessage(`References for ${key.name} index: ${references}`);
         return JSON.parse(references);
-      });
+      }));
     }));
-
-    sentry.captureMessage(`rawPostingLists: ${JSON.stringify(rawPostingLists)}`);
 
     // flatten list of lists, then remove duplicates
     const postingList = Array.from(new Set(rawPostingLists.flat()));
