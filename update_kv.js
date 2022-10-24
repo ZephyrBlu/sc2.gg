@@ -2,11 +2,7 @@ import fetch from 'node-fetch';
 import replayData from './public/data/replays.json' assert {type: "json"};
 
 function deploy() {
-  // don't update KV for non-production deploys
-  if (process.env.CF_PAGES_BRANCH !== 'master') {
-    console.log(`[update_kv] on ${process.env.CF_PAGES_BRANCH} branch, not master. Not updating KV storage`);
-    return;
-  }
+  console.log(`[update_kv] updating KV store on ${process.env.CF_PAGES_BRANCH}`);
 
   if (
     !process.env.ACCOUNT_IDENTIFIER ||
@@ -24,7 +20,12 @@ function deploy() {
 
   let replaysToSend = [];
   replayData.replays.forEach(async (replay) => {
-    const {content_hash: contentHash, ...replayValue} = replay;
+    const {
+      content_hash: contentHash,
+      id,
+      build_mappings,
+      ...replayValue
+    } = replay;
     const kvData = {
       key: contentHash,
       value: JSON.stringify(replayValue),
