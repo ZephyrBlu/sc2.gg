@@ -32,7 +32,7 @@ export async function render(pageContext: PageContextBuiltIn) {
         <div
           id="root"
           ${pageContext.urlPathname === '/'
-            ? `data-replays="${dangerouslySkipEscape(Buffer.from(JSON.stringify(initialReplayData.slice(0, 100))).toString('base64'))}"`
+            ? `data-replays=${Buffer.from(JSON.stringify(initialReplayData.slice(0, 100))).toString('base64')}`
             : ''}
         >
         </div>
