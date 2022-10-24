@@ -78,7 +78,8 @@ async function update() {
 
   if (
     !process.env.ACCOUNT_IDENTIFIER ||
-    !process.env.NAMESPACE_IDENTIFIER ||
+    !process.env.REPLAYS_NAMESPACE_IDENTIFIER ||
+    !process.env.REPLAY_INDEX_NAMESPACE_IDENTIFIER ||
     !process.env.API_KEY
   ) {
     console.error('[update_kv] missing one of: ACCOUNT_IDENTIFIER, REPLAYS_NAMESPACE_IDENTIFIER, REPLAY_INDEX_NAMESPACE_IDENTIFIER, API_KEY');
