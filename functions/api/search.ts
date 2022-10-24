@@ -43,11 +43,14 @@ export const onRequest: PagesFunction<{
       const index = await replayIndex.list({prefix: `${prefix}__`});
 
       // find the keys in the index that contain at least one search term
-      const indexResults = index.keys.filter((key) => (
+      const matchingIndexKeys = index.keys.filter((key) => (
         searchTerms.some((term) => key.name.includes(term)))
       );
 
-      return indexResults as unknown as string[];
+      return matchingIndexKeys.map(async (key) => {
+        const references = await replayIndex.get(key.name);
+        return JSON.parse(references);
+      });
     }));
 
     sentry.captureMessage(`rawPostingLists: ${JSON.stringify(rawPostingLists)}`);
