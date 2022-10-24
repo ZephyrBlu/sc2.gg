@@ -38,10 +38,10 @@ function deploy() {
     ) {
       const res = await fetch(WORKERS_KV_URL, {
         method: 'PUT',
-        headers: new Headers({
+        headers: {
           'Authorization': `Bearer ${process.env.API_KEY}`,
           'Content-Type': 'application/json',
-        }),
+        },
         body: JSON.stringify(replaysToSend),
       });
 
