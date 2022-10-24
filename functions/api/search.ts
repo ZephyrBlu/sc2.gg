@@ -21,14 +21,8 @@ export const onRequest: PagesFunction<{
       env,
     } = context;
 
-    const replayIndex = env.CF_PAGES_BRANCH === 'master'
-      ? env.REPLAY_INDEX
-      : env.REPLAY_INDEX_TEST;
-    const replayData = env.CF_PAGES_BRANCH === 'master'
-      ? env.REPLAYS
-      : env.REPLAYS_TEST;
-
-    sentry.captureMessage(`context: ${JSON.stringify(context)}, replayIndex: ${replayIndex}, replayData: ${replayData}`);
+    const replayIndex = env.REPLAY_INDEX || env.REPLAY_INDEX_TEST;
+    const replayData = env.REPLAYS || env.REPLAYS_TEST;
 
     const url = new URL(request.url);
     const urlParams = new URLSearchParams(url.search);
@@ -56,12 +50,12 @@ export const onRequest: PagesFunction<{
       return indexResults as unknown as string[];
     }));
 
-    sentry.captureMessage(`rawPostingLists: ${rawPostingLists}`);
+    sentry.captureMessage(`rawPostingLists: ${JSON.stringify(rawPostingLists)}`);
 
     // flatten list of lists, then remove duplicates
     const postingList = Array.from(new Set(rawPostingLists.flat()));
 
-    sentry.captureMessage(`postingList: ${postingList}`);
+    sentry.captureMessage(`postingList: ${JSON.stringify(postingList)}`);
 
     // const rawPostingLists: string[][] = await Promise.all(searchTerms.map(async (term) => {
     //   const references = await replayIndex.get(term);
@@ -82,7 +76,7 @@ export const onRequest: PagesFunction<{
       return replay;
     }));
 
-    sentry.captureMessage(`replays: ${replays}`);
+    sentry.captureMessage(`replays: ${JSON.stringify(replays)}`);
 
     return new Response(JSON.stringify(replays));
   } catch (e) {
