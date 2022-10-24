@@ -1,5 +1,5 @@
-import {players} from '../../constants';
+import {PLAYERS} from '../../constants';
 
 export async function prerender() {
-  return players.map(player => `/player/${player}`);
+  return PLAYERS.map(player => `/player/${player}`);
 }

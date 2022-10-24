@@ -8,6 +8,8 @@ export async function render(pageContext: PageContextBuiltIn) {
   let initialReplayData = replayData.replays;
   const playedAtSort = (a: Replay, b: Replay) => b.played_at - a.played_at;
   initialReplayData.sort(playedAtSort);
+
+  // @ts-ignore:next-line
   initialReplayData = initialReplayData.map((replay: Replay) => {
     replay.builds = replay.build_mappings.map((build) => buildData[build]);
     return replay;

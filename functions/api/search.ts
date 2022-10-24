@@ -1,3 +1,5 @@
+import {PREFIXES} from '../../constants';
+
 export const onRequest: PagesFunction<{
   CF_PAGES_BRANCH: string,
   REPLAYS: KVNamespace,
@@ -31,11 +33,26 @@ export const onRequest: PagesFunction<{
   // limit to 5 terms
   const searchTerms = query.split(' ').slice(0, 5);
 
-  const rawPostingLists: string[][] = await Promise.all(searchTerms.map(async (term) => {
-    const references = await replayIndex.get(term);
-    return JSON.parse(references);
+  // get list of keys for each index category, then search index
+  const rawPostingLists = await Promise.all(PREFIXES.map(async (prefix) => {
+    const index = await replayIndex.list({prefix});
+
+    // find the keys in the index that contain at least one search term
+    const indexResults = index.keys.filter((key) => (
+      searchTerms.some((term) => key.name.includes(term)))
+    );
+
+    return indexResults as unknown as string[];
   }));
-  const postingList = rawPostingLists.flat();
+
+  // flatten list of lists, then remove duplicates
+  const postingList = Array.from(new Set(rawPostingLists.flat()));
+
+  // const rawPostingLists: string[][] = await Promise.all(searchTerms.map(async (term) => {
+  //   const references = await replayIndex.get(term);
+  //   return JSON.parse(references);
+  // }));
+  // const postingList = rawPostingLists.flat();
 
   /*
     currently the hash for replays is a simple content hash

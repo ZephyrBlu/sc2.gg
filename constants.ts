@@ -1,10 +1,17 @@
-export const players = [
+export const PLAYERS = [
   'Serral',
   'ByuN',
   'Maru',
   'ShoWTimE',
 ];
 
-const tournaments = [
+const TOURNAMENTS = [
   'TSL',
+];
+
+export const PREFIXES = [
+  'map',
+  'race',
+  'player',
+  'metadata',
 ];
