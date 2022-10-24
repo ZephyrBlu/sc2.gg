@@ -3,7 +3,7 @@ import replayData from './public/data/replays.json' assert {type: "json"};
 import indexData from './public/data/indexes.json' assert {type: "json"};
 
 async function writeToKV(url, data) {
-  console.log(`writing ${data.length} records to ${url}`);
+  console.log(`[update_kv] writing ${data.length} records to ${url}`);
   const res = await fetch(url, {
     method: 'PUT',
     headers: {
@@ -22,8 +22,8 @@ async function updateIndex(url) {
   console.log('[update_kv] updating replay index');
 
   let indexesToSend = [];
-  Object.entries(indexData).forEach((category, keys) => {
-    Object.entries(keys).forEach(async (key, references) => {
+  Object.entries(indexData).forEach(([category, keys]) => {
+    Object.entries(keys).forEach(async ([key, references]) => {
       const kvData = {
         key: key.toLowerCase(),
         value: JSON.stringify(references),
