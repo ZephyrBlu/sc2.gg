@@ -14,7 +14,9 @@ async function writeToKV(url, data) {
   });
 
   if (res.status !== 200) {
+    const body = await res.json();
     console.log(`[update_kv] KV PUT failed with status ${res.status}: ${res.statusText}`);
+    console.log(`[update_kv] response: ${JSON.stringify(body)}`);
   }
 }
 
@@ -25,7 +27,7 @@ async function updateIndex(url) {
   Object.entries(indexData).forEach(([category, keys]) => {
     Object.entries(keys).forEach(async ([key, references]) => {
       const kvData = {
-        key: key.toLowerCase(),
+        key: `${category}__${key}`,
         value: JSON.stringify(references),
         metadata: JSON.stringify({context: category}),
       };
@@ -41,7 +43,7 @@ async function updateIndex(url) {
     await writeToKV(url, indexesToSend);
   }
 
-  console.log('[update_kv] successfully updated replay index');
+  console.log('[update_kv] finished updating replay index');
 }
 
 async function updateReplays(url) {
@@ -71,7 +73,7 @@ async function updateReplays(url) {
     await writeToKV(url, replaysToSend);
   }
 
-  console.log('[update_kv] successfully updated replay data');
+  console.log('[update_kv] finished updating replay data');
 }
 
 async function update() {
