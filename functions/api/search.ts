@@ -50,8 +50,9 @@ export const onRequest: PagesFunction<{
       sentry.captureMessage(`Matching index keys with search terns ${JSON.stringify(searchTerms)}: ${JSON.stringify(matchingIndexKeys)}`);
 
       const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
+        sentry.captureMessage(`Fetching value for ${key.name}`);
         const references = await replayIndex.get(key.name);
-        sentry.captureMessage(`References for ${key.name} index: ${references}`);
+        sentry.captureMessage(`Found references for ${key.name} index: ${references}`);
         return JSON.parse(references);
       }));
 
