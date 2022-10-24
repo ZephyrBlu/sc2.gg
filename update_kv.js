@@ -3,6 +3,7 @@ import replayData from './public/data/replays.json' assert {type: "json"};
 import indexData from './public/data/indexes.json' assert {type: "json"};
 
 async function writeToKV(url, data) {
+  console.log(`writing ${data.length} records to ${url}`);
   const res = await fetch(url, {
     method: 'PUT',
     headers: {
@@ -13,7 +14,7 @@ async function writeToKV(url, data) {
   });
 
   if (res.status !== 200) {
-    console.error(`[update_kv] KV PUT failed with status ${res.status}: ${res.statusText}`);
+    console.log(`[update_kv] KV PUT failed with status ${res.status}: ${res.statusText}`);
   }
 }
 
@@ -36,7 +37,7 @@ async function updateIndex(url) {
     });
   });
 
-  if (indexesToSend) {
+  if (indexesToSend.length > 0) {
     await writeToKV(url, indexesToSend);
   }
 
@@ -66,7 +67,7 @@ async function updateReplays(url) {
     }
   });
 
-  if (replaysToSend) {
+  if (replaysToSend.length > 0) {
     await writeToKV(url, replaysToSend);
   }
 
