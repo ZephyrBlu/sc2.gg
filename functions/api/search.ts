@@ -43,34 +43,12 @@ export const onRequest: PagesFunction<{
       prefixIndexes[prefix] = index.keys;
     }));
 
-    // // get list of keys for each index category, then search index
-    // const rawPostingLists = await Promise.all(PREFIXES.map(async (prefix) => {
-    //   const index = await replayIndex.list({prefix: `${prefix}__`});
-
-    //   // find the keys in the index that contain at least one search term
-    //   const matchingIndexKeys = index.keys.filter((key) => (
-    //     searchTerms.some((term) => key.name.includes(term)))
-    //   );
-
-    //   sentry.captureMessage(`Matching index keys with search terms ${JSON.stringify(searchTerms)}: ${JSON.stringify(matchingIndexKeys)}`);
-
-    //   const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
-    //     const references = await replayIndex
-    //       .get(key.name, {type: 'json'})
-    //       .catch(e => sentry.captureException(e));
-    //     return references as string[];
-    //   }));
-    //   return indexResults.flat();
-    // }));
-
     // get list of keys for each index category, then search index
     const rawPostingLists = await Promise.all(searchTerms.map(async (term) => {
       // find the keys in the index that contain at least one search term
       const matchingTermKeys = Object.entries(prefixIndexes).map(([_, index]) => (
         index.filter((entry) => entry.name.includes(term))
       )).flat();
-
-      sentry.captureMessage(`Matching index keys with search terms ${JSON.stringify(searchTerms)}: ${JSON.stringify(matchingIndexKeys)}`);
 
       const indexResults = await Promise.all(matchingTermKeys.map(async (key) => {
         const references = await replayIndex
@@ -80,6 +58,8 @@ export const onRequest: PagesFunction<{
       }));
       return indexResults.flat();
     }));
+
+    sentry.captureMessage(`rawPostingLists lengths: ${JSON.stringify(rawPostingLists.map(list => list.length))}`);
 
     // https://stackoverflow.com/a/1885569
     // progressively applying this intersection logic to each search term results, creates intersection of all terms
