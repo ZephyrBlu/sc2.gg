@@ -51,8 +51,11 @@ export const onRequest: PagesFunction<{
 
       const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
         sentry.captureMessage(`Fetching value for ${key.name}`);
-        const references = await replayIndex.get(key.name);
-        sentry.captureMessage(`Found references for ${key.name} index: ${references}`);
+        const references = await replayIndex.get(key.name).catch((e) => {
+          sentry.captureException(e);
+          sentry.captureMessage(`Failed at replay KV fetch for key ${key.name} on query ${query}`);
+          return '[]';
+        });
         return JSON.parse(references);
       }));
 
@@ -62,7 +65,7 @@ export const onRequest: PagesFunction<{
     // flatten list of lists, then remove duplicates
     const postingList = Array.from(new Set(rawPostingLists.flat()));
 
-    sentry.captureMessage(`postingList: ${JSON.stringify(postingList)}`);
+    sentry.captureMessage(`postingList for ${query}: ${JSON.stringify(postingList)}`);
 
     // const rawPostingLists: string[][] = await Promise.all(searchTerms.map(async (term) => {
     //   const references = await replayIndex.get(term);
@@ -79,7 +82,10 @@ export const onRequest: PagesFunction<{
 
     // max requests to other services is 1000
     const replays = await Promise.all(postingList.slice(0, 995).map(async (replayId) => {
-      const replay = await replayData.get(replayId);
+      const replay = await replayData.get(replayId).catch((e) => {
+        sentry.captureException(e);
+        sentry.captureMessage(`Failed at replay KV fetch for id ${replayId} on query ${query}`);
+    });
       return replay;
     }));
 
