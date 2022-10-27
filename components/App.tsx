@@ -156,7 +156,7 @@ export function App() {
     const searchTermReferences: {[k: string]: Set<number>} = {};
 
     Object.entries(searchIndexes).forEach(([name, index]) => {
-      Object.entries(index.entries).forEach(([key, references]) => {
+      Object.entries(index).forEach(([key, references]) => {
         searchTerms.forEach((term) => {
           if (!term) {
             return;
@@ -174,7 +174,7 @@ export function App() {
             references.forEach(id => {
               if (!searchTermReferences[term].has(id)) {
                 searchTermReferences[term].add(id);
-                searchTermResults[term].push(indexOrderedReplays[id]);
+                searchTermResults[term].push(indexOrderedReplays.find(replay => replay.content_hash === id));
               }
             });
           }

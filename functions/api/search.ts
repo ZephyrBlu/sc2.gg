@@ -2,7 +2,6 @@ import {PREFIXES} from '../../constants';
 import Toucan from 'toucan-js';
 
 export const onRequest: PagesFunction<{
-  CF_PAGES_BRANCH: string,
   REPLAYS: KVNamespace,
   REPLAYS_TEST: KVNamespace,
   REPLAY_INDEX: KVNamespace,
@@ -47,7 +46,7 @@ export const onRequest: PagesFunction<{
         searchTerms.some((term) => key.name.includes(term)))
       );
 
-      sentry.captureMessage(`Matching index keys with search terns ${JSON.stringify(searchTerms)}: ${JSON.stringify(matchingIndexKeys)}`);
+      sentry.captureMessage(`Matching index keys with search terms ${JSON.stringify(searchTerms)}: ${JSON.stringify(matchingIndexKeys)}`);
 
       const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
         sentry.captureMessage(`Fetching value for ${key.name}`);
@@ -59,16 +58,14 @@ export const onRequest: PagesFunction<{
       return indexResults;
     }));
 
-    // flatten list of lists, then remove duplicates
-    const postingList = Array.from(new Set(rawPostingLists.flat()));
+    // https://stackoverflow.com/a/1885569
+    // progressively applying this intersection logic to each search term results, creates intersection of all terms
+    // this is likely the most computationally intensive part of the search
+    const postingList = rawPostingLists.flat().reduce((current, next) => {
+      return current.filter(value => next.includes(value))
+    }, rawPostingLists[0]);
 
     sentry.captureMessage(`postingList: ${JSON.stringify(postingList)}`);
-
-    // const rawPostingLists: string[][] = await Promise.all(searchTerms.map(async (term) => {
-    //   const references = await replayIndex.get(term);
-    //   return JSON.parse(references);
-    // }));
-    // const postingList = rawPostingLists.flat();
 
     /*
       currently the hash for replays is a simple content hash
