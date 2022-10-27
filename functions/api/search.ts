@@ -50,7 +50,7 @@ export const onRequest: PagesFunction<{
 
       const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
         sentry.captureMessage(`Fetching value for ${key.name}`);
-        const references = await replayIndex.get(key.name);
+        const references = await replayIndex.get(key.name, {type: 'json'}).catch(e => sentry.captureException(e));
         sentry.captureMessage(`Found references for ${key.name} index: ${references}`);
         return references;
       }));
