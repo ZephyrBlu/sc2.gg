@@ -49,16 +49,15 @@ export const onRequest: PagesFunction<{
       sentry.captureMessage(`Matching index keys with search terms ${JSON.stringify(searchTerms)}: ${JSON.stringify(matchingIndexKeys)}`);
 
       const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
-        sentry.captureMessage(`Fetching value for ${key.name}`);
-        const references = await replayIndex.get(key.name, {type: 'json'}).catch(e => sentry.captureException(e));
-        sentry.captureMessage(`Found references for ${key.name} index: ${references}`);
-        return references;
+        const references = await replayIndex
+          .get(key.name, {type: 'json'})
+          .catch(e => sentry.captureException(e));
+        return references as string[];
       }));
-
-      sentry.captureMessage(`Index results for ${prefix}: ${JSON.stringify(indexResults)}`);
-
       return indexResults.flat();
     }));
+
+    sentry.captureMessage(`rawPostingLists: ${JSON.stringify(rawPostingLists.flat()[0])}, ${rawPostingLists.flat().length}`);
 
     // https://stackoverflow.com/a/1885569
     // progressively applying this intersection logic to each search term results, creates intersection of all terms
@@ -77,7 +76,7 @@ export const onRequest: PagesFunction<{
     */
 
     // max requests to other services is 1000
-    const replays = await Promise.all(postingList.slice(0, 995).map(async (replayId) => {
+    const replays = await Promise.all(postingList.slice(0, 900).map(async (replayId) => {
       const replay = await replayData.get(replayId);
       return replay;
     }));
