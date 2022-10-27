@@ -37,18 +37,42 @@ export const onRequest: PagesFunction<{
     // limit to 5 terms
     const searchTerms = query.split(' ').slice(0, 5);
 
-    // get list of keys for each index category, then search index
-    const rawPostingLists = await Promise.all(PREFIXES.map(async (prefix) => {
+    const prefixIndexes: {[prefix: string]: KVNamespaceListResult<unknown>['keys']} = {};
+    await Promise.all(PREFIXES.map(async (prefix) => {
       const index = await replayIndex.list({prefix: `${prefix}__`});
+      prefixIndexes[prefix] = index.keys;
+    }));
 
+    // // get list of keys for each index category, then search index
+    // const rawPostingLists = await Promise.all(PREFIXES.map(async (prefix) => {
+    //   const index = await replayIndex.list({prefix: `${prefix}__`});
+
+    //   // find the keys in the index that contain at least one search term
+    //   const matchingIndexKeys = index.keys.filter((key) => (
+    //     searchTerms.some((term) => key.name.includes(term)))
+    //   );
+
+    //   sentry.captureMessage(`Matching index keys with search terms ${JSON.stringify(searchTerms)}: ${JSON.stringify(matchingIndexKeys)}`);
+
+    //   const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
+    //     const references = await replayIndex
+    //       .get(key.name, {type: 'json'})
+    //       .catch(e => sentry.captureException(e));
+    //     return references as string[];
+    //   }));
+    //   return indexResults.flat();
+    // }));
+
+    // get list of keys for each index category, then search index
+    const rawPostingLists = await Promise.all(searchTerms.map(async (term) => {
       // find the keys in the index that contain at least one search term
-      const matchingIndexKeys = index.keys.filter((key) => (
-        searchTerms.some((term) => key.name.includes(term)))
-      );
+      const matchingTermKeys = Object.entries(prefixIndexes).map(([_, index]) => (
+        index.filter((entry) => entry.name.includes(term))
+      )).flat();
 
       sentry.captureMessage(`Matching index keys with search terms ${JSON.stringify(searchTerms)}: ${JSON.stringify(matchingIndexKeys)}`);
 
-      const indexResults = await Promise.all(matchingIndexKeys.map(async (key) => {
+      const indexResults = await Promise.all(matchingTermKeys.map(async (key) => {
         const references = await replayIndex
           .get(key.name, {type: 'json'})
           .catch(e => sentry.captureException(e));
@@ -56,8 +80,6 @@ export const onRequest: PagesFunction<{
       }));
       return indexResults.flat();
     }));
-
-    sentry.captureMessage(`rawPostingLists: ${JSON.stringify(rawPostingLists.flat()[0])}, ${rawPostingLists.flat().length}`);
 
     // https://stackoverflow.com/a/1885569
     // progressively applying this intersection logic to each search term results, creates intersection of all terms
