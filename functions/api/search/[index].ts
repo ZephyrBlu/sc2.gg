@@ -1,4 +1,4 @@
-import {PREFIXES} from '../../constants';
+import {PREFIXES} from '../../../constants';
 import Toucan from 'toucan-js';
 
 export const onRequest: PagesFunction<{
@@ -19,6 +19,7 @@ export const onRequest: PagesFunction<{
     const {
       request,
       env,
+      params,
     } = context;
 
     const replayIndex = env.REPLAY_INDEX || env.REPLAY_INDEX_TEST;
@@ -38,22 +39,24 @@ export const onRequest: PagesFunction<{
     // limit to 5 terms
     const searchTerms = query.split(' ').slice(0, 5);
 
-    const prefixIndexes: {[prefix: string]: KVNamespaceListResult<unknown>['keys']} = {};
-    await Promise.all(PREFIXES.map(async (prefix) => {
-      const index = await replayIndex.list({prefix: `${prefix}__`});
-      prefixIndexes[prefix] = index.keys;
-    }));
+    // const prefixIndexes: {[prefix: string]: KVNamespaceListResult<unknown>['keys']} = {};
+    // await Promise.all(PREFIXES.map(async (prefix) => {
+    //   const index = await replayIndex.list({prefix: `${prefix}__`});
+    //   prefixIndexes[prefix] = index.keys;
+    // }));
+
+    sentry.captureMessage(`Request params: ${params}`);
+    const index = await replayIndex.list({prefix: `${params}__`});
 
     // get list of keys for each index category, then search index
     const rawPostingLists = await Promise.all(searchTerms.map(async (term) => {
       // find the keys in the index that contain the search term
-      let matchingTermKeys = Object.entries(prefixIndexes).map(([_, index]) => (
-        index.filter((entry) => entry.name.includes(term))
-      )).flat();
+      let matchingTermKeys = index.keys.filter((entry) => entry.name.includes(term));
 
       // de-dupe references from across multiple indexes
       matchingTermKeys = Array.from(new Set(matchingTermKeys));
 
+      sentry.captureMessage(`Fetching references for matching keys (${matchingTermKeys.length}): ${JSON.stringify(matchingTermKeys)}`);
       const indexResults = await Promise.all(matchingTermKeys.map(async (key) => {
         const references = await replayIndex
           .get(key.name, {type: 'json'})
