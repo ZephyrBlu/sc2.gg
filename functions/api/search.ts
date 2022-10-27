@@ -45,10 +45,13 @@ export const onRequest: PagesFunction<{
 
     // get list of keys for each index category, then search index
     const rawPostingLists = await Promise.all(searchTerms.map(async (term) => {
-      // find the keys in the index that contain at least one search term
-      const matchingTermKeys = Object.entries(prefixIndexes).map(([_, index]) => (
+      // find the keys in the index that contain the search term
+      let matchingTermKeys = Object.entries(prefixIndexes).map(([_, index]) => (
         index.filter((entry) => entry.name.includes(term))
       )).flat();
+
+      // de-dupe references from across multiple indexes
+      matchingTermKeys = Array.from(new Set(matchingTermKeys));
 
       const indexResults = await Promise.all(matchingTermKeys.map(async (key) => {
         const references = await replayIndex
@@ -64,7 +67,7 @@ export const onRequest: PagesFunction<{
     // https://stackoverflow.com/a/1885569
     // progressively applying this intersection logic to each search term results, creates intersection of all terms
     // this is likely the most computationally intensive part of the search
-    const postingList = rawPostingLists.flat().reduce((current, next) => {
+    const postingList = rawPostingLists.reduce((current, next) => {
       return current.filter(value => next.includes(value))
     }, rawPostingLists[0]);
 
