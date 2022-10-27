@@ -52,10 +52,12 @@ export const onRequest: PagesFunction<{
         sentry.captureMessage(`Fetching value for ${key.name}`);
         const references = await replayIndex.get(key.name);
         sentry.captureMessage(`Found references for ${key.name} index: ${references}`);
-        return JSON.parse(references);
+        return references;
       }));
 
-      return indexResults;
+      sentry.captureMessage(`Index results for ${prefix}: ${JSON.stringify(indexResults)}`);
+
+      return indexResults.flat();
     }));
 
     // https://stackoverflow.com/a/1885569
