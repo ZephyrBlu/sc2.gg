@@ -43,8 +43,9 @@ export const onRequest: PagesFunction<{
     //   prefixIndexes[prefix] = index.keys;
     // }));
 
-    sentry.captureMessage(`Request params: ${JSON.stringify(params)}`);
     const index = await replayIndex.list({prefix: `${params.index}__`});
+
+    return new Response(JSON.stringify(index.keys.slice(0, 100)));
 
     // get list of keys for each index category, then search index
     const rawPostingLists = await Promise.all(searchTerms.map(async (term) => {
@@ -54,7 +55,6 @@ export const onRequest: PagesFunction<{
       // de-dupe references from across multiple indexes
       matchingTermKeys = Array.from(new Set(matchingTermKeys));
 
-      sentry.captureMessage(`Fetching references for matching keys (${matchingTermKeys.length}): ${JSON.stringify(matchingTermKeys)}`);
       const indexResults = await Promise.all(matchingTermKeys.map(async (key) => {
         const references = await replayIndex
           .get(key.name, {type: 'json'})
