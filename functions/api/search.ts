@@ -70,6 +70,8 @@ export const onRequest: PagesFunction<{
       return current.filter(value => next.includes(value))
     }, rawPostingLists[0]);
 
+    return new Response(JSON.stringify(postingList.slice(0, 100)));
+
     /*
       currently the hash for replays is a simple content hash
       this is unsuitable for >1000 search results since they will be unordered
@@ -77,13 +79,13 @@ export const onRequest: PagesFunction<{
       which can be used for sorting
     */
 
-    // max requests to other services is 1000
-    const replays = await Promise.all(postingList.slice(0, 900).map(async (replayId) => {
-      const replay = await replayData.get(replayId);
-      return replay;
-    }));
+    // // max requests to other services is 1000
+    // const replays = await Promise.all(postingList.slice(0, 900).map(async (replayId) => {
+    //   const replay = await replayData.get(replayId);
+    //   return replay;
+    // }));
 
-    return new Response(JSON.stringify(replays));
+    // return new Response(JSON.stringify(replays));
   } catch (e) {
     sentry.captureException(e);
     return new Response(`Something went wrong: ${e.toString()}`, {
