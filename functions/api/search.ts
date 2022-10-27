@@ -9,6 +9,7 @@ export const onRequest: PagesFunction<{
 }> = async (context) => {
   const sentry = new Toucan({
     dsn: 'https://897e41e5e6f24829b75be219387dff94@o299086.ingest.sentry.io/4504037385240576',
+    tracesSampleRate: 1.0,
     context, // Includes 'waitUntil', which is essential for Sentry logs to be delivered. Also includes 'request' -- no need to set it separately.
     allowedHeaders: ['user-agent'],
     allowedSearchParams: /(.*)/,
@@ -62,16 +63,12 @@ export const onRequest: PagesFunction<{
       return indexResults.flat();
     }));
 
-    sentry.captureMessage(`rawPostingLists lengths: ${JSON.stringify(rawPostingLists.map(list => list.length))}`);
-
     // https://stackoverflow.com/a/1885569
     // progressively applying this intersection logic to each search term results, creates intersection of all terms
     // this is likely the most computationally intensive part of the search
     const postingList = rawPostingLists.reduce((current, next) => {
       return current.filter(value => next.includes(value))
     }, rawPostingLists[0]);
-
-    sentry.captureMessage(`postingList: ${JSON.stringify(postingList)}`);
 
     /*
       currently the hash for replays is a simple content hash
@@ -85,8 +82,6 @@ export const onRequest: PagesFunction<{
       const replay = await replayData.get(replayId);
       return replay;
     }));
-
-    sentry.captureMessage(`replays: ${JSON.stringify(replays)}`);
 
     return new Response(JSON.stringify(replays));
   } catch (e) {
