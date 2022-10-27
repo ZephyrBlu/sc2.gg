@@ -1,4 +1,3 @@
-import {PREFIXES} from '../../../constants';
 import Toucan from 'toucan-js';
 
 export const onRequest: PagesFunction<{
@@ -9,7 +8,6 @@ export const onRequest: PagesFunction<{
 }> = async (context) => {
   const sentry = new Toucan({
     dsn: 'https://897e41e5e6f24829b75be219387dff94@o299086.ingest.sentry.io/4504037385240576',
-    tracesSampleRate: 1.0,
     context, // Includes 'waitUntil', which is essential for Sentry logs to be delivered. Also includes 'request' -- no need to set it separately.
     allowedHeaders: ['user-agent'],
     allowedSearchParams: /(.*)/,
@@ -45,8 +43,8 @@ export const onRequest: PagesFunction<{
     //   prefixIndexes[prefix] = index.keys;
     // }));
 
-    sentry.captureMessage(`Request params: ${params}`);
-    const index = await replayIndex.list({prefix: `${params}__`});
+    sentry.captureMessage(`Request params: ${JSON.stringify(params)}`);
+    const index = await replayIndex.list({prefix: `${params.index}__`});
 
     // get list of keys for each index category, then search index
     const rawPostingLists = await Promise.all(searchTerms.map(async (term) => {
