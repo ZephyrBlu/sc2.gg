@@ -5,6 +5,8 @@ export const onRequest: PagesFunction<{
   REPLAYS_TEST: KVNamespace,
   REPLAY_INDEX: KVNamespace,
   REPLAY_INDEX_TEST: KVNamespace,
+  CACHED_RESULTS: KVNamespace,
+  TEST_CACHED_RESULTS: KVNamespace,
 }> = async (context) => {
   const sentry = new Toucan({
     dsn: 'https://897e41e5e6f24829b75be219387dff94@o299086.ingest.sentry.io/4504037385240576',
@@ -22,6 +24,7 @@ export const onRequest: PagesFunction<{
 
     const replayIndex = env.REPLAY_INDEX || env.REPLAY_INDEX_TEST;
     const replayData = env.REPLAYS || env.REPLAYS_TEST;
+    const computedQueries = env.CACHED_RESULTS || env.TEST_CACHED_RESULTS;
 
     const url = new URL(request.url);
     const urlParams = new URLSearchParams(url.search);
@@ -34,14 +37,17 @@ export const onRequest: PagesFunction<{
 
     const query = urlParams.get('q');
 
+    const sortedSearchTerms = query.split(' ');
+    sortedSearchTerms.sort();
+
+    const queryResultsKey = sortedSearchTerms.join('__');
+    const cachedQueryResults = await computedQueries.get(queryResultsKey);
+    if (cachedQueryResults) {
+      return new Response(cachedQueryResults);
+    }
+
     // limit to 5 terms
     const searchTerms = query.split(' ').slice(0, 5);
-
-    // const prefixIndexes: {[prefix: string]: KVNamespaceListResult<unknown>['keys']} = {};
-    // await Promise.all(PREFIXES.map(async (prefix) => {
-    //   const index = await replayIndex.list({prefix: `${prefix}__`});
-    //   prefixIndexes[prefix] = index.keys;
-    // }));
 
     const index = await replayIndex.list({prefix: `${params.index}__`});
 
@@ -53,12 +59,13 @@ export const onRequest: PagesFunction<{
       // de-dupe references from across multiple indexes
       matchingTermKeys = Array.from(new Set(matchingTermKeys));
 
-      const indexResults = await Promise.all(matchingTermKeys.map(async (key) => {
-        const references = await replayIndex
-          .get(key.name, {type: 'json'})
-          .catch(e => sentry.captureException(e));
-        return references as string[];
-      }));
+      const indexResults = await Promise.all(
+        matchingTermKeys.map(async (key) => (
+          replayIndex
+            .get(key.name, {type: 'json'})
+            .catch(e => sentry.captureException(e))
+        ))
+      );
       return indexResults.flat();
     }));
 
@@ -69,8 +76,6 @@ export const onRequest: PagesFunction<{
       return current.filter(value => next.includes(value))
     }, rawPostingLists[0]);
 
-    return new Response(JSON.stringify(postingList.slice(0, 100)));
-
     /*
       currently the hash for replays is a simple content hash
       this is unsuitable for >1000 search results since they will be unordered
@@ -78,13 +83,13 @@ export const onRequest: PagesFunction<{
       which can be used for sorting
     */
 
-    // // max requests to other services is 1000
-    // const replays = await Promise.all(postingList.slice(0, 900).map(async (replayId) => {
-    //   const replay = await replayData.get(replayId);
-    //   return replay;
-    // }));
+    // max requests to other services is 1000
+    const replays = await Promise.all(postingList.slice(0, 900).map(async (replayId) => {
+      const replay = await replayData.get(replayId as string);
+      return replay;
+    }));
 
-    // return new Response(JSON.stringify(replays));
+    return new Response(JSON.stringify(replays));
   } catch (e) {
     sentry.captureException(e);
     return new Response(`Something went wrong: ${e.toString()}`, {
