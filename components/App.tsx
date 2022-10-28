@@ -27,11 +27,12 @@ export function App() {
   const [buildSize, setBuildSize] = useState<number>(10);
   const [numResults, setNumResults] = useState<number>(0);
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
+  const [apiReplays, setApiReplays] = useState<Replay[]>();
   const {searchIndex} = useSearch();
 
   useEffect(() => {
     const search = async () => {
-      const searchResults = [];
+      let searchResults: Replay[] = [];
 
       if (searchInput) {
         const inputQuery = encodeURIComponent(searchInput).replace(/%20/g, '+');
@@ -52,6 +53,15 @@ export function App() {
         const results = await searchIndex(matchupQuery, 'race');
         searchResults.push(...results);
       }
+
+      console.log('raw api results', searchResults);
+
+      // de-dupe results
+      searchResults = Array.from(new Set(searchResults));
+      searchResults.sort(playedAtSort);
+      setApiReplays(searchResults);
+
+      console.log('just set api replays', searchResults);
     };
 
     search();
