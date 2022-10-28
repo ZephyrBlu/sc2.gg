@@ -6,7 +6,7 @@ export const onRequest: PagesFunction<{
   REPLAY_INDEX: KVNamespace,
   REPLAY_INDEX_TEST: KVNamespace,
   CACHED_RESULTS: KVNamespace,
-  TEST_CACHED_RESULTS: KVNamespace,
+  CACHED_RESULTS_TEST: KVNamespace,
 }> = async (context) => {
   const sentry = new Toucan({
     dsn: 'https://897e41e5e6f24829b75be219387dff94@o299086.ingest.sentry.io/4504037385240576',
@@ -24,7 +24,7 @@ export const onRequest: PagesFunction<{
 
     const replayIndex = env.REPLAY_INDEX || env.REPLAY_INDEX_TEST;
     const replayData = env.REPLAYS || env.REPLAYS_TEST;
-    const computedQueries = env.CACHED_RESULTS || env.TEST_CACHED_RESULTS;
+    const computedQueries = env.CACHED_RESULTS || env.CACHED_RESULTS_TEST;
 
     const url = new URL(request.url);
     const urlParams = new URLSearchParams(url.search);
@@ -84,15 +84,17 @@ export const onRequest: PagesFunction<{
     */
 
     // max requests to other services is 1000
-    const replays = await Promise.all(postingList.slice(0, 900).map(async (replayId) => {
-      const replay = await replayData.get(replayId as string);
+    const replays = await Promise.all(postingList.slice(0, 100).map(async (replayId) => {
+      const replay = await replayData
+        .get(replayId as string)
+        .catch((e) => sentry.captureException(e));
       return replay;
     }));
 
     return new Response(JSON.stringify(replays));
   } catch (e) {
     sentry.captureException(e);
-    return new Response(`Something went wrong: ${e.toString()}`, {
+    return new Response(e.toString(), {
       status: 500,
     });
   }
