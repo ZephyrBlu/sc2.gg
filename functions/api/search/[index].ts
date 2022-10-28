@@ -45,8 +45,6 @@ export const onRequest: PagesFunction<{
 
     const index = await replayIndex.list({prefix: `${params.index}__`});
 
-    return new Response(JSON.stringify(index.keys.slice(0, 100)));
-
     // get list of keys for each index category, then search index
     const rawPostingLists = await Promise.all(searchTerms.map(async (term) => {
       // find the keys in the index that contain the search term
