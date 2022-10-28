@@ -86,7 +86,7 @@ export const onRequest: PagesFunction<{
     // max requests to other services is 1000
     const replays = await Promise.all(postingList.slice(0, 100).map(async (replayId) => {
       const replay = await replayData
-        .get(replayId as string)
+        .get(replayId as string, {type: 'json'})
         .catch((e) => sentry.captureException(e));
       return replay;
     }));

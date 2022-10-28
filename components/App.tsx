@@ -1,9 +1,16 @@
 import {useState, useMemo, useEffect, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import {matchupRaceMapping, mirrorMatchups} from './constants';
+import {useSearch} from './hooks';
 import {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
 import './App.css';
+
+const INDEXES = [
+  'player',
+  'race',
+  'map',
+];
 
 export function App() {
   const [serialized] = useState<string | undefined>(
@@ -20,6 +27,35 @@ export function App() {
   const [buildSize, setBuildSize] = useState<number>(10);
   const [numResults, setNumResults] = useState<number>(0);
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
+  const {searchIndex} = useSearch();
+
+  useEffect(() => {
+    const search = async () => {
+      const searchResults = [];
+
+      if (searchInput) {
+        const inputQuery = encodeURIComponent(searchInput).replace(/%20/g, '+');
+        const results = await Promise.all(INDEXES.map((index) => (
+          searchIndex(inputQuery, index).then(res => res.json()))
+        ));
+
+        searchResults.push(...results.flat());
+      }
+
+      if (quickSelectOptions.player) {
+        const results = await searchIndex(quickSelectOptions.player, 'player');
+        searchResults.push(...results);
+      }
+
+      if (quickSelectOptions.matchup) {
+        const matchupQuery = matchupRaceMapping[quickSelectOptions.matchup].join('+').toLowerCase();
+        const results = await searchIndex(matchupQuery, 'race');
+        searchResults.push(...results);
+      }
+    };
+
+    search();
+  }, [searchInput, quickSelectOptions]);
 
   useEffect(() => {
     const fetchIndexes = async () => {
@@ -108,39 +144,6 @@ export function App() {
       return orderedReplays.slice(0, 100);
     }
 
-    // // builds
-    // if (input.includes("(")) {
-    //   const buildSearchTokens = input
-    //     .replace(/[()]/g, "")
-    //     .split(",")
-    //     .map(building => building.trim());
-
-    //   if (buildSearchTokens.length < 3) {
-    //     return orderedReplays.slice(0, 100);
-    //   }
-
-    //   const searchTrigrams = [];
-    //   for (let i = 0; i < buildSearchTokens.length - 2; i++) {
-    //     searchTrigrams.push(buildSearchTokens.slice(i, i + 3).join(","));
-    //   }
-
-    //   const buildIndex: {[k: string]: number[]} = searchIndexes.build.entries;
-    //   const buildSearchResults: Set<number> = new Set();
-    //   searchTrigrams.forEach((key: string) => {
-    //     if (buildIndex[key]) {
-    //       buildIndex[key].forEach((id) => {
-    //         buildSearchResults.add(id);
-    //       });
-    //     }
-    //   });
-    //   numResults.current = Array.from(buildSearchResults).length;
-
-    //   return Array.from(buildSearchResults)
-    //     .map(id => indexOrderedReplays[id])
-    //     .slice(0, 100)
-    //     .sort(playedAtSort).map(mapToReplayComponent);
-    // }
-
     const searchTerms = searchInput.split(" ");
 
     const isMatchupSelected = quickSelectOptions.matchup && matchupRaceMapping[quickSelectOptions.matchup];
@@ -220,14 +223,6 @@ export function App() {
     <div className="App">
       <header className="App__header">
         StarCraft 2 Tournament Games
-        {/* <span className="App__sub-heading">
-          This site is built with&nbsp;
-          <a href="https://reactjs.org/" target="_blank">React</a>,
-          hosted on&nbsp;
-          <a href="https://pages.cloudflare.com/" target="_blank">Cloudflare Pages</a>
-          &nbsp;and&nbsp;
-          <a href="https://github.com/ZephyrBlu/sc2.gg" target="_blank">Open Source on GitHub</a>
-        </span> */}
       </header>
       <div className="App__search">
         <input
