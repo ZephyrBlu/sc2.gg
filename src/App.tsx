@@ -68,7 +68,8 @@ export function App() {
 
       // if search results are fresher than existing results, update them
       if (replays.length > 0 && searchStartTime > searchResults.searchStartedAt) {
-        const intersectionResults = replays.filter(r => r).reduce((current, next) => {
+        console.log('all search results', replays);
+        const intersectionResults = replays.filter(r => r.length > 0).reduce((current, next) => {
           return current.filter(value => next.includes(value))
         }, replays[0]);
 
