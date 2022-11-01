@@ -29,7 +29,6 @@ async function updateComputedResults(url) {
     const kvData = {
       key,
       value: JSON.stringify(references),
-      metadata: JSON.stringify(references),
     };
     computedResultsToSend.push(kvData);
 
