@@ -25,7 +25,7 @@ async function updateComputedResults(url) {
   console.log('[update_kv] updating computed search results');
 
   let computedResultsToSend = [];
-  Object.entries(computedResults).forEach(([key, references]) => {
+  Object.entries(computedResults).forEach(async ([key, references]) => {
     const kvData = {
       key,
       value: JSON.stringify(references),
