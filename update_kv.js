@@ -75,16 +75,9 @@ async function updateReplays(url) {
 
   let replaysToSend = [];
   replayData.replays.forEach(async (replay) => {
-    const {
-      content_hash: contentHash,
-      id,
-      build_mappings,
-      ...replayValue
-    } = replay;
     const kvData = {
-      key: contentHash,
-      value: JSON.stringify(replayValue),
-      metadata: JSON.stringify(replayValue),
+      key: replay.content_hash,
+      value: JSON.stringify(replay),
     };
     replaysToSend.push(kvData);
 
@@ -130,4 +123,4 @@ async function update() {
   console.log(`[update_kv] updated KV data for ${replayData.replays.length} replays`);
 }
 
-// await update();
+await update();
