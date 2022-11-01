@@ -36,46 +36,55 @@ export function App() {
   });
   const {searchIndex} = useSearch();
 
+  console.log('search results', searchResults);
+
   useEffect(() => {
     const search = async () => {
-      let replays: Replay[] = [];
+      let replays: Replay[][] = [];
       let searchStartTime = Date.now();
 
       if (quickSelectOptions.player) {
         const results = await searchIndex(quickSelectOptions.player.toLowerCase(), 'player');
-        replays.push(...results);
+        replays.push(results);
       }
 
       if (quickSelectOptions.matchup) {
         await Promise.all(matchupRaceMapping[quickSelectOptions.matchup].map(async (matchup) => {
           const results = await searchIndex(matchup.toLowerCase(), 'race');
-          replays.push(...results);
+          replays.push(results);
         }));
       }
 
       if (searchInput) {
         const terms = searchInput.split(' ');
+        const inputResults: Replay[] = [];
         await Promise.all(terms.map(async (term) => {
           const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
           const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery.toLowerCase(), index)));
-          replays.push(...results.flat());
+          inputResults.push(...results);
         }));
+        replays.push(inputResults);
       }
 
       // if search results are fresher than existing results, update them
       if (searchStartTime > searchResults.searchStartedAt) {
+        const intersectionResults = replays.filter(r => r).reduce((current, next) => {
+          return current.filter(value => next.includes(value))
+        }, replays[0]);
+
         // de-dupe results
-        replays.sort(playedAtSort);
-        console.log('setting new search data', searchStartTime, searchResults);
+        intersectionResults.sort(playedAtSort);
+        console.log('setting new search data', searchResults, {searchStartTime, intersectionResults});
         setSearchResults({
           searchStartedAt: searchStartTime,
-          replays,
+          replays: intersectionResults,
         });
+        console.log('new search data', searchResults);
       }
     };
 
     search();
-  }, [searchInput, quickSelectOptions, setSearchResults]);
+  }, [searchInput, quickSelectOptions, searchIndex, setSearchResults]);
 
   // useEffect(() => {
   //   const fetchIndexes = async () => {
