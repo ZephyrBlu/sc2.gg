@@ -34,21 +34,25 @@ export function App() {
     const search = async () => {
       let searchResults: Replay[] = [];
 
-      if (searchInput) {
-        const inputQuery = encodeURIComponent(searchInput).replace(/%20/g, '+');
-        const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
-        searchResults.push(...results.flat());
-      }
-
       if (quickSelectOptions.player) {
-        const results = await searchIndex(quickSelectOptions.player, 'player');
+        const results = await searchIndex(quickSelectOptions.player.toLowerCase(), 'player');
         searchResults.push(...results);
       }
 
       if (quickSelectOptions.matchup) {
-        const matchupQuery = matchupRaceMapping[quickSelectOptions.matchup].join('+').toLowerCase();
-        const results = await searchIndex(matchupQuery, 'race');
-        searchResults.push(...results);
+        await Promise.all(matchupRaceMapping[quickSelectOptions.matchup].map(async (matchup) => {
+          const results = await searchIndex(matchup.toLowerCase(), 'race');
+          searchResults.push(...results);
+        }));
+      }
+
+      if (searchInput) {
+        const terms = searchInput.split(' ');
+        await Promise.all(terms.map(async (term) => {
+          const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
+          const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery.toLowerCase(), index)));
+          searchResults.push(...results.flat());
+        }));
       }
 
       console.log('raw api results', searchResults);

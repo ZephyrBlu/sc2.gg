@@ -40,10 +40,14 @@ export const onRequest: PagesFunction<{
     const sortedSearchTerms = query.split(' ');
     sortedSearchTerms.sort();
 
-    const queryResultsKey = sortedSearchTerms.join('__');
-    const cachedQueryResults = await computedQueries.get(queryResultsKey);
-    if (cachedQueryResults) {
-      return new Response(cachedQueryResults);
+    const queryResultsKey = `${params.index}__${sortedSearchTerms.slice(0, 5).join('-')}`;
+    const cachedQueryResults = await computedQueries.list({prefix: queryResultsKey});
+    if (cachedQueryResults.keys.length > 0) {
+      return new Response(JSON.stringify(cachedQueryResults.keys), {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
     }
 
     // limit to 5 terms
