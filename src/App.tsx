@@ -334,8 +334,8 @@ export function App() {
           : serialized
             ? JSON.parse(atob(serialized)).map(mapToReplayComponent)
             : <LoadingAnimation />} */}
-        {searchResults.replays.length > 0 &&
-          searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
+        {searchResults.length > 0 &&
+          searchResults.slice(0, 25).map(mapToReplayComponent)}
       </div>
     </div>
   )
