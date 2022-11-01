@@ -91,7 +91,11 @@ export const onRequest: PagesFunction<{
       return replay;
     }));
 
-    return new Response(JSON.stringify(replays));
+    return new Response(JSON.stringify(replays), {
+      headers: {
+        'content-type': 'application/json;charset=UTF-8',
+      },
+    });
   } catch (e) {
     sentry.captureException(e);
     return new Response(e.toString(), {
