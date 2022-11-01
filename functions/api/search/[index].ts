@@ -93,7 +93,7 @@ export const onRequest: PagesFunction<{
 
     return new Response(JSON.stringify(replays), {
       headers: {
-        'content-type': 'application/json;charset=UTF-8',
+        'Content-Type': 'application/json',
       },
     });
   } catch (e) {
