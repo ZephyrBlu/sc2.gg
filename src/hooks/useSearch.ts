@@ -8,7 +8,6 @@ export function useSearch() {
     const url = `/api/search/${index}?q=${query}`;
 
     if (queryCache[url]) {
-      console.log('hit query cache for', url, queryCache[url]);
       return queryCache[url];
     }
 

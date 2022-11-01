@@ -31,8 +31,6 @@ export function App() {
   const [searchResults, setSearchResults] = useState<Replay[]>([]);
   const {searchIndex} = useSearch();
 
-  console.log('search results', searchResults);
-
   useEffect(() => {
     const search = async () => {
       let replays: Replay[][] = [];
@@ -58,21 +56,21 @@ export function App() {
           const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery.toLowerCase(), index)));
           inputResults.push(...results);
         }));
-        replays.push(inputResults.flat());
+        const inputIntersectionResults = inputResults.filter(r => r.length > 0).reduce((current, next) => {
+          return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
+        }, inputResults[0]);
+        replays.push(inputIntersectionResults);
       }
 
       // if search results are fresher than existing results, update them
-      if (replays.length > 0 && searchStartTime > searchStartedAt.current) {
-        console.log('all search results', replays);
+      if (searchStartTime > searchStartedAt.current) {
         const intersectionResults = replays.filter(r => r.length > 0).reduce((current, next) => {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, replays[0]);
 
         intersectionResults.sort(playedAtSort);
-        console.log('setting new search data', searchResults, {searchStartTime, intersectionResults});
         setSearchResults(intersectionResults);
         searchStartedAt.current = searchStartTime;
-        console.log('new search data', searchResults);
       }
     };
 
