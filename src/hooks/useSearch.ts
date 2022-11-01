@@ -4,8 +4,12 @@ import {Replay} from '../types';
 export function useSearch() {
   const [queryCache, setQueryCache] = useState<{[query: string]: Replay[]}>({});
 
-  const searchIndex = async (query: string, index: string) => {
-    const url = `/api/search/${index}?q=${query}`;
+  const searchIndex = async (query: string, index: string, opts: any = {}) => {
+    let url = `/api/search/${index}?q=${query}`;
+
+    if (opts.mirror) {
+      url += '&mirror';
+    }
 
     if (queryCache[url]) {
       return queryCache[url];

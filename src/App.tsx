@@ -42,8 +42,10 @@ export function App() {
       }
 
       if (quickSelectOptions.matchup) {
-        await Promise.all(matchupRaceMapping[quickSelectOptions.matchup].map(async (matchup) => {
-          const results = await searchIndex(matchup.toLowerCase(), 'race');
+        const matchup = matchupRaceMapping[quickSelectOptions.matchup];
+        const isMirror = matchup.length === 1;
+        await Promise.all(matchup.map(async (matchup) => {
+          const results = await searchIndex(matchup.toLowerCase(), 'race', {mirror: isMirror});
           replays.push(results);
         }));
       }
@@ -63,13 +65,29 @@ export function App() {
       }
 
       // if search results are fresher than existing results, update them
-      if (searchStartTime > searchStartedAt.current) {
+      if (replays.length > 0 && searchStartTime > searchStartedAt.current) {
         const intersectionResults = replays.filter(r => r.length > 0).reduce((current, next) => {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, replays[0]);
-
         intersectionResults.sort(playedAtSort);
-        setSearchResults(intersectionResults);
+
+        const exactMatches: Replay[] = [];
+        const otherMatches: Replay[] = [];
+        const terms = searchInput.split(' ');
+        intersectionResults.forEach((replay) => {
+          replay.players.forEach((player) => {
+            // any exact name match should rank replay higher
+            const exactMatch = terms.some((term: string) => player.name === term);
+            if (exactMatch) {
+              exactMatches.push(replay);
+            } else {
+              otherMatches.push(replay);
+            }
+          });
+        });
+
+        const orderedResults = [...exactMatches, ...otherMatches];
+        setSearchResults(orderedResults);
         searchStartedAt.current = searchStartTime;
       }
     };

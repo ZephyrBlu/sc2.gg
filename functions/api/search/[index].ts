@@ -36,6 +36,7 @@ export const onRequest: PagesFunction<{
     }
 
     const query = urlParams.get('q');
+    const isMirror = params.index === 'race' && urlParams.get('mirror');
 
     const sortedSearchTerms = query.split(' ');
     sortedSearchTerms.sort();
@@ -52,7 +53,7 @@ export const onRequest: PagesFunction<{
       results.sort((a, b) => b.played_at - a.played_at);
 
       const seen_replays = new Set();
-      const replays = [];
+      let replays = [];
       results.forEach((replay) => {
         if (!seen_replays.has(replay.content_hash)) {
           replays.push(replay);
@@ -60,7 +61,14 @@ export const onRequest: PagesFunction<{
         }
       });
 
-      return new Response(JSON.stringify(results.slice(0, 100)), {
+      if (isMirror) {
+        const race = sortedSearchTerms[0];
+        replays = replays.filter((replay) => (
+          replay.players.all(player => player.race === race)
+        ));
+      }
+
+      return new Response(JSON.stringify(replays.slice(0, 100)), {
         headers: {
           'Content-Type': 'application/json',
         }
