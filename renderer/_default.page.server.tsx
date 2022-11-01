@@ -1,5 +1,5 @@
 import {escapeInject, dangerouslySkipEscape, PageContextBuiltIn} from 'vite-plugin-ssr';
-import type {Replay} from '../components/types';
+import type {Replay} from '../src/types';
 import replayData from '../public/data/replays.json';
 import buildData from '../public/data/builds.json';
 import styles from '../components/index.css';

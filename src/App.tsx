@@ -27,24 +27,29 @@ export function App() {
   const [buildSize, setBuildSize] = useState<number>(10);
   const [numResults, setNumResults] = useState<number>(0);
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
-  const [apiReplays, setApiReplays] = useState<Replay[]>();
-  const resultsStartTime = useRef(0);
+  const [searchResults, setSearchResults] = useState<{
+    searchStartedAt: number,
+    replays: Replay[],
+  }>({
+    searchStartedAt: 0,
+    replays: [],
+  });
   const {searchIndex} = useSearch();
 
   useEffect(() => {
     const search = async () => {
-      let searchResults: Replay[] = [];
+      let replays: Replay[] = [];
       let searchStartTime = Date.now();
 
       if (quickSelectOptions.player) {
         const results = await searchIndex(quickSelectOptions.player.toLowerCase(), 'player');
-        searchResults.push(...results);
+        replays.push(...results);
       }
 
       if (quickSelectOptions.matchup) {
         await Promise.all(matchupRaceMapping[quickSelectOptions.matchup].map(async (matchup) => {
           const results = await searchIndex(matchup.toLowerCase(), 'race');
-          searchResults.push(...results);
+          replays.push(...results);
         }));
       }
 
@@ -53,16 +58,19 @@ export function App() {
         await Promise.all(terms.map(async (term) => {
           const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
           const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery.toLowerCase(), index)));
-          searchResults.push(...results.flat());
+          replays.push(...results.flat());
         }));
       }
 
       // if search results are fresher than existing results, update them
-      if (searchStartTime > resultsStartTime.current) {
+      if (searchStartTime > searchResults.searchStartedAt) {
         // de-dupe results
-        searchResults.sort(playedAtSort);
-        setApiReplays(searchResults);
-        resultsStartTime.current = searchStartTime;
+        replays.sort(playedAtSort);
+        console.log('setting new search data', searchStartTime, searchResults);
+        setSearchResults({
+          searchStartedAt: searchStartTime,
+          replays,
+        });
       }
     };
 
@@ -324,7 +332,8 @@ export function App() {
           : serialized
             ? JSON.parse(atob(serialized)).map(mapToReplayComponent)
             : <LoadingAnimation />} */}
-        {apiReplays && apiReplays.slice(0, 25).map(mapToReplayComponent)}
+        {searchResults.replays.length > 0 &&
+          searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
       </div>
     </div>
   )
