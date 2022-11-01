@@ -36,10 +36,7 @@ export function App() {
 
       if (searchInput) {
         const inputQuery = encodeURIComponent(searchInput).replace(/%20/g, '+');
-        const results = await Promise.all(INDEXES.map((index) => (
-          searchIndex(inputQuery, index).then(res => res.json()))
-        ));
-
+        const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
         searchResults.push(...results.flat());
       }
 
