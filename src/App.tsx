@@ -27,13 +27,8 @@ export function App() {
   const [buildSize, setBuildSize] = useState<number>(10);
   const [numResults, setNumResults] = useState<number>(0);
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
-  const [searchResults, setSearchResults] = useState<{
-    searchStartedAt: number,
-    replays: Replay[],
-  }>({
-    searchStartedAt: 0,
-    replays: [],
-  });
+  const searchStartedAt = useRef(0);
+  const [searchResults, setSearchResults] = useState<Replay[]>([]);
   const {searchIndex} = useSearch();
 
   console.log('search results', searchResults);
@@ -67,7 +62,7 @@ export function App() {
       }
 
       // if search results are fresher than existing results, update them
-      if (replays.length > 0 && searchStartTime > searchResults.searchStartedAt) {
+      if (replays.length > 0 && searchStartTime > searchStartedAt.current) {
         console.log('all search results', replays);
         const intersectionResults = replays.filter(r => r.length > 0).reduce((current, next) => {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
@@ -75,10 +70,8 @@ export function App() {
 
         intersectionResults.sort(playedAtSort);
         console.log('setting new search data', searchResults, {searchStartTime, intersectionResults});
-        setSearchResults({
-          searchStartedAt: searchStartTime,
-          replays: intersectionResults,
-        });
+        setSearchResults(intersectionResults);
+        searchStartedAt.current = searchStartTime;
         console.log('new search data', searchResults);
       }
     };
