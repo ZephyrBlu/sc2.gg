@@ -75,7 +75,7 @@ export function App() {
     };
 
     search();
-  }, [searchInput, quickSelectOptions]);
+  }, [searchInput, quickSelectOptions, setSearchResults]);
 
   // useEffect(() => {
   //   const fetchIndexes = async () => {
