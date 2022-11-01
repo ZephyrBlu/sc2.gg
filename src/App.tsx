@@ -67,7 +67,7 @@ export function App() {
       }
 
       // if search results are fresher than existing results, update them
-      if (searchStartTime > searchResults.searchStartedAt) {
+      if (replays.length > 0 && searchStartTime > searchResults.searchStartedAt) {
         const intersectionResults = replays.filter(r => r).reduce((current, next) => {
           return current.filter(value => next.includes(value))
         }, replays[0]);
@@ -84,7 +84,7 @@ export function App() {
     };
 
     search();
-  }, [searchInput, quickSelectOptions, searchIndex, setSearchResults]);
+  }, [searchInput, quickSelectOptions, setSearchResults]);
 
   // useEffect(() => {
   //   const fetchIndexes = async () => {
