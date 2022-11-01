@@ -70,7 +70,7 @@ export function App() {
       if (replays.length > 0 && searchStartTime > searchResults.searchStartedAt) {
         console.log('all search results', replays);
         const intersectionResults = replays.filter(r => r.length > 0).reduce((current, next) => {
-          return current.filter(value => next.includes(value))
+          return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, replays[0]);
 
         // de-dupe results
