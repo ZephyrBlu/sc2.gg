@@ -40,6 +40,8 @@ async function updateComputedResults(url) {
   if (computedResultsToSend.length > 0) {
     await writeToKV(url, computedResultsToSend);
   }
+
+  console.log('[update_kv] finished updating computed results');
 }
 
 async function updateIndex(url) {
@@ -128,4 +130,4 @@ async function update() {
   console.log(`[update_kv] updated KV data for ${replayData.replays.length} replays`);
 }
 
-await update();
+// await update();

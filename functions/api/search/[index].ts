@@ -43,7 +43,24 @@ export const onRequest: PagesFunction<{
     const queryResultsKey = `${params.index}__${sortedSearchTerms.slice(0, 5).join('-')}`;
     const cachedQueryResults = await computedQueries.list({prefix: queryResultsKey});
     if (cachedQueryResults.keys.length > 0) {
-      return new Response(JSON.stringify(cachedQueryResults.keys), {
+      let results = await Promise.all(
+        cachedQueryResults.keys.map(async (cachedQueryKey) => (
+          computedQueries.get(cachedQueryKey.name, {type: 'json'}))
+        )
+      );
+      results = results.flat();
+      results.sort((a, b) => b.played_at - a.played_at);
+
+      const seen_replays = new Set();
+      const replays = [];
+      results.forEach((replay) => {
+        if (!seen_replays.has(replay.content_hash)) {
+          replays.push(replay);
+          seen_replays.add(replay.content_hash);
+        }
+      });
+
+      return new Response(JSON.stringify(results.slice(0, 100)), {
         headers: {
           'Content-Type': 'application/json',
         }
