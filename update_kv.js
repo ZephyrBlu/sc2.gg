@@ -123,4 +123,4 @@ async function update() {
   console.log(`[update_kv] updated KV data for ${replayData.replays.length} replays`);
 }
 
-await update();
+// await update();

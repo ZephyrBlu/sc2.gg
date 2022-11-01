@@ -57,13 +57,13 @@ export function App() {
 
       if (searchInput) {
         const terms = searchInput.split(' ');
-        const inputResults: Replay[] = [];
+        const inputResults: Replay[][] = [];
         await Promise.all(terms.map(async (term) => {
           const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
           const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery.toLowerCase(), index)));
           inputResults.push(...results);
         }));
-        replays.push(inputResults);
+        replays.push(inputResults.flat());
       }
 
       // if search results are fresher than existing results, update them
@@ -73,7 +73,6 @@ export function App() {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, replays[0]);
 
-        // de-dupe results
         intersectionResults.sort(playedAtSort);
         console.log('setting new search data', searchResults, {searchStartTime, intersectionResults});
         setSearchResults({
