@@ -12,7 +12,10 @@ export function useSearch() {
     }
 
     const results = await fetch(url).then(res => res.json());
-    queryCache[url] = results;
+    setQueryCache(prevState => ({
+      ...prevState,
+      [url]: results,
+    }));
     return results;
   };
 

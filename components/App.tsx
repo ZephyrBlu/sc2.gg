@@ -63,8 +63,6 @@ export function App() {
         searchResults.sort(playedAtSort);
         setApiReplays(searchResults);
         resultsStartTime.current = searchStartTime;
-
-        console.log(`updating API results from ${resultsStartTime} to ${searchStartTime}`);
       }
     };
 
