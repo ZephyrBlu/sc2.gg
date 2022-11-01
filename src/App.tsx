@@ -77,7 +77,7 @@ export function App() {
         intersectionResults.forEach((replay) => {
           replay.players.forEach((player) => {
             // any exact name match should rank replay higher
-            const exactMatch = terms.some((term: string) => player.name.toLowerCase === term.toLowerCase);
+            const exactMatch = terms.some((term: string) => player.name.toLowerCase() === term.toLowerCase());
             console.log('exact match?', player.name.toLowerCase(), terms[0].toLowerCase(), exactMatch);
             if (exactMatch) {
               exactMatches.push(replay);
