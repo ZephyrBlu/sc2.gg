@@ -58,7 +58,6 @@ export function App() {
       console.log('raw api results', searchResults);
 
       // de-dupe results
-      searchResults = Array.from(new Set(searchResults));
       searchResults.sort(playedAtSort);
       setApiReplays(searchResults);
 
@@ -145,90 +144,90 @@ export function App() {
       .map(mapToReplayComponent) : []
   ), [replays, builds, buildSize, showBuildsAndResults]);
 
-  const searchResults = useMemo(() => {
-    if (
-      !searchIndexes ||
-      !replays ||
-      !builds ||
-      (!searchInput && !quickSelectOptions.matchup && !quickSelectOptions.player)
-    ) {
-      return orderedReplays.slice(0, 100);
-    }
+  // const searchResults = useMemo(() => {
+  //   if (
+  //     !searchIndexes ||
+  //     !replays ||
+  //     !builds ||
+  //     (!searchInput && !quickSelectOptions.matchup && !quickSelectOptions.player)
+  //   ) {
+  //     return orderedReplays.slice(0, 100);
+  //   }
 
-    const searchTerms = searchInput.split(" ");
+  //   const searchTerms = searchInput.split(" ");
 
-    const isMatchupSelected = quickSelectOptions.matchup && matchupRaceMapping[quickSelectOptions.matchup];
-    if (isMatchupSelected) {
-      searchTerms.push(...matchupRaceMapping[quickSelectOptions.matchup!]);
-    }
+  //   const isMatchupSelected = quickSelectOptions.matchup && matchupRaceMapping[quickSelectOptions.matchup];
+  //   if (isMatchupSelected) {
+  //     searchTerms.push(...matchupRaceMapping[quickSelectOptions.matchup!]);
+  //   }
 
-    if (quickSelectOptions.player) {
-      searchTerms.push(quickSelectOptions.player);
-    }
+  //   if (quickSelectOptions.player) {
+  //     searchTerms.push(quickSelectOptions.player);
+  //   }
 
-    const searchTermResults: {[k: string]: any[]} = {};
-    const searchTermReferences: {[k: string]: Set<number>} = {};
+  //   const searchTermResults: {[k: string]: any[]} = {};
+  //   const searchTermReferences: {[k: string]: Set<number>} = {};
 
-    Object.entries(searchIndexes).forEach(([name, index]) => {
-      Object.entries(index).forEach(([key, references]) => {
-        searchTerms.forEach((term) => {
-          if (!term) {
-            return;
-          }
+  //   Object.entries(searchIndexes).forEach(([name, index]) => {
+  //     Object.entries(index).forEach(([key, references]) => {
+  //       searchTerms.forEach((term) => {
+  //         if (!term) {
+  //           return;
+  //         }
 
-          if (!(term in searchTermResults)) {
-            searchTermResults[term] = [];
-          }
+  //         if (!(term in searchTermResults)) {
+  //           searchTermResults[term] = [];
+  //         }
 
-          if (!(term in searchTermReferences)) {
-            searchTermReferences[term] = new Set();
-          }
+  //         if (!(term in searchTermReferences)) {
+  //           searchTermReferences[term] = new Set();
+  //         }
 
-          if (key.toLowerCase().includes(term.toLowerCase())) {
-            references.forEach(id => {
-              if (!searchTermReferences[term].has(id)) {
-                searchTermReferences[term].add(id);
-                searchTermResults[term].push(indexOrderedReplays.find(replay => replay.content_hash === id));
-              }
-            });
-          }
-        });
-      });
-    });
+  //         if (key.toLowerCase().includes(term.toLowerCase())) {
+  //           references.forEach(id => {
+  //             if (!searchTermReferences[term].has(id)) {
+  //               searchTermReferences[term].add(id);
+  //               searchTermResults[term].push(indexOrderedReplays.find(replay => replay.content_hash === id));
+  //             }
+  //           });
+  //         }
+  //       });
+  //     });
+  //   });
 
-    // https://stackoverflow.com/a/1885569
-    // progressively applying this intersection logic to each search term results
-    // creates intersection of all terms
-    let rawResults = Object.values(searchTermResults);
-    let intersectionResults: Replay[] = rawResults.reduce((current, next) => {
-      return current.filter(value => next.includes(value))
-    }, rawResults[0]);
+  //   // https://stackoverflow.com/a/1885569
+  //   // progressively applying this intersection logic to each search term results
+  //   // creates intersection of all terms
+  //   let rawResults = Object.values(searchTermResults);
+  //   let intersectionResults: Replay[] = rawResults.reduce((current, next) => {
+  //     return current.filter(value => next.includes(value))
+  //   }, rawResults[0]);
 
-    if (isMatchupSelected) {
-      let mirrorRace: string | undefined;
-      searchTerms.forEach(() => {
-        if (Object.keys(mirrorMatchups).includes(quickSelectOptions.matchup!)) {
-          mirrorRace = matchupRaceMapping[quickSelectOptions.matchup!][0];
-        }
-      });
+  //   if (isMatchupSelected) {
+  //     let mirrorRace: string | undefined;
+  //     searchTerms.forEach(() => {
+  //       if (Object.keys(mirrorMatchups).includes(quickSelectOptions.matchup!)) {
+  //         mirrorRace = matchupRaceMapping[quickSelectOptions.matchup!][0];
+  //       }
+  //     });
 
-      if (mirrorRace) {
-        intersectionResults = intersectionResults.filter((replay) => {
-          let mirror = true;
-          replay.players.forEach((player) => {
-            if (player.race !== mirrorRace) {
-              mirror = false;
-            }
-          });
-          return mirror;
-        });
-      }
-    }
+  //     if (mirrorRace) {
+  //       intersectionResults = intersectionResults.filter((replay) => {
+  //         let mirror = true;
+  //         replay.players.forEach((player) => {
+  //           if (player.race !== mirrorRace) {
+  //             mirror = false;
+  //           }
+  //         });
+  //         return mirror;
+  //       });
+  //     }
+  //   }
 
-    setNumResults(intersectionResults.length);
+  //   setNumResults(intersectionResults.length);
 
-    return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  }, [searchInput, replays, searchIndexes, builds, buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
+  //   return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
+  // }, [searchInput, replays, searchIndexes, builds, buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
 
   return (
     <div className="App">
@@ -319,11 +318,12 @@ export function App() {
         </div>
       </div>
       <div className="App__replay-list">
-        {searchIndexes && replays
+        {/* {searchIndexes && replays
           ? searchResults
           : serialized
             ? JSON.parse(atob(serialized)).map(mapToReplayComponent)
-            : <LoadingAnimation />}
+            : <LoadingAnimation />} */}
+        {apiReplays && apiReplays.map(mapToReplayComponent)}
       </div>
     </div>
   )
