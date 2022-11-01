@@ -13,13 +13,13 @@ const INDEXES = [
 ];
 
 export function App() {
-  const [serialized] = useState<string | undefined>(
-    document.getElementById('root')!.dataset.replays
-  );
+  // const [serialized] = useState<string | undefined>(
+  //   document.getElementById('root')!.dataset.replays
+  // );
   const [searchInput, setSearchInput] = useState<string>('');
-  const [searchIndexes, setSearchIndexes] = useState();
-  const [replays, setReplays] = useState<Replay[]>();
-  const [builds, setBuilds] = useState();
+  // const [searchIndexes, setSearchIndexes] = useState();
+  // const [replays, setReplays] = useState<Replay[]>();
+  // const [builds, setBuilds] = useState();
   const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
     matchup: null,
     player: null,
@@ -28,11 +28,13 @@ export function App() {
   const [numResults, setNumResults] = useState<number>(0);
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
   const [apiReplays, setApiReplays] = useState<Replay[]>();
+  const [resultsStartTime, setResultsStartTime] = useState<number>(0);
   const {searchIndex} = useSearch();
 
   useEffect(() => {
     const search = async () => {
       let searchResults: Replay[] = [];
+      let searchStartTime = Date.now();
 
       if (quickSelectOptions.player) {
         const results = await searchIndex(quickSelectOptions.player.toLowerCase(), 'player');
@@ -57,48 +59,53 @@ export function App() {
 
       console.log('raw api results', searchResults);
 
-      // de-dupe results
-      searchResults.sort(playedAtSort);
-      setApiReplays(searchResults);
+      // if search results are fresher than existing results, update them
+      if (searchStartTime > resultsStartTime) {
+        // de-dupe results
+        searchResults.sort(playedAtSort);
+        setApiReplays(searchResults);
 
-      console.log('just set api replays', searchResults);
+        console.log('just set api replays', searchResults);
+      }
     };
+
+    console.log('search input + quick select', searchInput, quickSelectOptions);
 
     search();
   }, [searchInput, quickSelectOptions]);
 
-  useEffect(() => {
-    const fetchIndexes = async () => {
-      const response = await fetch('/data/indexes.json');
-      const data = await response.json();
-      setSearchIndexes(data);
-    };
+  // useEffect(() => {
+  //   const fetchIndexes = async () => {
+  //     const response = await fetch('/data/indexes.json');
+  //     const data = await response.json();
+  //     setSearchIndexes(data);
+  //   };
 
-    const fetchReplays = async () => {
-      const response = await fetch('/data/replays.json');
-      const data = await response.json();
-      setReplays(data.replays);
-    };
+  //   const fetchReplays = async () => {
+  //     const response = await fetch('/data/replays.json');
+  //     const data = await response.json();
+  //     setReplays(data.replays);
+  //   };
 
-    const fetchBuilds = async () => {
-      const response = await fetch('/data/builds.json');
-      const data = await response.json();
-      setBuilds(data);
-    };
+  //   const fetchBuilds = async () => {
+  //     const response = await fetch('/data/builds.json');
+  //     const data = await response.json();
+  //     setBuilds(data);
+  //   };
 
-    const fetchData = async () => {
-      // fetching essential data
-      await Promise.all([
-        fetchIndexes(),
-        fetchReplays(),
-        fetchBuilds(),
-      ]);
+  //   const fetchData = async () => {
+  //     // fetching essential data
+  //     await Promise.all([
+  //       fetchIndexes(),
+  //       fetchReplays(),
+  //       fetchBuilds(),
+  //     ]);
 
-      // fetching secondary data
-    };
+  //     // fetching secondary data
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -123,26 +130,25 @@ export function App() {
     calculateBuildSize();
   }, []);
 
-  const indexOrderedReplays = useMemo(() => (
-    replays ? [...replays].sort((a, b) => a.id - b.id) : []
-  ), [replays]);
+  // const indexOrderedReplays = useMemo(() => (
+  //   replays ? [...replays].sort((a, b) => a.id - b.id) : []
+  // ), [replays]);
 
   const playedAtSort = (a: Replay, b: Replay) => b.played_at - a.played_at;
   const mapToReplayComponent = (replay: Replay) => (
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
-      builds={builds}
       buildSize={buildSize}
       showBuildsAndResults={showBuildsAndResults}
     />
   );
 
-  const orderedReplays = useMemo(() => (
-    replays && builds ? [...replays]
-      .sort(playedAtSort)
-      .map(mapToReplayComponent) : []
-  ), [replays, builds, buildSize, showBuildsAndResults]);
+  // const orderedReplays = useMemo(() => (
+  //   replays && builds ? [...replays]
+  //     .sort(playedAtSort)
+  //     .map(mapToReplayComponent) : []
+  // ), [replays, builds, buildSize, showBuildsAndResults]);
 
   // const searchResults = useMemo(() => {
   //   if (
@@ -323,7 +329,7 @@ export function App() {
           : serialized
             ? JSON.parse(atob(serialized)).map(mapToReplayComponent)
             : <LoadingAnimation />} */}
-        {apiReplays && apiReplays.map(mapToReplayComponent)}
+        {apiReplays && apiReplays.slice(0, 25).map(mapToReplayComponent)}
       </div>
     </div>
   )
