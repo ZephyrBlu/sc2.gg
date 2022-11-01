@@ -1,4 +1,4 @@
-import {useState, useMemo, useEffect, useLayoutEffect} from 'react';
+import {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import {matchupRaceMapping, mirrorMatchups} from './constants';
 import {useSearch} from './hooks';
@@ -28,7 +28,7 @@ export function App() {
   const [numResults, setNumResults] = useState<number>(0);
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
   const [apiReplays, setApiReplays] = useState<Replay[]>();
-  const [resultsStartTime, setResultsStartTime] = useState<number>(0);
+  const resultsStartTime = useRef(0);
   const {searchIndex} = useSearch();
 
   useEffect(() => {
@@ -57,19 +57,16 @@ export function App() {
         }));
       }
 
-      console.log('raw api results', searchResults);
-
       // if search results are fresher than existing results, update them
-      if (searchStartTime > resultsStartTime) {
+      if (searchStartTime > resultsStartTime.current) {
         // de-dupe results
         searchResults.sort(playedAtSort);
         setApiReplays(searchResults);
+        resultsStartTime.current = searchStartTime;
 
-        console.log('just set api replays', searchResults);
+        console.log(`updating API results from ${resultsStartTime} to ${searchStartTime}`);
       }
     };
-
-    console.log('search input + quick select', searchInput, quickSelectOptions);
 
     search();
   }, [searchInput, quickSelectOptions]);
