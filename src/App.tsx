@@ -5,6 +5,7 @@ import {useSearch} from './hooks';
 import {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
 import './App.css';
+import {compare} from './utils';
 
 const INDEXES = [
   'player',
@@ -37,7 +38,7 @@ export function App() {
       let searchStartTime = Date.now();
 
       if (quickSelectOptions.player) {
-        const results = await searchIndex(quickSelectOptions.player.toLowerCase(), 'player');
+        const results = await searchIndex(quickSelectOptions.player, 'player');
         replays.push(results);
       }
 
@@ -45,7 +46,7 @@ export function App() {
         const matchup = matchupRaceMapping[quickSelectOptions.matchup];
         const isMirror = matchup.length === 1;
         await Promise.all(matchup.map(async (matchup) => {
-          const results = await searchIndex(matchup.toLowerCase(), 'race', {mirror: isMirror});
+          const results = await searchIndex(matchup, 'race', {mirror: isMirror});
           replays.push(results);
         }));
       }
@@ -55,7 +56,7 @@ export function App() {
         const inputResults: Replay[][] = [];
         await Promise.all(terms.map(async (term) => {
           const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
-          const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery.toLowerCase(), index)));
+          const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
           inputResults.push(...results);
         }));
         const inputIntersectionResults = inputResults.filter(r => r.length > 0).reduce((current, next) => {
@@ -70,6 +71,7 @@ export function App() {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, replays[0]);
         intersectionResults.sort(playedAtSort);
+        console.log('intersection results', intersectionResults, replays);
 
         const exactMatches: Replay[] = [];
         const otherMatches: Replay[] = [];
@@ -78,7 +80,7 @@ export function App() {
           let exact = false;
           replay.players.forEach((player) => {
             // any exact name match should rank replay higher
-            const exactMatch = terms.some((term: string) => player.name.toLowerCase() === term.toLowerCase());
+            const exactMatch = terms.some((term: string) => compare(player.name, term));
             console.log('exact match?', player.name.toLowerCase(), terms[0].toLowerCase(), exactMatch);
             if (!exact && exactMatch) {
               exactMatches.push(replay);

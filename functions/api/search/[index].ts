@@ -1,4 +1,5 @@
 import Toucan from 'toucan-js';
+import {compare} from '../../../src/utils';
 import {Replay} from '../../../src/types';
 
 export const onRequest: PagesFunction<{
@@ -65,7 +66,7 @@ export const onRequest: PagesFunction<{
       if (isMirror) {
         const race = sortedSearchTerms[0];
         replays = replays.filter((replay) => (
-          replay.players.every(player => player.race === race)
+          replay.players.every(player => compare(player.race, race))
         ));
       }
 

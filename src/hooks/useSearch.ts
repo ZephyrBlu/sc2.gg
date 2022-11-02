@@ -5,7 +5,7 @@ export function useSearch() {
   const [queryCache, setQueryCache] = useState<{[query: string]: Replay[]}>({});
 
   const searchIndex = async (query: string, index: string, opts: any = {}) => {
-    let url = `/api/search/${index}?q=${query}`;
+    let url = `/api/search/${index}?q=${query.toLowerCase()}`;
 
     if (opts.mirror) {
       url += '&mirror';
