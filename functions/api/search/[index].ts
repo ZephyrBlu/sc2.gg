@@ -1,6 +1,6 @@
 import Toucan from 'toucan-js';
-import {compare} from '../../../src/utils';
-import {Replay} from '../../../src/types';
+import { compare } from '../../../src/utils';
+import { Replay } from '../../../src/types';
 
 export const onRequest: PagesFunction<{
   REPLAYS: KVNamespace,
@@ -39,16 +39,18 @@ export const onRequest: PagesFunction<{
 
     const query = urlParams.get('q');
     const isMirror = params.index === 'race' && urlParams.has('mirror');
+    const racesParam= urlParams.get('race').split(',');
+    const playerParam = urlParams.get('player');
 
     const sortedSearchTerms = query.split(' ');
     sortedSearchTerms.sort();
 
     const queryResultsKey = `${params.index}__${sortedSearchTerms.slice(0, 5).join('-')}`;
-    const cachedQueryResults = await computedQueries.list({prefix: queryResultsKey});
+    const cachedQueryResults = await computedQueries.list({ prefix: queryResultsKey });
     if (cachedQueryResults.keys.length > 0) {
       let results = await Promise.all(
         cachedQueryResults.keys.map(async (cachedQueryKey) => (
-          computedQueries.get(cachedQueryKey.name, {type: 'json'}))
+          computedQueries.get(cachedQueryKey.name, { type: 'json' }))
         )
       );
       results = results.flat();
@@ -70,7 +72,21 @@ export const onRequest: PagesFunction<{
         ));
       }
 
-      return new Response(JSON.stringify(replays.slice(0, 100)), {
+      if (racesParam) {
+        replays = replays.filter(replay => (
+          replay.players.some(player => (
+            racesParam.some(race => compare(player.race, race))
+          ))
+        ));
+      }
+
+      if (playerParam) {
+        replays = replays.filter(replay => (
+          replay.players.some(player => compare(player.name, playerParam))
+        ));
+      }
+
+      return new Response(JSON.stringify(replays.slice(0, 500)), {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -80,7 +96,7 @@ export const onRequest: PagesFunction<{
     // limit to 5 terms
     const searchTerms = query.split(' ').slice(0, 5);
 
-    const index = await replayIndex.list({prefix: `${params.index}__`});
+    const index = await replayIndex.list({ prefix: `${params.index}__` });
 
     // get list of keys for each index category, then search index
     const rawPostingLists = await Promise.all(searchTerms.map(async (term) => {
@@ -93,7 +109,7 @@ export const onRequest: PagesFunction<{
       const indexResults = await Promise.all(
         matchingTermKeys.map(async (key) => (
           replayIndex
-            .get(key.name, {type: 'json'})
+            .get(key.name, { type: 'json' })
             .catch(e => sentry.captureException(e))
         ))
       );
@@ -115,9 +131,9 @@ export const onRequest: PagesFunction<{
     */
 
     // max requests to other services is 1000
-    const replays = await Promise.all(postingList.slice(0, 100).map(async (replayId) => {
+    const replays = await Promise.all(postingList.slice(0, 500).map(async (replayId) => {
       const replay = await replayData
-        .get(replayId as string, {type: 'json'})
+        .get(replayId as string, { type: 'json' })
         .catch((e) => sentry.captureException(e));
       return replay;
     }));

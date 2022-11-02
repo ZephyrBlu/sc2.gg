@@ -11,6 +11,14 @@ export function useSearch() {
       url += '&mirror';
     }
 
+    if (opts.race) {
+      url += `&race=${opts.race.toLowerCase()}`;
+    }
+
+    if (opts.player) {
+      url += `&player=${opts.player.toLowerCase()}`;
+    }
+
     if (queryCache[url]) {
       return queryCache[url];
     }
