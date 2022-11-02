@@ -36,7 +36,7 @@ export const onRequest: PagesFunction<{
     }
 
     const query = urlParams.get('q');
-    const isMirror = params.index === 'race' && urlParams.get('mirror');
+    const isMirror = params.index === 'race' && urlParams.has('mirror');
 
     const sortedSearchTerms = query.split(' ');
     sortedSearchTerms.sort();

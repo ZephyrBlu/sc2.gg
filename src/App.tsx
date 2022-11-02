@@ -88,6 +88,7 @@ export function App() {
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
+        console.log('setting new results', searchResults, orderedResults);
         setSearchResults(orderedResults);
         searchStartedAt.current = searchStartTime;
       }
@@ -95,39 +96,6 @@ export function App() {
 
     search();
   }, [searchInput, quickSelectOptions, setSearchResults]);
-
-  // useEffect(() => {
-  //   const fetchIndexes = async () => {
-  //     const response = await fetch('/data/indexes.json');
-  //     const data = await response.json();
-  //     setSearchIndexes(data);
-  //   };
-
-  //   const fetchReplays = async () => {
-  //     const response = await fetch('/data/replays.json');
-  //     const data = await response.json();
-  //     setReplays(data.replays);
-  //   };
-
-  //   const fetchBuilds = async () => {
-  //     const response = await fetch('/data/builds.json');
-  //     const data = await response.json();
-  //     setBuilds(data);
-  //   };
-
-  //   const fetchData = async () => {
-  //     // fetching essential data
-  //     await Promise.all([
-  //       fetchIndexes(),
-  //       fetchReplays(),
-  //       fetchBuilds(),
-  //     ]);
-
-  //     // fetching secondary data
-  //   };
-
-  //   fetchData();
-  // }, []);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -152,10 +120,6 @@ export function App() {
     calculateBuildSize();
   }, []);
 
-  // const indexOrderedReplays = useMemo(() => (
-  //   replays ? [...replays].sort((a, b) => a.id - b.id) : []
-  // ), [replays]);
-
   const playedAtSort = (a: Replay, b: Replay) => b.played_at - a.played_at;
   const mapToReplayComponent = (replay: Replay) => (
     <ReplayRecord
@@ -165,97 +129,6 @@ export function App() {
       showBuildsAndResults={showBuildsAndResults}
     />
   );
-
-  // const orderedReplays = useMemo(() => (
-  //   replays && builds ? [...replays]
-  //     .sort(playedAtSort)
-  //     .map(mapToReplayComponent) : []
-  // ), [replays, builds, buildSize, showBuildsAndResults]);
-
-  // const searchResults = useMemo(() => {
-  //   if (
-  //     !searchIndexes ||
-  //     !replays ||
-  //     !builds ||
-  //     (!searchInput && !quickSelectOptions.matchup && !quickSelectOptions.player)
-  //   ) {
-  //     return orderedReplays.slice(0, 100);
-  //   }
-
-  //   const searchTerms = searchInput.split(" ");
-
-  //   const isMatchupSelected = quickSelectOptions.matchup && matchupRaceMapping[quickSelectOptions.matchup];
-  //   if (isMatchupSelected) {
-  //     searchTerms.push(...matchupRaceMapping[quickSelectOptions.matchup!]);
-  //   }
-
-  //   if (quickSelectOptions.player) {
-  //     searchTerms.push(quickSelectOptions.player);
-  //   }
-
-  //   const searchTermResults: {[k: string]: any[]} = {};
-  //   const searchTermReferences: {[k: string]: Set<number>} = {};
-
-  //   Object.entries(searchIndexes).forEach(([name, index]) => {
-  //     Object.entries(index).forEach(([key, references]) => {
-  //       searchTerms.forEach((term) => {
-  //         if (!term) {
-  //           return;
-  //         }
-
-  //         if (!(term in searchTermResults)) {
-  //           searchTermResults[term] = [];
-  //         }
-
-  //         if (!(term in searchTermReferences)) {
-  //           searchTermReferences[term] = new Set();
-  //         }
-
-  //         if (key.toLowerCase().includes(term.toLowerCase())) {
-  //           references.forEach(id => {
-  //             if (!searchTermReferences[term].has(id)) {
-  //               searchTermReferences[term].add(id);
-  //               searchTermResults[term].push(indexOrderedReplays.find(replay => replay.content_hash === id));
-  //             }
-  //           });
-  //         }
-  //       });
-  //     });
-  //   });
-
-  //   // https://stackoverflow.com/a/1885569
-  //   // progressively applying this intersection logic to each search term results
-  //   // creates intersection of all terms
-  //   let rawResults = Object.values(searchTermResults);
-  //   let intersectionResults: Replay[] = rawResults.reduce((current, next) => {
-  //     return current.filter(value => next.includes(value))
-  //   }, rawResults[0]);
-
-  //   if (isMatchupSelected) {
-  //     let mirrorRace: string | undefined;
-  //     searchTerms.forEach(() => {
-  //       if (Object.keys(mirrorMatchups).includes(quickSelectOptions.matchup!)) {
-  //         mirrorRace = matchupRaceMapping[quickSelectOptions.matchup!][0];
-  //       }
-  //     });
-
-  //     if (mirrorRace) {
-  //       intersectionResults = intersectionResults.filter((replay) => {
-  //         let mirror = true;
-  //         replay.players.forEach((player) => {
-  //           if (player.race !== mirrorRace) {
-  //             mirror = false;
-  //           }
-  //         });
-  //         return mirror;
-  //       });
-  //     }
-  //   }
-
-  //   setNumResults(intersectionResults.length);
-
-  //   return intersectionResults.slice(0, 100).sort(playedAtSort).map(mapToReplayComponent);
-  // }, [searchInput, replays, searchIndexes, builds, buildSize, quickSelectOptions, showBuildsAndResults, setNumResults]);
 
   return (
     <div className="App">
@@ -339,18 +212,9 @@ export function App() {
               Show builds and results
             </label>
           </span>
-          {/* <select className="App__search-filters">
-            <option value="results">Show builds and results</option>
-            <option value="builds">Hide builds and results</option>
-          </select> */}
         </div>
       </div>
       <div className="App__replay-list">
-        {/* {searchIndexes && replays
-          ? searchResults
-          : serialized
-            ? JSON.parse(atob(serialized)).map(mapToReplayComponent)
-            : <LoadingAnimation />} */}
         {searchResults.length > 0 &&
           searchResults.slice(0, 25).map(mapToReplayComponent)}
       </div>
