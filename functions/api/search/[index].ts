@@ -1,4 +1,5 @@
 import Toucan from 'toucan-js';
+import {Replay} from '../../../src/types';
 
 export const onRequest: PagesFunction<{
   REPLAYS: KVNamespace,
@@ -53,8 +54,8 @@ export const onRequest: PagesFunction<{
       results.sort((a, b) => b.played_at - a.played_at);
 
       const seen_replays = new Set();
-      let replays = [];
-      results.forEach((replay) => {
+      let replays: Replay[] = [];
+      results.forEach((replay: Replay) => {
         if (!seen_replays.has(replay.content_hash)) {
           replays.push(replay);
           seen_replays.add(replay.content_hash);
@@ -64,7 +65,7 @@ export const onRequest: PagesFunction<{
       if (isMirror) {
         const race = sortedSearchTerms[0];
         replays = replays.filter((replay) => (
-          replay.players.all(player => player.race === race)
+          replay.players.every(player => player.race === race)
         ));
       }
 

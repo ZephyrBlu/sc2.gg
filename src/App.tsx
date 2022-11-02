@@ -75,20 +75,24 @@ export function App() {
         const otherMatches: Replay[] = [];
         const terms = searchInput.split(' ');
         intersectionResults.forEach((replay) => {
+          let exact = false;
           replay.players.forEach((player) => {
             // any exact name match should rank replay higher
             const exactMatch = terms.some((term: string) => player.name.toLowerCase() === term.toLowerCase());
             console.log('exact match?', player.name.toLowerCase(), terms[0].toLowerCase(), exactMatch);
-            if (exactMatch) {
+            if (!exact && exactMatch) {
               exactMatches.push(replay);
-            } else {
-              otherMatches.push(replay);
+              exact = true;
             }
           });
+
+          if (!exact) {
+            otherMatches.push(replay);
+          }
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
-        console.log('setting new results', searchResults, orderedResults);
+        console.log('setting new results', intersectionResults, searchResults, orderedResults);
         setSearchResults(orderedResults);
         searchStartedAt.current = searchStartTime;
       }
@@ -129,6 +133,8 @@ export function App() {
       showBuildsAndResults={showBuildsAndResults}
     />
   );
+
+  console.log('new render, current search results', searchResults);
 
   return (
     <div className="App">
