@@ -39,7 +39,7 @@ export const onRequest: PagesFunction<{
 
     const query = urlParams.get('q');
     const isMirror = params.index === 'race' && urlParams.has('mirror');
-    const racesParam= urlParams.get('race').split(',');
+    const racesParam = urlParams.has('race') ? urlParams.get('race').split(',') : null;
     const playerParam = urlParams.get('player');
 
     const sortedSearchTerms = query.split(' ');
