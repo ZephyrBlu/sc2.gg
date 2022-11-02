@@ -37,15 +37,8 @@ export function App() {
       let replays: Replay[][] = [];
       let searchStartTime = Date.now();
 
-      const queryOptions = {
-        race: quickSelectOptions.matchup
-          ? matchupRaceMapping[quickSelectOptions.matchup].join(',')
-          : null,
-        player: quickSelectOptions.player,
-      };
-
       if (quickSelectOptions.player) {
-        const results = await searchIndex(quickSelectOptions.player, 'player', queryOptions);
+        const results = await searchIndex(quickSelectOptions.player, 'player');
         replays.push(results);
       }
 
@@ -53,7 +46,7 @@ export function App() {
         const matchup = matchupRaceMapping[quickSelectOptions.matchup];
         const isMirror = matchup.length === 1;
         await Promise.all(matchup.map(async (matchup) => {
-          const results = await searchIndex(matchup, 'race', {...queryOptions, mirror: isMirror});
+          const results = await searchIndex(matchup, 'race', {mirror: isMirror});
           replays.push(results);
         }));
       }
@@ -61,6 +54,13 @@ export function App() {
       if (searchInput) {
         const terms = searchInput.split(' ');
         const inputResults: Replay[][] = [];
+        const queryOptions = {
+          race: quickSelectOptions.matchup
+            ? matchupRaceMapping[quickSelectOptions.matchup].join(',')
+            : null,
+          player: quickSelectOptions.player,
+        };
+
         await Promise.all(terms.map(async (term) => {
           const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
           const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index, queryOptions)));
