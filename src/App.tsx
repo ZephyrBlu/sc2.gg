@@ -84,7 +84,16 @@ export function App() {
       }
 
       // if search results are fresher than existing results, update them
-      if (replays.length > 0 && searchStartTime > searchStartedAt.current) {
+      if (searchStartTime > searchStartedAt.current) {
+        if (replays.length === 0) {
+          setSearchResults(prevState => ({
+            ...prevState,
+            loading: false,
+            replays: [],
+          }));
+          searchStartedAt.current = searchStartTime;
+        }
+
         const intersectionResults = replays.filter(r => r.length > 0).reduce((current, next) => {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, replays[0]);
