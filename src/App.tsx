@@ -23,9 +23,11 @@ export function App() {
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
   const searchStartedAt = useRef(0);
   const [searchResults, setSearchResults] = useState<{
+    loading: boolean,
     query: {[key: string]: string | null} | null,
     replays: Replay[],
   }>({
+    loading: false,
     query: null,
     replays: [],
   });
@@ -33,6 +35,16 @@ export function App() {
 
   useEffect(() => {
     const search = async () => {
+      setSearchResults(prevState => ({
+        ...prevState,
+        loading: true,
+        query: {
+          player: quickSelectOptions.player,
+          matchup: quickSelectOptions.matchup,
+          input: searchInput,
+        },
+      }));
+
       let replays: Replay[][] = [];
       let searchStartTime = Date.now();
 
@@ -98,14 +110,11 @@ export function App() {
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
-        setSearchResults({
-          query: {
-            player: quickSelectOptions.player,
-            matchup: quickSelectOptions.matchup,
-            input: searchInput,
-          },
+        setSearchResults(prevState => ({
+          ...prevState,
+          loading: false,
           replays: orderedResults,
-        });
+        }));
         searchStartedAt.current = searchStartTime;
       }
     };
@@ -148,7 +157,7 @@ export function App() {
 
   const buildResultsText = () => {
     if (!searchResults.query) {
-      return 'Loading results...';
+      return;
     }
 
     const resultsQuery = [];
@@ -165,7 +174,7 @@ export function App() {
       resultsQuery.push(`"${searchResults.query.input}"`);
     }
 
-    return `Showing results for: ${resultsQuery.join(', ')}`;
+    return `${searchResults.loading ? 'Loading' : 'Showing'} results for: ${resultsQuery.join(', ')}`;
   };
 
   return (
@@ -233,7 +242,7 @@ export function App() {
         </div>
         <div className="App__search-header">
             <span className="App__search-results">
-              {(searchInput || quickSelectOptions.matchup || quickSelectOptions) && buildResultsText()}
+              {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) && buildResultsText()}
             </span>
           <span className="App__search-filters">
             <input
