@@ -54,7 +54,7 @@ export const onRequest: PagesFunction<{
         )
       );
       results = results.flat();
-      results.sort((a, b) => b.played_at - a.played_at);
+      results.sort((a: Replay, b: Replay) => b.played_at - a.played_at);
 
       const seen_replays = new Set();
       let replays: Replay[] = [];

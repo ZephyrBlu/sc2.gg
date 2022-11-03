@@ -14,22 +14,21 @@ const INDEXES = [
 ];
 
 export function App() {
-  // const [serialized] = useState<string | undefined>(
-  //   document.getElementById('root')!.dataset.replays
-  // );
   const [searchInput, setSearchInput] = useState<string>('');
-  // const [searchIndexes, setSearchIndexes] = useState();
-  // const [replays, setReplays] = useState<Replay[]>();
-  // const [builds, setBuilds] = useState();
   const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
     matchup: null,
     player: null,
   });
   const [buildSize, setBuildSize] = useState<number>(10);
-  const [numResults, setNumResults] = useState<number>(0);
   const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
   const searchStartedAt = useRef(0);
-  const [searchResults, setSearchResults] = useState<Replay[]>([]);
+  const [searchResults, setSearchResults] = useState<{
+    query: {[key: string]: string | null} | null,
+    replays: Replay[],
+  }>({
+    query: null,
+    replays: [],
+  });
   const {searchIndex} = useSearch();
 
   useEffect(() => {
@@ -78,7 +77,6 @@ export function App() {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, replays[0]);
         intersectionResults.sort(playedAtSort);
-        console.log('intersection results', intersectionResults, replays);
 
         const exactMatches: Replay[] = [];
         const otherMatches: Replay[] = [];
@@ -88,7 +86,6 @@ export function App() {
           replay.players.forEach((player) => {
             // any exact name match should rank replay higher
             const exactMatch = terms.some((term: string) => compare(player.name, term));
-            console.log('exact match?', player.name.toLowerCase(), terms[0].toLowerCase(), exactMatch);
             if (!exact && exactMatch) {
               exactMatches.push(replay);
               exact = true;
@@ -101,8 +98,14 @@ export function App() {
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
-        console.log('setting new results', intersectionResults, searchResults, orderedResults);
-        setSearchResults(orderedResults);
+        setSearchResults({
+          query: {
+            player: quickSelectOptions.player,
+            matchup: quickSelectOptions.matchup,
+            input: searchInput,
+          },
+          replays: orderedResults,
+        });
         searchStartedAt.current = searchStartTime;
       }
     };
@@ -143,7 +146,27 @@ export function App() {
     />
   );
 
-  console.log('new render, current search results', searchResults);
+  const buildResultsText = () => {
+    if (!searchResults.query) {
+      return 'Loading results...';
+    }
+
+    const resultsQuery = [];
+
+    if (searchResults.query.player) {
+      resultsQuery.push(searchResults.query.player);
+    }
+
+    if (searchResults.query.matchup) {
+      resultsQuery.push(searchResults.query.matchup);
+    }
+
+    if (searchResults.query.input) {
+      resultsQuery.push(`"${searchResults.query.input}"`);
+    }
+
+    return `Showing results for: ${resultsQuery.join(', ')}`;
+  };
 
   return (
     <div className="App">
@@ -210,10 +233,7 @@ export function App() {
         </div>
         <div className="App__search-header">
             <span className="App__search-results">
-            {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) &&
-              <>
-                {numResults} replays found
-              </>}
+              {(searchInput || quickSelectOptions.matchup || quickSelectOptions) && buildResultsText()}
             </span>
           <span className="App__search-filters">
             <input
@@ -230,8 +250,8 @@ export function App() {
         </div>
       </div>
       <div className="App__replay-list">
-        {searchResults.length > 0 &&
-          searchResults.slice(0, 25).map(mapToReplayComponent)}
+        {searchResults.replays.length > 0 &&
+          searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
       </div>
     </div>
   )
