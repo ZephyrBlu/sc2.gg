@@ -283,7 +283,7 @@ export function App() {
               Select a matchup/player, or start typing
             </span>
           : <span className="App__default">
-              No replays found for: {buildResultsText()}
+              No replays found for: {buildResultsText()?.slice(21)}
             </span>}
       </div>
     </div>
