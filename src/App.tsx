@@ -202,6 +202,7 @@ export function App() {
         <input
           type="search"
           className="App__search-input"
+          autoFocus
           value={searchInput}
           placeholder="Search 7000+ replays for any player, race, map or tournament"
           onChange={(e) => setSearchInput(e.target.value)}
@@ -266,7 +267,6 @@ export function App() {
               type="checkbox"
               name="search-filter"
               checked={showBuildsAndResults}
-              autoFocus
               onChange={() => setShowBuildsAndResults(prevState => !prevState)}
             />
             <label className="App__filter-label" htmlFor="search-filter">
