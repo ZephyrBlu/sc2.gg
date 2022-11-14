@@ -1,31 +1,16 @@
-import {Fragment} from 'react';
+import {Fragment, useMemo} from 'react';
 // import {ReplayDetails} from './ReplayDetails';
 import {Replay} from './types';
 import './ReplayRecord.css';
 
 interface Props {
   replay: Replay;
-  buildMappings: string[][];
   buildSize: number;
   showBuildsAndResults: boolean;
 }
 
-export function ReplayRecord({ replay, buildMappings, buildSize, showBuildsAndResults }: Props) {
+export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props) {
   // const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
-
-  const stripMap = (name: string) => {
-    let strippedMapName = name.split(' ');
-
-    if (strippedMapName[strippedMapName.length - 1] === 'LE') {
-      strippedMapName = strippedMapName.slice(0, -1);
-    }
-
-    if (strippedMapName[0] === "[ESL]" || strippedMapName[0] === "[TLMC15]") {
-      strippedMapName = strippedMapName.slice(1);
-    }
-
-    return strippedMapName.join(' ');
-  };
 
   return (
     <div
@@ -40,7 +25,7 @@ export function ReplayRecord({ replay, buildMappings, buildSize, showBuildsAndRe
         <div className="ReplayRecord__match-info">
           <span>
             <span className="ReplayRecord__map">
-              {stripMap(replay.map)}
+              {replay.map}
             </span>
             <span className="ReplayRecord__game-length">
               {Math.ceil(replay.game_length / 60)}min
@@ -87,10 +72,8 @@ export function ReplayRecord({ replay, buildMappings, buildSize, showBuildsAndRe
                   </span>}
               </div>
               <div className="ReplayRecord__player-build">
-                {showBuildsAndResults ?
-                  buildMappings[replay.builds[index]]
+                {showBuildsAndResults ? replay.builds[index]
                     .slice(0, buildSize)
-                    .filter(building => building)
                     .map((building, buildingIndex) => (
                       <Fragment key={`${replay.id}-${building}-${buildingIndex}`}>
                         <img
