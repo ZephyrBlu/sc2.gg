@@ -282,7 +282,9 @@ export function App() {
           ? <span className="App__default">
               Select a matchup/player, or start typing
             </span>
-          : <span className="App__default">
+          : searchResults.loading
+            ? <LoadingAnimation />
+            : <span className="App__default">
               No replays found for: {buildResultsText()?.slice(21)}
             </span>}
       </div>
