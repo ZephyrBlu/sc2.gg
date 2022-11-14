@@ -8,7 +8,7 @@ export function useSearch() {
     let url = `https://patient-wood-5201.fly.dev/search/${index}?q=${query.toLowerCase()}`;
 
     if (opts.mirror) {
-      url += '&mirror';
+      url += '&mirror=1';
     }
 
     if (queryCache[url]) {
