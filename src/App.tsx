@@ -34,6 +34,18 @@ export function App() {
   const {searchIndex} = useSearch();
 
   useEffect(() => {
+    const preloadMatchups = async () => {
+      await Promise.all([
+        searchIndex('Protoss', 'race'),
+        searchIndex('Zerg', 'race'),
+        searchIndex('Terran', 'race'),
+      ]);
+    };
+
+    preloadMatchups();
+  }, []);
+
+  useEffect(() => {
     const search = async () => {
       setSearchResults(prevState => ({
         ...prevState,
