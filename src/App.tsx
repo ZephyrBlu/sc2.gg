@@ -266,6 +266,7 @@ export function App() {
               type="checkbox"
               name="search-filter"
               checked={showBuildsAndResults}
+              autoFocus
               onChange={() => setShowBuildsAndResults(prevState => !prevState)}
             />
             <label className="App__filter-label" htmlFor="search-filter">
@@ -278,7 +279,7 @@ export function App() {
         {searchResults.replays.length > 0
           ? searchResults.replays.slice(0, 25).map(mapToReplayComponent)
           : <span className="App__default">
-              Select a matchup or player, or start typing to see search results
+              Select a matchup/player, or start typing to see search results
             </span>}
       </div>
     </div>
