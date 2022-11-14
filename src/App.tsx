@@ -56,8 +56,8 @@ export function App() {
       if (quickSelectOptions.matchup) {
         const matchup = matchupRaceMapping[quickSelectOptions.matchup];
         const isMirror = matchup.length === 1;
-        await Promise.all(matchup.map(async (matchup) => {
-          const results = await searchIndex(matchup, 'race', {mirror: isMirror});
+        await Promise.all(matchup.map(async (race) => {
+          const results = await searchIndex(race, 'race', {mirror: isMirror});
           replays.push(results);
         }));
       }
@@ -65,16 +65,10 @@ export function App() {
       if (searchInput) {
         const terms = searchInput.split(' ');
         const inputResults: Replay[][] = [];
-        const queryOptions = {
-          race: quickSelectOptions.matchup
-            ? matchupRaceMapping[quickSelectOptions.matchup].join(',')
-            : null,
-          player: quickSelectOptions.player,
-        };
 
         await Promise.all(terms.map(async (term) => {
           const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
-          const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index, queryOptions)));
+          const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
           inputResults.push(...results);
         }));
         const inputIntersectionResults = inputResults.filter(r => r.length > 0).reduce((current, next) => {
@@ -92,6 +86,7 @@ export function App() {
             replays: [],
           }));
           searchStartedAt.current = searchStartTime;
+          return;
         }
 
         const intersectionResults = replays.filter(r => r.length > 0).reduce((current, next) => {

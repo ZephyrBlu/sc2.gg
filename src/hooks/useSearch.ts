@@ -5,30 +5,22 @@ export function useSearch() {
   const [queryCache, setQueryCache] = useState<{[query: string]: Replay[]}>({});
 
   const searchIndex = async (query: string, index: string, opts: any = {}) => {
-    let url = `/api/search/${index}?q=${query.toLowerCase()}`;
+    let url = `https://patient-wood-5201.fly.dev/search/${index}?q=${query.toLowerCase()}`;
 
     if (opts.mirror) {
       url += '&mirror';
-    }
-
-    if (opts.race) {
-      url += `&race=${opts.race.toLowerCase()}`;
-    }
-
-    if (opts.player) {
-      url += `&player=${opts.player.toLowerCase()}`;
     }
 
     if (queryCache[url]) {
       return queryCache[url];
     }
 
-    const results = await fetch(url).then(res => res.json());
+    const response = await fetch(url).then(res => res.json());
     setQueryCache(prevState => ({
       ...prevState,
-      [url]: results,
+      [url]: response.results,
     }));
-    return results;
+    return response.results;
   };
 
   return {searchIndex};
