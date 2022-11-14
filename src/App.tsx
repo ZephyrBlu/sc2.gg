@@ -276,10 +276,14 @@ export function App() {
         </div>
       </div>
       <div className="App__replay-list">
-        {searchResults.replays.length > 0
-          ? searchResults.replays.slice(0, 25).map(mapToReplayComponent)
-          : <span className="App__default">
+        {searchResults.replays.length > 0 &&
+          searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
+        {searchResults.replays.length === 0 && !(searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
+          ? <span className="App__default">
               Select a matchup/player, or start typing
+            </span>
+          : <span className="App__default">
+              No replays found for: {buildResultsText()}
             </span>}
       </div>
     </div>
