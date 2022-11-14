@@ -275,8 +275,11 @@ export function App() {
         </div>
       </div>
       <div className="App__replay-list">
-        {searchResults.replays.length > 0 &&
-          searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
+        {searchResults.replays.length > 0
+          ? searchResults.replays.slice(0, 25).map(mapToReplayComponent)
+          : <span className="App__default">
+              Select a matchup or player, or start typing to see search results
+            </span>}
       </div>
     </div>
   )
