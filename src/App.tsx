@@ -279,7 +279,7 @@ export function App() {
         {searchResults.replays.length > 0
           ? searchResults.replays.slice(0, 25).map(mapToReplayComponent)
           : <span className="App__default">
-              Select a matchup/player, or start typing to see search results
+              Select a matchup/player, or start typing
             </span>}
       </div>
     </div>
