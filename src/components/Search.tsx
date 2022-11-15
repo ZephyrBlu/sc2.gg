@@ -1,10 +1,10 @@
 import {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import {matchupRaceMapping} from './constants';
-import {useBuilds, useSearch} from './hooks';
+import {useSearch} from './hooks';
 import type {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
-import './App.css';
+import './Search.css';
 import {compare} from './utils';
 
 const INDEXES = [
@@ -13,7 +13,7 @@ const INDEXES = [
   'map',
 ];
 
-export function App() {
+export function Search() {
   const [searchInput, setSearchInput] = useState<string>('');
   const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
     matchup: null,
@@ -32,7 +32,6 @@ export function App() {
     replays: [],
   });
   const {searchIndex} = useSearch();
-  const {matchupBuildClusters, matchupBuildTree} = useBuilds();
 
   useEffect(() => {
     const preloadMatchups = async () => {
@@ -41,10 +40,6 @@ export function App() {
         searchIndex('Zerg', 'race', {preload: true}),
         searchIndex('Terran', 'race', {preload: true}),
       ]);
-      const clusters = await matchupBuildClusters(['Protoss', 'Zerg']);
-      const tree = await matchupBuildTree(['Protoss', 'Zerg']);
-      console.log('clusters', clusters);
-      console.log('tree', tree);
     };
 
     preloadMatchups();

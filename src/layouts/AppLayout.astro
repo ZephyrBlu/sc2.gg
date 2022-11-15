@@ -1,0 +1,26 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
+import '../components/index.css';
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StarCraft 2 Tournament Games</title>
+  </head>
+  <body>
+    <style>
+      .AppLayout__nav {
+        display: flex;
+      }
+    </style>
+    <nav class="AppLayout__nav">
+      <a href="/">Search</a>
+      <a href="/builds">Builds</a>
+    </nav>
+    <slot />
+  </body>
+</html>

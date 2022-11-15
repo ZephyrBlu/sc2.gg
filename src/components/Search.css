@@ -1,8 +1,8 @@
-.App {
+.Search {
   padding-bottom: 30px;
 }
 
-.App__header {
+.Search__header {
   background-color: var(--primary-dark-2);
   border: 3px solid var(--primary-blue);
   margin: 20px 0;
@@ -16,26 +16,26 @@
   row-gap: 10px;
 }
 
-.App__sub-heading {
+.Search__sub-heading {
   font-weight: 400;
   font-size: 12px;
 }
 
-.App__replay-list {
+.Search__replay-list {
   border-radius: 8px;
   /* box-shadow: 0 0 0 3px var(--primary-blue); */
 }
 
-.App__search,
-.App__search-input {
+.Search__search,
+.Search__search-input {
   width: 100%;
 }
 
-.App__search {
+.Search__search {
   margin-bottom: 10px;
 }
 
-.App__search-input {
+.Search__search-input {
   background-color: var(--primary-light-1);
   border-radius: 8px;
   font-size: 18px;
@@ -45,23 +45,23 @@
   margin-bottom: 20px;
 }
 
-.App__quick-search {
+.Search__quick-search {
 }
 
-.App__matchup-quick-select,
-.App__player-quick-select {
+.Search__matchup-quick-select,
+.Search__player-quick-select {
   display: flex;
   justify-content: space-evenly;
   column-gap: 20px;
 }
 
-.App__matchup-quick-select {
+.Search__matchup-quick-select {
 }
 
-.App__player-quick-select {
+.Search__player-quick-select {
 }
 
-.App__quick-option {
+.Search__quick-option {
   flex-grow: 1;
   border-radius: 15px;
   border: none;
@@ -76,24 +76,24 @@
   margin-bottom: 10px;
 }
 
-.App__quick-option:hover {
+.Search__quick-option:hover {
   cursor: pointer;
   background-color: var(--primary-light-2);
 }
 
-.App__quick-option--selected {
+.Search__quick-option--selected {
   box-shadow: 0 0 0 2px var(--primary-blue);
   background-color: var(--primary-light-2);
 }
 
-.App__search-header {
+.Search__search-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: 6px;
 }
 
-.App__search-filters {
+.Search__search-filters {
   display: flex;
   align-items: center;
   column-gap: 5px;
@@ -105,15 +105,15 @@
   font-size: 14px;
 }
 
-.App__filter-checkbox {
+.Search__filter-checkbox {
   margin: 0;
 }
 
-.App__search-results {
+.Search__search-results {
   font-size: 16px;
 }
 
-.App__default {
+.Search__default {
   font-size: 16px;
   margin-top: 40px;
   display: flex;
@@ -121,47 +121,47 @@
 }
 
 @media(max-width: 575px) {
-  .App {
+  .Search {
     padding-bottom: 15px;
   }
 
-  .App__header {
+  .Search__header {
     font-size: 18px;
     padding: 10px;
     margin: 20px 0;
     margin-bottom: 10px;
   }
 
-  .App__search {
+  .Search__search {
     margin-bottom: 6px;
   }
 
-  .App__search-input {
+  .Search__search-input {
     font-size: 16px;
     margin-bottom: 10px;
   }
 
-  .App__matchup-quick-select,
-  .App__player-quick-select {
+  .Search__matchup-quick-select,
+  .Search__player-quick-select {
     column-gap: 5px;
   }
 
-  .App__quick-option {
+  .Search__quick-option {
     font-size: 11px;
     font-weight: 700;
     margin-bottom: 6px;
     padding: 6px 8px;
   }
 
-  .App__search-results {
+  .Search__search-results {
     font-size: 12px;
   }
 
-  .App__default {
+  .Search__default {
     font-size: 14px;
   }
 
-  .App__search-filters {
+  .Search__search-filters {
     font-size: 11px;
   }
 }

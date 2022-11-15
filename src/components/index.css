@@ -70,7 +70,7 @@ body {
   min-height: 100vh;
 }
 
-.App {
+.Search {
   width: 60%;
   max-width: 800px;
   min-width: 620px;
@@ -100,13 +100,13 @@ a, a:visited {
 }
 
 @media(max-width: 1300px) {
-  .App {
+  .Search {
     width: 80%;
   }
 }
 
 @media(max-width: 650px) {
-  .App {
+  .Search {
     width: 90%;
     min-width: 0;
   }
