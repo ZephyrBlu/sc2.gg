@@ -271,7 +271,7 @@ export function Search() {
               checked={showBuildsAndResults}
               onChange={() => setShowBuildsAndResults(prevState => !prevState)}
             />
-            <label className="Search__filter-label" htmlFor="search-filter">
+            <label id="search-filter" className="Search__filter-label" htmlFor="search-filter">
               Show builds and results
             </label>
           </span>
