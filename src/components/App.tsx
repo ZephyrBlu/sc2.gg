@@ -37,9 +37,9 @@ export function App() {
   useEffect(() => {
     const preloadMatchups = async () => {
       await Promise.all([
-        searchIndex('Protoss', 'race'),
-        searchIndex('Zerg', 'race'),
-        searchIndex('Terran', 'race'),
+        searchIndex('Protoss', 'race', {preload: true}),
+        searchIndex('Zerg', 'race', {preload: true}),
+        searchIndex('Terran', 'race', {preload: true}),
       ]);
       const clusters = await matchupBuildClusters(['Protoss', 'Zerg']);
       const tree = await matchupBuildTree(['Protoss', 'Zerg']);
@@ -52,15 +52,15 @@ export function App() {
 
   useEffect(() => {
     const search = async () => {
-      setSearchResults(prevState => ({
-        ...prevState,
+      setSearchResults({
+        replays: [],
         loading: true,
         query: {
           player: quickSelectOptions.player,
           matchup: quickSelectOptions.matchup,
           input: searchInput,
         },
-      }));
+      });
 
       let replays: Replay[][] = [];
       let searchStartTime = Date.now();
@@ -90,10 +90,12 @@ export function App() {
         }));
 
         inputResults = inputResults.filter(r => r.length > 0);
-        const inputIntersectionResults = inputResults.reduce((current, next) => {
-          return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
-        }, inputResults[0]);
-        replays.push(inputIntersectionResults);
+        if (inputResults.length > 0) {
+          const inputIntersectionResults = inputResults.reduce((current, next) => {
+            return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
+          }, inputResults[0]);
+          replays.push(inputIntersectionResults);
+        }
       }
 
       // if search results are fresher than existing results, update them
