@@ -33,5 +33,40 @@ export function useBuilds() {
     return response.results;
   };
 
-  return {matchupBuildClusters, matchupBuildTree};
+  const raceBuildClusters = async (race: string) => {
+    let url = `https://patient-wood-5201.fly.dev/clusters/${race.toLowerCase()}`;
+
+    if (queryCache[url]) {
+      return queryCache[url];
+    }
+
+    const response = await fetch(url).then(res => res.json());
+    setQueryCache(prevState => ({
+      ...prevState,
+      [url]: response.results,
+    }));
+    return response.results;
+  };
+
+  const raceBuildTrees = async (race: string) => {
+    let url = `https://patient-wood-5201.fly.dev/trees/${race.toLowerCase()}`;
+
+    if (queryCache[url]) {
+      return queryCache[url];
+    }
+
+    const response = await fetch(url).then(res => res.json());
+    setQueryCache(prevState => ({
+      ...prevState,
+      [url]: response.results,
+    }));
+    return response.results;
+  };
+
+  return {
+    matchupBuildClusters,
+    matchupBuildTree,
+    raceBuildClusters,
+    raceBuildTrees,
+  };
 }

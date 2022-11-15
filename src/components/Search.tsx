@@ -199,28 +199,25 @@ export function Search() {
   };
 
   return (
-    <div className="App">
-      <header className="App__header">
-        StarCraft 2 Tournament Games
-      </header>
-      <div className="App__search">
+    <div className="Search">
+      <div className="Search__search">
         <input
           type="search"
-          className="App__search-input"
+          className="Search__search-input"
           autoFocus
           value={searchInput}
           placeholder="Search 7000+ replays for any player, race, map or tournament"
           onChange={(e) => setSearchInput(e.target.value)}
         />
-        <div className="App__quick-search">
-          <div className="App__matchup-quick-select">
+        <div className="Search__quick-search">
+          <div className="Search__matchup-quick-select">
             {Object.keys(matchupRaceMapping).map((option) => (
               <button
                 key={option}
                 className={`
-                  App__quick-option
+                  Search__quick-option
                   ${option === quickSelectOptions.matchup ?
-                    'App__quick-option--selected' : ''}
+                    'Search__quick-option--selected' : ''}
                 `}
                 onClick={() => {
                   let newOption: string | null = option;
@@ -237,14 +234,14 @@ export function Search() {
               </button>
             ))}
           </div>
-          <div className="App__player-quick-select">
+          <div className="Search__player-quick-select">
             {['Serral', 'ByuN', 'ShoWTimE', 'Maru'].map((option) => (
               <button
                 key={option}
                 className={`
-                  App__quick-option
+                  Search__quick-option
                   ${option === quickSelectOptions.player ?
-                    'App__quick-option--selected' : ''}
+                    'Search__quick-option--selected' : ''}
                 `}
                 onClick={() => {
                   let newOption: string | null = option;
@@ -262,34 +259,34 @@ export function Search() {
             ))}
           </div>
         </div>
-        <div className="App__search-header">
-            <span className="App__search-results">
+        <div className="Search__search-header">
+            <span className="Search__search-results">
               {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) && buildResultsText()}
             </span>
-          <span className="App__search-filters">
+          <span className="Search__search-filters">
             <input
-              className="App__filter-checkbox"
+              className="Search__filter-checkbox"
               type="checkbox"
               name="search-filter"
               checked={showBuildsAndResults}
               onChange={() => setShowBuildsAndResults(prevState => !prevState)}
             />
-            <label className="App__filter-label" htmlFor="search-filter">
+            <label className="Search__filter-label" htmlFor="search-filter">
               Show builds and results
             </label>
           </span>
         </div>
       </div>
-      <div className="App__replay-list">
+      <div className="Search__replay-list">
         {searchResults.replays.length > 0 &&
           searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
         {searchResults.replays.length === 0 && !(searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
-          ? <span className="App__default">
+          ? <span className="Search__default">
               Select a matchup/player, or start typing
             </span>
           : searchResults.loading
             ? <LoadingAnimation />
-            : <span className="App__default">
+            : <span className="Search__default">
               No replays found for: {buildResultsText()?.slice(21)}
             </span>}
       </div>

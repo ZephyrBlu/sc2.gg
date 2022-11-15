@@ -1,18 +1,35 @@
 import { useEffect } from "react";
 import {useBuilds} from "./hooks";
 
+const RACES = ['Protoss', 'Terran', 'Zerg'];
+
 export function Builds() {
-  const {matchupBuildClusters, matchupBuildTree} = useBuilds();
+  const {raceBuildClusters, raceBuildTrees} = useBuilds();
 
   useEffect(() => {
-    const preload = async () => {
-      const clusters = await matchupBuildClusters(['Protoss', 'Zerg']);
-      const tree = await matchupBuildTree(['Protoss', 'Zerg']);
-      console.log('clusters', clusters);
-      console.log('tree', tree);
+    const generateMatchups = () => {
+      const matchups = RACES.map(outerRace => RACES.map(innerRace => {
+        const matchup = [innerRace, outerRace];
+        matchup.sort();
+        return matchup.join(',');
+      })).flat();
+      return Array.from(new Set(matchups)).map(matchup => matchup.split(','));
     };
 
-    preload();
+    const load = async () => {
+      const clusters = await Promise.all(RACES.map((race) => (
+        raceBuildClusters(race)
+      )));
+
+      const trees = await Promise.all(RACES.map((race) => (
+        raceBuildTrees(race)
+      )));
+
+      console.log('clusters', clusters);
+      console.log('tree', trees);
+    };
+
+    load();
   }, []);
   
   return (

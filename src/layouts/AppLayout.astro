@@ -11,16 +11,60 @@ import '../components/index.css';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StarCraft 2 Tournament Games</title>
   </head>
-  <body>
-    <style>
-      .AppLayout__nav {
-        display: flex;
+  <style>
+    .AppLayout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      align-content: center;
+      width: 60%;
+      max-width: 800px;
+      min-width: 620px;
+    }
+
+    @media(max-width: 1300px) {
+      .AppLayout {
+        width: 80%;
       }
-    </style>
+    }
+
+    @media(max-width: 650px) {
+      .AppLayout {
+        width: 90%;
+        min-width: 0;
+      }
+    }
+
+
+    .AppLayout__nav {
+      display: flex;
+      justify-content: space-around;
+      width: 50%;
+      margin: 20px 0;
+    }
+
+    .AppLayout__link {
+      border: 2px solid var(--primary-blue);
+      background-color: var(--secondary-dark-2);
+      border-radius: 8px;
+      padding: 8px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .AppLayout__container {
+      width: 100%;
+    }
+  </style>
+  <body class="AppLayout">
     <nav class="AppLayout__nav">
-      <a href="/">Search</a>
-      <a href="/builds">Builds</a>
+      <a class="AppLayout__link" href="/">Search</a>
+      <a class="AppLayout__link" href="/builds">Builds</a>
     </nav>
-    <slot />
+    <div class="AppLayout__container">
+      <slot />
+    </div>
   </body>
 </html>
