@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+---
+import {App} from '../components/App';
+import '../components/index.css';
+---
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -12,7 +15,6 @@
     <title>StarCraft 2 Tournament Games</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <App client:load />
   </body>
 </html>

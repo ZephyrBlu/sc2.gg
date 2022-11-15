@@ -2,7 +2,7 @@ import {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import {matchupRaceMapping} from './constants';
 import {useBuilds, useSearch} from './hooks';
-import {Replay} from "./types";
+import type {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
 import './App.css';
 import {compare} from './utils';
