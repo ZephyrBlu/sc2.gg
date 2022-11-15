@@ -265,13 +265,14 @@ export function Search() {
             </span>
           <span className="Search__search-filters">
             <input
+              id="search-filter"
               className="Search__filter-checkbox"
               type="checkbox"
               name="search-filter"
               checked={showBuildsAndResults}
               onChange={() => setShowBuildsAndResults(prevState => !prevState)}
             />
-            <label id="search-filter" className="Search__filter-label" htmlFor="search-filter">
+            <label className="Search__filter-label" htmlFor="search-filter">
               Show builds and results
             </label>
           </span>
