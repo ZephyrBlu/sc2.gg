@@ -76,14 +76,16 @@ export function App() {
 
       if (searchInput) {
         const terms = searchInput.split(' ');
-        const inputResults: Replay[][] = [];
+        let inputResults: Replay[][] = [];
 
         await Promise.all(terms.map(async (term) => {
           const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
           const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
           inputResults.push(...results);
         }));
-        const inputIntersectionResults = inputResults.filter(r => r.length > 0).reduce((current, next) => {
+
+        inputResults = inputResults.filter(r => r.length > 0);
+        const inputIntersectionResults = inputResults.reduce((current, next) => {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, inputResults[0]);
         replays.push(inputIntersectionResults);
