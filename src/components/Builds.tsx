@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import cluster from "cluster";
+import {useState, useEffect} from "react";
 import {useBuilds} from "./hooks";
 
 const RACES = ['Protoss', 'Terran', 'Zerg'];
 
 export function Builds() {
+  const [clusters, setClusters] = useState({});
+  const [trees, setTrees] = useState({});
   const {raceBuildClusters, raceBuildTrees} = useBuilds();
 
   useEffect(() => {
@@ -17,24 +20,56 @@ export function Builds() {
     };
 
     const load = async () => {
-      const clusters = await Promise.all(RACES.map((race) => (
-        raceBuildClusters(race)
-      )));
+      const raceClusters = await Promise.all(RACES.map(async (race) => {
+        const results = await raceBuildClusters(race);
+        return {[race]: results};
+      }));
 
-      const trees = await Promise.all(RACES.map((race) => (
-        raceBuildTrees(race)
-      )));
+      let mappedClusters = {};
+      raceClusters.forEach((cluster) => {
+        mappedClusters = {
+          ...mappedClusters,
+          ...cluster,
+        };
+      });
 
-      console.log('clusters', clusters);
-      console.log('tree', trees);
+      const raceTrees = await Promise.all(RACES.map(async (race) => {
+        const results = await raceBuildTrees(race);
+        return {[race]: results};
+      }));
+
+      let mappedTrees = {};
+      raceTrees.forEach((tree) => {
+        mappedTrees = {
+          ...mappedTrees,
+          ...tree,
+        };
+      });
+      setClusters(mappedClusters);
+      setTrees(mappedTrees);
     };
 
     load();
   }, []);
   
+  console.log('clusters', clusters);
+  console.log('trees', trees);
+
   return (
     <div className="Builds">
-      Hello world
+      {Object.entries(clusters).map(([race, opponents]) => (
+        <div className="Builds__race">
+          {Object.entries(opponents).map(([opponentRace, opponentCluster]) => (
+            <div className="Builds__opponent-race">
+              {opponentCluster.clusters.map((raceCluster) => (
+                <div className="Builds__cluster">
+                  {raceCluster.build.build}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
