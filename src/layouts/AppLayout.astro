@@ -58,13 +58,15 @@ import '../components/index.css';
       width: 100%;
     }
   </style>
-  <body class="AppLayout">
-    <nav class="AppLayout__nav">
-      <a class="AppLayout__link" href="/">Search</a>
-      <a class="AppLayout__link" href="/builds">Builds</a>
-    </nav>
-    <div class="AppLayout__container">
-      <slot />
+  <body>
+    <div class="AppLayout">
+      <nav class="AppLayout__nav">
+        <a class="AppLayout__link" href="/">Search</a>
+        <a class="AppLayout__link" href="/builds">Builds</a>
+      </nav>
+      <div class="AppLayout__container">
+        <slot />
+      </div>
     </div>
   </body>
 </html>
