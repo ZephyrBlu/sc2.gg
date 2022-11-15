@@ -81,7 +81,7 @@ export function App() {
         await Promise.all(terms.map(async (term) => {
           const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
           const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
-          inputResults.push(...results);
+          inputResults.push(results.flat());
         }));
 
         inputResults = inputResults.filter(r => r.length > 0);
@@ -103,7 +103,8 @@ export function App() {
           return;
         }
 
-        const intersectionResults = replays.filter(r => r.length > 0).reduce((current, next) => {
+        replays = replays.filter(r => r.length > 0);
+        const intersectionResults = replays.reduce((current, next) => {
           return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
         }, replays[0]);
         intersectionResults.sort(playedAtSort);
