@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Replay} from '../types';
+import type {Replay} from '../types';
 
 export function useSearch() {
   const [queryCache, setQueryCache] = useState<{[query: string]: Replay[]}>({});
