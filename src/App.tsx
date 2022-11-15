@@ -1,7 +1,7 @@
 import {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
-import {matchupRaceMapping, mirrorMatchups} from './constants';
-import {useSearch} from './hooks';
+import {matchupRaceMapping} from './constants';
+import {useBuilds, useSearch} from './hooks';
 import {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
 import './App.css';
@@ -32,6 +32,7 @@ export function App() {
     replays: [],
   });
   const {searchIndex} = useSearch();
+  const {matchupBuildClusters, matchupBuildTree} = useBuilds();
 
   useEffect(() => {
     const preloadMatchups = async () => {
@@ -40,6 +41,10 @@ export function App() {
         searchIndex('Zerg', 'race'),
         searchIndex('Terran', 'race'),
       ]);
+      const clusters = await matchupBuildClusters(['Protoss', 'Zerg']);
+      const tree = await matchupBuildTree(['Protoss', 'Zerg']);
+      console.log('clusters', clusters);
+      console.log('tree', tree);
     };
 
     preloadMatchups();
