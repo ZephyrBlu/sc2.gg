@@ -147,7 +147,7 @@
   }
 
   .Search__quick-option {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     margin-bottom: 6px;
     padding: 6px 8px;
@@ -162,6 +162,6 @@
   }
 
   .Search__search-filters {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
