@@ -47,14 +47,25 @@ export function Search() {
 
   useEffect(() => {
     const search = async () => {
-      setSearchResults({
-        replays: [],
-        loading: true,
-        query: {
-          player: quickSelectOptions.player,
-          matchup: quickSelectOptions.matchup,
-          input: searchInput,
-        },
+      setSearchResults(prevState => {
+        const newState = {
+          ...prevState,
+          replays: [],
+          loading: true,
+        };
+
+        if (prevState.loading) {
+          return newState;
+        }
+
+        return {
+          ...newState,
+          query: {
+            player: quickSelectOptions.player,
+            matchup: quickSelectOptions.matchup,
+            input: searchInput,
+          },
+        };
       });
 
       let replays: Replay[][] = [];
@@ -96,11 +107,15 @@ export function Search() {
       // if search results are fresher than existing results, update them
       if (searchStartTime > searchStartedAt.current) {
         if (replays.length === 0) {
-          setSearchResults(prevState => ({
-            ...prevState,
-            loading: false,
+          setSearchResults({
             replays: [],
-          }));
+            loading: false,
+            query: {
+              player: quickSelectOptions.player,
+              matchup: quickSelectOptions.matchup,
+              input: searchInput,
+            },
+          });
           searchStartedAt.current = searchStartTime;
           return;
         }
@@ -207,7 +222,7 @@ export function Search() {
           autoFocus
           value={searchInput}
           placeholder="Search 7000+ replays for any player, race, map or tournament"
-          onChange={(e) => setSearchInput(e.target.value)}
+          onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
         />
         <div className="Search__quick-search">
           <div className="Search__matchup-quick-select">
