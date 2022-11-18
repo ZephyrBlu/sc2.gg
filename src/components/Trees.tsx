@@ -1,11 +1,11 @@
 import {useState, useEffect} from "react";
 import {useBuilds} from "./hooks";
-import {Build} from './Build';
+import {Tree} from './Tree';
 import './Builds.css';
 
 const RACES = ['Protoss', 'Terran', 'Zerg'];
 
-export function Builds() {
+export function Trees() {
   const [clusters, setClusters] = useState({});
   const [trees, setTrees] = useState({});
   const {raceBuildClusters, raceBuildTrees} = useBuilds();
@@ -52,18 +52,10 @@ export function Builds() {
 
     load();
   }, []);
-  
-  console.log('clusters', clusters);
-  console.log('trees', trees);
-
-  const calculateClusterPercentage = (clusterGroup) => {
-    const topTenTotal = clusterGroup.clusters.reduce((total, cluster) => total + cluster.total, 0);
-    return ((topTenTotal / clusterGroup.total) * 100).toFixed(0);
-  };
 
   return (
     <div className="Builds">
-      {Object.entries(clusters).map(([race, opponents]) => (
+      {Object.entries(trees).map(([race, opponents]) => (
         <div className="Builds__race-builds">
           <div className="Builds__race-header">
             <h1 className="Builds__race">
@@ -78,7 +70,7 @@ export function Builds() {
               alt={race}
             />
           </div>
-          {Object.entries(opponents).map(([opponentRace, opponentCluster]) => (
+          {Object.entries(opponents).map(([opponentRace, opponentTree]) => (
             <div className="Builds__opponent-race-builds">
               <div className="Builds__race-header">
                 <h2 className="Builds__race">
@@ -93,32 +85,7 @@ export function Builds() {
                   alt={opponentRace}
                 />
               </div>
-              <div className="Builds__clusters-info">
-                {((opponentCluster.wins / opponentCluster.total) * 100).toFixed(1)}% win rate
-              </div>
-              <div className="Builds__clusters-info">
-                Top 10 clusters include {calculateClusterPercentage(opponentCluster)}% of games
-              </div>
-              {// opponentCluster.clusters.sort((a, b) => (b.wins / b.total) - (a.wins / a.total)) &&
-                opponentCluster.clusters.map((raceCluster) => (
-                  <div className="Builds__cluster">
-                    <Build
-                      race={race}
-                      build={{
-                        total: raceCluster.build.total,
-                        wins: raceCluster.build.wins,
-                        losses: raceCluster.build.losses,
-                      }}
-                      matchup={{
-                        total: opponentCluster.total,
-                        wins: opponentCluster.wins,
-                        losses: opponentCluster.losses,
-                      }}
-                      cluster={raceCluster}
-                      buildings={raceCluster.build.build.split('__')[1].split(',')}
-                    />
-                  </div>
-                ))}
+              <Tree race={race} oppRace={opponentRace} tree={opponentTree} />
             </div>
           ))}
         </div>
