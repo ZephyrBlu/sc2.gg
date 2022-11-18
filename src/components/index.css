@@ -70,6 +70,18 @@ body {
   justify-content: center;
 }
 
+h1, h2, h3, h4, h5 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
 a, a:visited {
   color: var(--text);
 }

@@ -1,3 +1,53 @@
 .Builds {
 
 }
+
+.Builds__race-builds {
+  margin-bottom: 40px;
+}
+
+.Builds__race-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.Builds__race-icon {
+  height: 40px;
+  width: 40px;
+  margin-left: 5px;
+}
+
+.Builds__race-icon--protoss {
+  margin-left: 0;
+}
+
+.Builds__race-icon-opponent {
+  height: 30px;
+  width: 30px;
+  margin-left: 5px;
+}
+
+.Builds__race-icon-opponent--protoss {
+  margin-left: 0;
+}
+
+.Builds__opponent-race-builds {
+  margin-bottom: 20px;
+}
+
+.Builds__clusters-info {
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 2px solid var(--primary-blue);
+  background-color: var(--secondary-dark-3);
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 20px;
+}
+
+.Build__cluster {
+  margin: 10px 0;
+}

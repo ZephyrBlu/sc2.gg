@@ -1,0 +1,40 @@
+.Build {
+  width: 100%;
+  padding: 5px;
+  border: 2px solid var(--primary-light-3);
+  border-radius: 8px;
+  background-color: var(--secondary-dark-1);
+  margin-bottom: 10px;
+  overflow-x: hidden;
+}
+
+.Build__buildings {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.Build__building {
+  display: flex;
+  align-items: center;
+}
+
+.Build__building-icon {
+  height: 30px;
+  width: 30px;
+}
+
+.Build__arrow-right {
+  height: 20px;
+  width: 20px;
+  margin: 0 -2px;
+}
+
+.Build__building:last-child .Build__arrow-right {
+  display: none;
+}
+
+.Build__stats {
+  font-size: 14px;
+  font-weight: 400;
+}
