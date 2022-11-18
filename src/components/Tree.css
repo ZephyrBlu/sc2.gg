@@ -3,10 +3,19 @@
 }
 
 .Tree__branch {
-  
+  display: flex;
+}
+
+.Tree__building {
+  display: flex;
 }
 
 .Tree__building-icon {
   height: 30px;
   width: 30px;
+}
+
+.Tree__arrow {
+  height: 20px;
+  width: 20px;
 }
