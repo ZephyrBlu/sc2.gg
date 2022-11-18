@@ -1,57 +1,51 @@
-import {useState, useEffect} from "react";
-import {useBuilds} from "./hooks";
 import {Tree} from './Tree';
 import './Builds.css';
 
-const RACES = ['Protoss', 'Terran', 'Zerg'];
+export function Trees({ trees }) {
+  // const {raceBuildClusters, raceBuildTrees} = useBuilds();
 
-export function Trees() {
-  const [clusters, setClusters] = useState({});
-  const [trees, setTrees] = useState({});
-  const {raceBuildClusters, raceBuildTrees} = useBuilds();
+  // useEffect(() => {
+  //   const generateMatchups = () => {
+  //     const matchups = RACES.map(outerRace => RACES.map(innerRace => {
+  //       const matchup = [innerRace, outerRace];
+  //       matchup.sort();
+  //       return matchup.join(',');
+  //     })).flat();
+  //     return Array.from(new Set(matchups)).map(matchup => matchup.split(','));
+  //   };
 
-  useEffect(() => {
-    const generateMatchups = () => {
-      const matchups = RACES.map(outerRace => RACES.map(innerRace => {
-        const matchup = [innerRace, outerRace];
-        matchup.sort();
-        return matchup.join(',');
-      })).flat();
-      return Array.from(new Set(matchups)).map(matchup => matchup.split(','));
-    };
+  //   const load = async () => {
+  //     const raceClusters = await Promise.all(RACES.map(async (race) => {
+  //       const results = await raceBuildClusters(race);
+  //       return {[race]: results};
+  //     }));
 
-    const load = async () => {
-      const raceClusters = await Promise.all(RACES.map(async (race) => {
-        const results = await raceBuildClusters(race);
-        return {[race]: results};
-      }));
+  //     let mappedClusters = {};
+  //     raceClusters.forEach((cluster) => {
+  //       mappedClusters = {
+  //         ...mappedClusters,
+  //         ...cluster,
+  //       };
+  //     });
 
-      let mappedClusters = {};
-      raceClusters.forEach((cluster) => {
-        mappedClusters = {
-          ...mappedClusters,
-          ...cluster,
-        };
-      });
+  //     const raceTrees = await Promise.all(RACES.map(async (race) => {
+  //       const results = await raceBuildTrees(race);
+  //       return {[race]: results};
+  //     }));
 
-      const raceTrees = await Promise.all(RACES.map(async (race) => {
-        const results = await raceBuildTrees(race);
-        return {[race]: results};
-      }));
+  //     let mappedTrees = {};
+  //     raceTrees.forEach((tree) => {
+  //       mappedTrees = {
+  //         ...mappedTrees,
+  //         ...tree,
+  //       };
+  //     });
+  //     setClusters(mappedClusters);
+  //     setTrees(mappedTrees);
+  //   };
 
-      let mappedTrees = {};
-      raceTrees.forEach((tree) => {
-        mappedTrees = {
-          ...mappedTrees,
-          ...tree,
-        };
-      });
-      setClusters(mappedClusters);
-      setTrees(mappedTrees);
-    };
-
-    load();
-  }, []);
+  //   load();
+  // }, []);
 
   return (
     <div className="Builds">

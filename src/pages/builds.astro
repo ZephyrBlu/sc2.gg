@@ -1,7 +1,28 @@
 ---
 import AppLayout from '../layouts/AppLayout.astro';
 import {Builds} from '../components/Builds';
+
+const raceBuildClusters = async (race: string) => {
+  let url = `https://patient-wood-5201.fly.dev/clusters/${race.toLowerCase()}`;
+
+  const response = await fetch(url).then(res => res.json());
+  return response.results;
+};
+
+const RACES = ['Protoss', 'Terran', 'Zerg'];
+const raceClusters = await Promise.all(RACES.map(async (race) => {
+  const results = await raceBuildClusters(race);
+  return {[race]: results};
+}));
+
+let mappedClusters = {};
+raceClusters.forEach((cluster) => {
+  mappedClusters = {
+    ...mappedClusters,
+    ...cluster,
+  };
+});
 ---
 <AppLayout>
-  <Builds client:load />
+  <Builds clusters={mappedClusters} />
 </AppLayout>

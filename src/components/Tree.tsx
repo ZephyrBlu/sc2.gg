@@ -1,8 +1,6 @@
 import './Tree.css';
 
-export function Tree({ race, oppRace, tree }){
-  console.log('tree', race, oppRace, tree);
-  
+export function Tree({ race, tree }){  
   const rendered = [];
   const renderNodes = (node, stack = [], offset = 0) => {
     if (node.label === '') {
@@ -11,9 +9,6 @@ export function Tree({ race, oppRace, tree }){
 
     const node_buildings = node.label.split(',');
     stack.push(...node_buildings);
-
-    // rendered.push({offset, build: stack});
-    // console.log('pushing fragment', node_buildings);
 
     if (node.children.length === 0) {
       rendered.push({offset, build: stack});
@@ -26,7 +21,6 @@ export function Tree({ race, oppRace, tree }){
   }
 
   tree.root.children.forEach(child => renderNodes(child));
-  console.log('rendered trees', rendered);
 
   return (
     <div className="Tree">
