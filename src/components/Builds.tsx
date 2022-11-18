@@ -99,16 +99,15 @@ export function Builds() {
               <div className="Builds__clusters-info">
                 Top 10 clusters include {calculateClusterPercentage(opponentCluster)}% of games
               </div>
-              {opponentCluster.clusters.sort((a, b) => (b.wins / b.total) - (a.wins / a.total)) &&
+              {// opponentCluster.clusters.sort((a, b) => (b.wins / b.total) - (a.wins / a.total)) &&
                 opponentCluster.clusters.map((raceCluster) => (
                   <div className="Builds__cluster">
-                    {console.log('raceCluster', raceCluster)}
                     <Build
                       race={race}
                       build={{
-                        total: raceCluster.total,
-                        wins: raceCluster.wins,
-                        losses: raceCluster.losses,
+                        total: raceCluster.build.total,
+                        wins: raceCluster.build.wins,
+                        losses: raceCluster.build.losses,
                       }}
                       matchup={{
                         total: opponentCluster.total,

@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import './Build.css';
 
-export function Build({ race, matchup, build, cluster, buildings }: {
+export function Build({ race, matchup, cluster, buildings }: {
   race: string,
   matchup: {
     total: number,
@@ -18,7 +18,7 @@ export function Build({ race, matchup, build, cluster, buildings }: {
 }) {
   const [showClusterBuilds, setShowClusterBuilds] = useState(false);
 
-  console.log('matchup/cluster/build', matchup, cluster, build);
+  // console.log('cluster/build', matchup, cluster);
 
   return (
     <div className="Build" onClick={() => setShowClusterBuilds(prevState => !prevState)}>
@@ -43,7 +43,7 @@ export function Build({ race, matchup, build, cluster, buildings }: {
           ))}
         </div>
         <span className="Build__stats">
-          {((build.wins / build.total) * 100).toFixed(1)}% win rate, {((build.total / matchup.total) * 100).toFixed(0)}% of games
+          {((cluster.wins / cluster.total) * 100).toFixed(1)}% win rate, {((cluster.total / matchup.total) * 100).toFixed(0)}% of matchup games
         </span>
       </div>
       <div className="Build__build Build__build--cluster">
@@ -68,9 +68,9 @@ export function Build({ race, matchup, build, cluster, buildings }: {
                 </div>
               ))}
             </div>
-            <span className="Build__stats">
-              {((build.wins / build.total) * 100).toFixed(1)}% win rate, {((build.total / cluster.total) * 100).toFixed(0)}% of games
-            </span>
+            {/* <span className="Build__stats">
+              {((build.wins / build.total) * 100).toFixed(1)}% win rate, {((build.total / cluster.total) * 100).toFixed(0)}% of cluster games
+            </span> */}
           </>
         ))}
       </div>
