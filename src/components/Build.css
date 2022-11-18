@@ -7,7 +7,7 @@
   border: 2px solid var(--primary-light-3);
   border-radius: 8px;
   background-color: var(--secondary-dark-1);
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   overflow-x: hidden;
 }
 
@@ -45,4 +45,17 @@
 .Build__stats {
   font-size: 14px;
   font-weight: 400;
+}
+
+.Build__cluster-container {
+}
+
+.Build__cluster-toggle {
+  font-size: 14px;
+  margin-left: 30px;
+  margin-bottom: 5px;
+}
+
+.Build__cluster-toggle:hover {
+  cursor: pointer;
 }

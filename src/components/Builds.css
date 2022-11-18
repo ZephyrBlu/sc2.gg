@@ -1,9 +1,25 @@
 .Builds {
-
 }
 
 .Builds__race-builds {
-  margin-bottom: 40px;
+}
+
+.Builds__race-divider {
+  margin: 20px 0;
+  border: 2px solid var(--primary-light-3);
+}
+
+.Builds__race-divider:last-child {
+  display: none;
+}
+
+.Builds__cluster-divider {
+  margin: 10px 0;
+  border: 1px solid var(--primary-light-1);
+}
+
+.Builds__cluster-divider:last-child {
+  display: none;
 }
 
 .Builds__race-header {
@@ -39,7 +55,7 @@
 .Builds__clusters-info {
   font-size: 14px;
   font-weight: 400;
-  padding: 8px 12px;
+  padding: 6px 8px;
   border-radius: 8px;
   border: 2px solid var(--primary-blue);
   background-color: var(--secondary-dark-3);
@@ -50,4 +66,13 @@
 
 .Build__cluster {
   margin: 10px 0;
+}
+
+.Builds__cluster-toggle {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.Builds__cluster-toggle:hover {
+  cursor: pointer;
 }
