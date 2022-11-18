@@ -99,24 +99,27 @@ export function Builds() {
               <div className="Builds__clusters-info">
                 Top 10 clusters include {calculateClusterPercentage(opponentCluster)}% of games
               </div>
-              {opponentCluster.clusters.sort((a, b) => (b.wins / b.total) - (a.wins / a.total)) && opponentCluster.clusters.map((raceCluster) => (
-                <div className="Builds__cluster">
-                  <Build
-                    race={race}
-                    build={{
-                      total: raceCluster.total,
-                      wins: raceCluster.wins,
-                      losses: raceCluster.losses,
-                    }}
-                    matchup={{
-                      total: opponentCluster.total,
-                      wins: opponentCluster.wins,
-                      losses: opponentCluster.losses,
-                    }}
-                    buildings={raceCluster.build.build.split('__')[1].split(',')}
-                  />
-                </div>
-              ))}
+              {opponentCluster.clusters.sort((a, b) => (b.wins / b.total) - (a.wins / a.total)) &&
+                opponentCluster.clusters.map((raceCluster) => (
+                  <div className="Builds__cluster">
+                    {console.log('raceCluster', raceCluster)}
+                    <Build
+                      race={race}
+                      build={{
+                        total: raceCluster.total,
+                        wins: raceCluster.wins,
+                        losses: raceCluster.losses,
+                      }}
+                      matchup={{
+                        total: opponentCluster.total,
+                        wins: opponentCluster.wins,
+                        losses: opponentCluster.losses,
+                      }}
+                      cluster={raceCluster}
+                      buildings={raceCluster.build.build.split('__')[1].split(',')}
+                    />
+                  </div>
+                ))}
             </div>
           ))}
         </div>
