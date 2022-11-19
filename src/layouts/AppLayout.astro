@@ -36,12 +36,21 @@ import '../components/index.css';
       }
     }
 
+    .AppLayout__header {
+      background-color: var(--primary-dark-2);
+      margin: 10px 0;
+      /* border-radius: 10px;
+      border: 3px solid var(--primary-blue);
+      padding: 6px 12px; */
+      font-weight: 700;
+      font-size: 24px;
+    }
 
     .AppLayout__nav {
       display: flex;
       justify-content: space-around;
-      width: 50%;
-      margin: 20px 0;
+      width: max-content;
+      margin-bottom: 10px;
     }
 
     .AppLayout__link {
@@ -53,6 +62,10 @@ import '../components/index.css';
       font-size: 16px;
       font-weight: 500;
       margin-right: 20px;
+    }
+    
+    .AppLayout__link:last-child {
+      margin: 0;
     }
 
     .AppLayout__container {
@@ -68,6 +81,9 @@ import '../components/index.css';
   </style>
   <body>
     <div class="AppLayout">
+      <header class="AppLayout__header">
+        StarCraft 2 Games
+      </header>
       <nav class="AppLayout__nav">
         <a class="AppLayout__link" href="/">Search</a>
         <a class="AppLayout__link" href="/builds">Builds</a>
