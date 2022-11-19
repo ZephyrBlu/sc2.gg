@@ -1,7 +1,8 @@
 .Builds {
 }
 
-.Builds__race-builds {
+.Builds__race-builds:nth-child(2) {
+  margin-top: 15px;
 }
 
 .Builds__race-divider {

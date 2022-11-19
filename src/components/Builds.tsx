@@ -1,4 +1,5 @@
 import {Build} from './Build';
+import {Infobox} from './Infobox';
 import './Builds.css';
 
 export function Builds({ clusters }) {
@@ -54,6 +55,10 @@ export function Builds({ clusters }) {
 
   return (
     <div className="Builds">
+      <Infobox>
+        Builds in each matchup represent clusters of builds grouped by similarity.
+        Common variations are the most common builds in the cluster, other than the main build.
+      </Infobox>
       {Object.entries(clusters).map(([race, opponents]) => (
         <>
           <div className="Builds__race-builds">

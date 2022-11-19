@@ -1,0 +1,15 @@
+.Infobox {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.Infobox__content {
+  width: 100%;
+  border-radius: 8px;
+  border: 2px solid var(--primary-blue);
+  background-color: var(--secondary-dark-2);
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 400;
+}
