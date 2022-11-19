@@ -1,0 +1,97 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
+import '../components/index.css';
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StarCraft 2 Tournament Games</title>
+  </head>
+  <style>
+    .AppLayout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      align-content: center;
+      width: 60%;
+      max-width: 800px;
+      min-width: 620px;
+    }
+
+    @media(max-width: 1300px) {
+      .AppLayout {
+        width: 80%;
+      }
+    }
+
+    @media(max-width: 650px) {
+      .AppLayout {
+        width: 90%;
+        min-width: 0;
+      }
+    }
+
+    .AppLayout__header {
+      background-color: var(--primary-dark-2);
+      margin: 10px 0;
+      /* border-radius: 10px;
+      border: 3px solid var(--primary-blue);
+      padding: 6px 12px; */
+      font-weight: 700;
+      font-size: 24px;
+    }
+
+    .AppLayout__nav {
+      display: flex;
+      justify-content: space-around;
+      width: max-content;
+      margin-bottom: 15px;
+    }
+
+    .AppLayout__link {
+      border: 2px solid var(--primary-blue);
+      background-color: var(--secondary-dark-2);
+      border-radius: 8px;
+      padding: 8px 16px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      margin-right: 20px;
+    }
+    
+    .AppLayout__link:last-child {
+      margin: 0;
+    }
+
+    .AppLayout__container {
+      width: 100%;
+    }
+
+    @media(max-width: 575px) {
+      .AppLayout__link {
+        font-size: 14px;
+        padding: 6px 12px;
+      }
+    }
+  </style>
+  <body>
+    <div class="AppLayout">
+      <header class="AppLayout__header">
+        StarCraft 2 Games
+      </header>
+      <nav class="AppLayout__nav">
+        <a class="AppLayout__link" href="/">Search</a>
+        <a class="AppLayout__link" href="/builds">Builds</a>
+        <a class="AppLayout__link" href="/trees">Trees</a>
+      </nav>
+      <div class="AppLayout__container">
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>

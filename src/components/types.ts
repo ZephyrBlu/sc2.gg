@@ -17,3 +17,9 @@ export type Replay = {
   summary_stats?: any,
   metadata: string,
 }
+
+export type Build = any;
+export type MatchupBuildCluster = any;
+export type MatchupBuildTree = any;
+export type RaceBuildCluster = any;
+export type RaceBuildTree = any;

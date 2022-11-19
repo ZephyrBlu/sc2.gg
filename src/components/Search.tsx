@@ -1,10 +1,10 @@
 import {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
-import {matchupRaceMapping, mirrorMatchups} from './constants';
+import {matchupRaceMapping} from './constants';
 import {useSearch} from './hooks';
-import {Replay} from "./types";
+import type {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
-import './App.css';
+import './Search.css';
 import {compare} from './utils';
 
 const INDEXES = [
@@ -13,7 +13,7 @@ const INDEXES = [
   'map',
 ];
 
-export function App() {
+export function Search() {
   const [searchInput, setSearchInput] = useState<string>('');
   const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
     matchup: null,
@@ -36,9 +36,9 @@ export function App() {
   useEffect(() => {
     const preloadMatchups = async () => {
       await Promise.all([
-        searchIndex('Protoss', 'race'),
-        searchIndex('Zerg', 'race'),
-        searchIndex('Terran', 'race'),
+        searchIndex('Protoss', 'race', {preload: true}),
+        searchIndex('Zerg', 'race', {preload: true}),
+        searchIndex('Terran', 'race', {preload: true}),
       ]);
     };
 
@@ -47,15 +47,15 @@ export function App() {
 
   useEffect(() => {
     const search = async () => {
-      setSearchResults(prevState => ({
-        ...prevState,
+      setSearchResults({
+        replays: [],
         loading: true,
         query: {
           player: quickSelectOptions.player,
           matchup: quickSelectOptions.matchup,
           input: searchInput,
         },
-      }));
+      });
 
       let replays: Replay[][] = [];
       let searchStartTime = Date.now();
@@ -85,20 +85,26 @@ export function App() {
         }));
 
         inputResults = inputResults.filter(r => r.length > 0);
-        const inputIntersectionResults = inputResults.reduce((current, next) => {
-          return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
-        }, inputResults[0]);
-        replays.push(inputIntersectionResults);
+        if (inputResults.length > 0) {
+          const inputIntersectionResults = inputResults.reduce((current, next) => {
+            return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
+          }, inputResults[0]);
+          replays.push(inputIntersectionResults);
+        }
       }
 
       // if search results are fresher than existing results, update them
       if (searchStartTime > searchStartedAt.current) {
         if (replays.length === 0) {
-          setSearchResults(prevState => ({
-            ...prevState,
-            loading: false,
+          setSearchResults({
             replays: [],
-          }));
+            loading: false,
+            query: {
+              player: quickSelectOptions.player,
+              matchup: quickSelectOptions.matchup,
+              input: searchInput,
+            },
+          });
           searchStartedAt.current = searchStartTime;
           return;
         }
@@ -129,11 +135,15 @@ export function App() {
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
-        setSearchResults(prevState => ({
-          ...prevState,
-          loading: false,
+        setSearchResults({
           replays: orderedResults,
-        }));
+          loading: false,
+          query: {
+            player: quickSelectOptions.player,
+            matchup: quickSelectOptions.matchup,
+            input: searchInput,
+          },
+        });
         searchStartedAt.current = searchStartTime;
       }
     };
@@ -197,28 +207,25 @@ export function App() {
   };
 
   return (
-    <div className="App">
-      <header className="App__header">
-        StarCraft 2 Tournament Games
-      </header>
-      <div className="App__search">
+    <div className="Search">
+      <div className="Search__search">
         <input
           type="search"
-          className="App__search-input"
+          className="Search__search-input"
           autoFocus
           value={searchInput}
           placeholder="Search 7000+ replays for any player, race, map or tournament"
-          onChange={(e) => setSearchInput(e.target.value)}
+          onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
         />
-        <div className="App__quick-search">
-          <div className="App__matchup-quick-select">
+        <div className="Search__quick-search">
+          <div className="Search__matchup-quick-select">
             {Object.keys(matchupRaceMapping).map((option) => (
               <button
                 key={option}
                 className={`
-                  App__quick-option
+                  Search__quick-option
                   ${option === quickSelectOptions.matchup ?
-                    'App__quick-option--selected' : ''}
+                    'Search__quick-option--selected' : ''}
                 `}
                 onClick={() => {
                   let newOption: string | null = option;
@@ -235,14 +242,14 @@ export function App() {
               </button>
             ))}
           </div>
-          <div className="App__player-quick-select">
+          <div className="Search__player-quick-select">
             {['Serral', 'ByuN', 'ShoWTimE', 'Maru'].map((option) => (
               <button
                 key={option}
                 className={`
-                  App__quick-option
+                  Search__quick-option
                   ${option === quickSelectOptions.player ?
-                    'App__quick-option--selected' : ''}
+                    'Search__quick-option--selected' : ''}
                 `}
                 onClick={() => {
                   let newOption: string | null = option;
@@ -260,34 +267,35 @@ export function App() {
             ))}
           </div>
         </div>
-        <div className="App__search-header">
-            <span className="App__search-results">
+        <div className="Search__search-header">
+            <span className="Search__search-results">
               {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) && buildResultsText()}
             </span>
-          <span className="App__search-filters">
+          <span className="Search__search-filters">
             <input
-              className="App__filter-checkbox"
+              id="search-filter"
+              className="Search__filter-checkbox"
               type="checkbox"
               name="search-filter"
               checked={showBuildsAndResults}
               onChange={() => setShowBuildsAndResults(prevState => !prevState)}
             />
-            <label className="App__filter-label" htmlFor="search-filter">
+            <label className="Search__filter-label" htmlFor="search-filter">
               Show builds and results
             </label>
           </span>
         </div>
       </div>
-      <div className="App__replay-list">
+      <div className="Search__replay-list">
         {searchResults.replays.length > 0 &&
           searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
         {searchResults.replays.length === 0 && !(searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
-          ? <span className="App__default">
+          ? <span className="Search__default">
               Select a matchup/player, or start typing
             </span>
           : searchResults.loading
             ? <LoadingAnimation />
-            : <span className="App__default">
+            : <span className="Search__default">
               No replays found for: {buildResultsText()?.slice(21)}
             </span>}
       </div>

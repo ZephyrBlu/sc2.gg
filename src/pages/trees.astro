@@ -1,0 +1,28 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import {Trees} from '../components/Trees';
+
+const raceBuildTrees = async (race: string) => {
+  let url = `https://patient-wood-5201.fly.dev/trees/${race.toLowerCase()}`;
+
+  const response = await fetch(url).then(res => res.json());
+  return response.results;
+};
+
+const RACES = ['Protoss', 'Terran', 'Zerg'];
+const raceTrees = await Promise.all(RACES.map(async (race) => {
+  const results = await raceBuildTrees(race);
+  return {[race]: results};
+}));
+
+let mappedTrees = {};
+raceTrees.forEach((tree) => {
+  mappedTrees = {
+    ...mappedTrees,
+    ...tree,
+  };
+});
+---
+<AppLayout>
+  <Trees trees={mappedTrees} />
+</AppLayout>

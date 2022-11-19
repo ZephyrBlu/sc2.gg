@@ -310,12 +310,12 @@
   }
 
   .ReplayRecord__tournament-info {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
   }
 
   .ReplayRecord__played-at {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
   }
 
@@ -365,7 +365,7 @@
   }
 
   .ReplayRecord__player-name {
-    font-size: 11px;
+    font-size: 12px;
     width: 70px;
   }
 
@@ -376,7 +376,7 @@
   }
 
   .ReplayRecord__player-result {
-    font-size: 11px;
+    font-size: 12px;
     border-radius: 5px;
     padding: 3px 6px;
     width: 24px;
@@ -392,7 +392,7 @@
   }
 
   .ReplayRecord__hidden {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
     font-style: italic;
   }
@@ -410,7 +410,7 @@
     column-gap: 5px;
     align-items: center;
     font-weight: 400;
-    font-size: 11px;
+    font-size: 12px;
   }
   
   .ReplayRecord__tag {
@@ -426,7 +426,7 @@
   
   .ReplayRecord__download {
     font-family: inherit;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
     background-color: var(--primary-light-1);
     border: none;
