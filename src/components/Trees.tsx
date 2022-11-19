@@ -51,7 +51,7 @@ export function Trees({ trees }) {
   return (
     <div className="Builds">
       <Infobox>
-        This page is unfinished! The tree UI is very rough. Branches will be collapsed for readibility in future.
+        This page is not finished! The tree UI is very rough. Branches will be collapsed for readibility in future.
       </Infobox>
       {Object.entries(trees).map(([race, opponents]) => (
         <>
