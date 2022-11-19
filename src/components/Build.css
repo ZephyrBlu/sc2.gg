@@ -2,7 +2,6 @@
 }
 
 .Build__build {
-  width: 100%;
   padding: 5px;
   border: 2px solid var(--primary-light-3);
   border-radius: 8px;
