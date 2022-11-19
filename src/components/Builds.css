@@ -64,10 +64,6 @@
   margin-bottom: 20px;
 }
 
-.Build__cluster {
-  margin: 10px 0;
-}
-
 .Builds__cluster-toggle {
   font-size: 16px;
   margin-bottom: 5px;
@@ -75,4 +71,11 @@
 
 .Builds__cluster-toggle:hover {
   cursor: pointer;
+}
+
+@media(max-width: 575px) {
+  .Builds__clusters-info {
+    font-size: 12px;
+    margin-right: 5px;
+  }
 }

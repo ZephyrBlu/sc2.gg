@@ -11,6 +11,10 @@
   overflow-x: scroll;
 }
 
+.Build ::-webkit-scrollbar-thumb {
+  border: 5px solid var(--secondary-dark-1);
+}
+
 .Build__build--cluster {
   margin-left: 30px;
   width: calc(100% - 30px);

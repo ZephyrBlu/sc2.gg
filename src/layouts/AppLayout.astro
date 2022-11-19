@@ -52,10 +52,18 @@ import '../components/index.css';
       text-decoration: none;
       font-size: 16px;
       font-weight: 500;
+      margin-right: 20px;
     }
 
     .AppLayout__container {
       width: 100%;
+    }
+
+    @media(max-width: 575px) {
+      .AppLayout__link {
+        font-size: 14px;
+        padding: 6px 12px;
+      }
     }
   </style>
   <body>

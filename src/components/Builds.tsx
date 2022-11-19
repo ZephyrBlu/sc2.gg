@@ -90,7 +90,7 @@ export function Builds({ clusters }) {
                     {((opponentCluster.wins / opponentCluster.total) * 100).toFixed(1)}% win rate
                   </div>
                   <div className="Builds__clusters-info">
-                    Top 10 builds include {calculateClusterPercentage(opponentCluster)}% of games
+                    Top 10 includes {calculateClusterPercentage(opponentCluster)}% of games
                   </div>
                   <details>
                     <summary className="Builds__cluster-toggle">
