@@ -47,25 +47,14 @@ export function Search() {
 
   useEffect(() => {
     const search = async () => {
-      setSearchResults(prevState => {
-        const newState = {
-          ...prevState,
-          replays: [],
-          loading: true,
-        };
-
-        if (prevState.loading) {
-          return newState;
-        }
-
-        return {
-          ...newState,
-          query: {
-            player: quickSelectOptions.player,
-            matchup: quickSelectOptions.matchup,
-            input: searchInput,
-          },
-        };
+      setSearchResults({
+        replays: [],
+        loading: true,
+        query: {
+          player: quickSelectOptions.player,
+          matchup: quickSelectOptions.matchup,
+          input: searchInput,
+        },
       });
 
       let replays: Replay[][] = [];
@@ -146,11 +135,15 @@ export function Search() {
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
-        setSearchResults(prevState => ({
-          ...prevState,
-          loading: false,
+        setSearchResults({
           replays: orderedResults,
-        }));
+          loading: false,
+          query: {
+            player: quickSelectOptions.player,
+            matchup: quickSelectOptions.matchup,
+            input: searchInput,
+          },
+        });
         searchStartedAt.current = searchStartTime;
       }
     };
