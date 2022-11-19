@@ -8,7 +8,7 @@
   border-radius: 8px;
   background-color: var(--secondary-dark-1);
   margin-bottom: 5px;
-  overflow-x: hidden;
+  overflow-x: scroll;
 }
 
 .Build__build--cluster {
