@@ -25,7 +25,7 @@ export function Tree({ race, tree }){
   return (
     <div className="Tree">
       {rendered.map(({ offset, build }) => (
-        <div className="Tree__branch" style={{marginLeft: (50 * offset) - 20}}>
+        <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
           {/* {offset !== 0 &&
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -1,5 +1,6 @@
 import {Tree} from './Tree';
 import './Builds.css';
+import { Infobox } from './Infobox';
 
 export function Trees({ trees }) {
   // const {raceBuildClusters, raceBuildTrees} = useBuilds();
@@ -49,40 +50,54 @@ export function Trees({ trees }) {
 
   return (
     <div className="Builds">
+      <Infobox>
+        This page is unfinished!
+      </Infobox>
       {Object.entries(trees).map(([race, opponents]) => (
-        <div className="Builds__race-builds">
-          <div className="Builds__race-header">
-            <h1 className="Builds__race">
-              {race}
-            </h1>
-            <img
-              src={`/icons/${race.toLowerCase()}-logo.svg`}
-              className={`
-                Builds__race-icon
-                ${race.toLowerCase() === 'protoss' ? 'Builds__race-icon--protoss' : ''}
-              `}
-              alt={race}
-            />
-          </div>
-          {Object.entries(opponents).map(([opponentRace, opponentTree]) => (
-            <div className="Builds__opponent-race-builds">
-              <div className="Builds__race-header">
-                <h2 className="Builds__race">
-                  vs {opponentRace}
-                </h2>
-                <img
-                  src={`/icons/${opponentRace.toLowerCase()}-logo.svg`}
-                  className={`
-                    Builds__race-icon-opponent
-                    ${opponentRace.toLowerCase() === 'protoss' ? 'Builds__race-icon-opponent--protoss' : ''}
-                  `}
-                  alt={opponentRace}
-                />
-              </div>
-              <Tree race={race} oppRace={opponentRace} tree={opponentTree} />
+        <>
+          <div className="Builds__race-builds">
+            <div className="Builds__race-header">
+              <h1 className="Builds__race">
+                {race}
+              </h1>
+              <img
+                src={`/icons/${race.toLowerCase()}-logo.svg`}
+                className={`
+                  Builds__race-icon
+                  ${race.toLowerCase() === 'protoss' ? 'Builds__race-icon--protoss' : ''}
+                `}
+                alt={race}
+              />
             </div>
-          ))}
-        </div>
+            {Object.entries(opponents).map(([opponentRace, opponentTree]) => (
+              <>
+                <div className="Builds__opponent-race-builds">
+                  <div className="Builds__race-header">
+                    <h2 className="Builds__race">
+                      vs {opponentRace}
+                    </h2>
+                    <img
+                      src={`/icons/${opponentRace.toLowerCase()}-logo.svg`}
+                      className={`
+                        Builds__race-icon-opponent
+                        ${opponentRace.toLowerCase() === 'protoss' ? 'Builds__race-icon-opponent--protoss' : ''}
+                      `}
+                      alt={opponentRace}
+                    />
+                  </div>
+                  <details>
+                    <summary>
+                      Show build tree
+                    </summary>
+                    <Tree race={race} tree={opponentTree} />
+                  </details>
+                </div>
+                <hr className="Builds__cluster-divider" />                  
+              </>
+            ))}
+          </div>
+          <hr className="Builds__race-divider" />
+        </>
       ))}
     </div>
   );

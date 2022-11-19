@@ -1,5 +1,5 @@
 .Tree {
-
+  overflow-x: auto;
 }
 
 .Tree__branch {
@@ -8,6 +8,7 @@
 
 .Tree__building {
   display: flex;
+  align-items: center;
 }
 
 .Tree__building-icon {
