@@ -3,7 +3,7 @@ import AppLayout from '../layouts/AppLayout.astro';
 import {Trees} from '../components/Trees';
 
 const raceBuildTrees = async (race: string) => {
-  let url = `https://patient-wood-5201.fly.dev/trees/${race.toLowerCase()}`;
+  let url = `http://0.0.0.0:8080/trees/${race.toLowerCase()}`;
 
   const response = await fetch(url).then(res => res.json());
   return response.results;
@@ -24,5 +24,5 @@ raceTrees.forEach((tree) => {
 });
 ---
 <AppLayout>
-  <Trees trees={mappedTrees} />
+  <Trees trees={mappedTrees} client:only="preact" />
 </AppLayout>
