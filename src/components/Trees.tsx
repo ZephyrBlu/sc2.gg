@@ -89,7 +89,7 @@ export function Trees({ trees }) {
                     <summary>
                       Show build tree
                     </summary>
-                    <Tree race={race} tree={opponentTree} />
+                    <Tree race={race} oppRace={opponentRace} tree={opponentTree} />
                   </details>
                 </div>
                 <hr className="Builds__cluster-divider" />                  
