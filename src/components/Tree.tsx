@@ -32,9 +32,11 @@ export function Tree({ race, oppRace, tree }) {
     node.children.slice(0).forEach(child => renderNodesDfs(child, [...stack], offset));
   };
 
-  const renderedBfs: {[key: string]: any[]} = {};
+  // const renderedBfs: {[key: string]: any[]} = {};
   let flattenedNodes = [];
-  const MAX_BRANCHES = 5;
+  const renderedBfs: any[] = [];
+
+  const MAX_BRANCHES = 10;
   const MIN_TOTAL = 25;
   const renderNodesBfs = (node, mode = 'tree') => {
     let queue = [{node, prefix: ''}];
@@ -63,11 +65,11 @@ export function Tree({ race, oppRace, tree }) {
       stack.push(...node_buildings);
 
       if (mode === 'tree') {
-        renderedBfs[prefix].push({offset: prefix.split(',').length + offset, build: node_buildings});
+        renderedBfs[renderedBfs.length -1].push({offset: prefix.split(',').length + offset, build: node_buildings});
       }
 
       if (mode === 'flat' && node.children.length === 0) {
-        renderedBfs[prefix].push({offset: prefix.split(',').length, build: stack});
+        renderedBfs[renderedBfs.length - 1].push({offset: prefix.split(',').length, build: stack});
         return;
       }
 
@@ -83,23 +85,18 @@ export function Tree({ race, oppRace, tree }) {
     }
 
     queue.forEach(({node, prefix}) => {
-      renderedBfs[prefix.slice(1)] = [];
+      renderedBfs.push([{offset: 0, build: prefix.slice(1).split(',')}])
       dfs(node, prefix.slice(1), [], 0, mode);
-    });
-
-    flattenedNodes = Object.entries(renderedBfs).map(([prefix, nodes]) => {
-      const initialNode = {offset: 0, build: prefix.split(',')};
-      return [initialNode, ...nodes];
     });
   };
 
   // tree.root.children.forEach(child => renderNodesDfs(child));
   tree.root.children.forEach(child => renderNodesBfs(child, 'flat'));
 
-  console.log('bfs rendered', flattenedNodes);
+  console.log('bfs rendered', renderedBfs);
 
   return (
-    flattenedNodes.map((tree) => (
+    renderedBfs.map((tree) => (
       <div className="Tree">
         {tree.map(({ offset, build }) => (
           <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
