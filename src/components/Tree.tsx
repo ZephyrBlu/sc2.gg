@@ -32,8 +32,6 @@ export function Tree({ race, oppRace, tree }) {
     node.children.slice(0).forEach(child => renderNodesDfs(child, [...stack], offset));
   };
 
-  // const renderedBfs: {[key: string]: any[]} = {};
-  let flattenedNodes = [];
   const renderedBfs: any[] = [];
 
   const MAX_BRANCHES = 10;
@@ -73,9 +71,20 @@ export function Tree({ race, oppRace, tree }) {
         return;
       }
 
-      node.children.forEach(child => {
-        const newStack = mode === 'flat' ? [...stack] : [];
-        const newOffset = mode === 'flat' ? 0 : stack.length + offset;
+      node.children.forEach((child) => {
+        let newStack;
+        let newOffset;
+
+        if (mode === 'tree') {
+          newStack = [];
+          newOffset = stack.length + offset;
+        }
+
+        if (mode === 'flat') {
+          newStack = [...stack];
+          newOffset = 0;
+        }
+
         dfs(child, prefix, newStack, newOffset, mode);
       });
     };
@@ -85,13 +94,14 @@ export function Tree({ race, oppRace, tree }) {
     }
 
     queue.forEach(({node, prefix}) => {
-      renderedBfs.push([{offset: 0, build: prefix.slice(1).split(',')}])
+      const build = prefix.slice(1).split(',');
+      renderedBfs.push([{offset: 0, build}]);
       dfs(node, prefix.slice(1), [], 0, mode);
     });
   };
 
   // tree.root.children.forEach(child => renderNodesDfs(child));
-  tree.root.children.forEach(child => renderNodesBfs(child, 'flat'));
+  tree.root.children.forEach(child => renderNodesBfs(child, 'tree'));
 
   console.log('bfs rendered', renderedBfs);
 
