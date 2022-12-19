@@ -2,6 +2,7 @@ import {useRef} from 'react';
 import './Tree.css';
 
 export function Tree({ race, oppRace, tree }) {
+  const queues = useRef([]);
   console.log('race/tree', race, oppRace, tree);
 
   const renderedDfs = [];
@@ -93,6 +94,7 @@ export function Tree({ race, oppRace, tree }) {
       return [];
     }
 
+    queues.current = [...queue];
     queue.forEach(({node, prefix}) => {
       const build = prefix.slice(1).split(',');
       renderedBfs.push([{offset: 0, build}]);
@@ -104,13 +106,20 @@ export function Tree({ race, oppRace, tree }) {
   tree.root.children.forEach(child => renderNodesBfs(child, 'tree'));
 
   console.log('bfs rendered', renderedBfs);
+  console.log('queue', queues.current);
 
-  return (
-    renderedBfs.map((tree) => (
-      <div className="Tree">
-        {tree.map(({ offset, build }) => (
-          <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
-            {/* {offset !== 0 &&
+  const flat = renderedBfs.map((tree) => (
+    <div className="Tree">
+      {tree.map(({ offset, build }) => (
+        <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
+          {build.map((building) => (
+            <div className="Tree__building">
+              <img
+                alt={building}
+                title={building}
+                className="Tree__building-icon"
+                src={`/images/buildings/${race}/${building}.png`}
+              />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -119,31 +128,81 @@ export function Tree({ race, oppRace, tree }) {
                 stroke="currentColor"
                 className="Tree__arrow"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 4.5l15 15m0 0V8.25m0 11.25H8.25" />
-              </svg>} */}
-            {build.map((building) => (
-              <div className="Tree__building">
-                <img
-                  alt={building}
-                  title={building}
-                  className="Tree__building-icon"
-                  src={`/images/buildings/${race}/${building}.png`}
-                />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="Tree__arrow"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </div>
-            ))}
-          </div>
-        ))}
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  ));
+
+  const renderChildren = (node, offset = 0) => {
+    console.log('node', node);
+
+    return (
+      node.children.map((child) => (
+        <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
+          <details>
+              <summary className="Tree__branch-summary">
+                {child.label.split(',').map((building) => (
+                  <div className="Tree__building">
+                    <img
+                      alt={building}
+                      title={building}
+                      className="Tree__building-icon"
+                      src={`/images/buildings/${race}/${building}.png`}
+                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="Tree__arrow"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  
+                  </div>
+                ))}
+              </summary>
+              {renderChildren(child, 1)}
+            </details>
+        </div>
+      ))
+    );
+  };
+
+  return queues.current.map(queue => {
+    const prefix = queue.prefix.slice(1).split(',')
+
+    return (
+      <div className="Tree">
+        <div className="Tree__prefix">
+          {prefix.map(building => (
+            <div className="Tree__building">
+              <img
+                alt={building}
+                title={building}
+                className="Tree__building-icon"
+                src={`/images/buildings/${race}/${building}.png`}
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="Tree__arrow"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </div>
+          ))}
+        </div>
+        {renderChildren(queue.node, prefix.length)}
       </div>
-    ))
-  );
+    );
+  });
 }

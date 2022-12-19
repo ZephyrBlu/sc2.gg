@@ -3,7 +3,7 @@
   margin-bottom: 40px;
 }
 
-.Tree__branch {
+.Tree__branch, .Tree__prefix, .Tree__branch-summary {
   display: flex;
 }
 
