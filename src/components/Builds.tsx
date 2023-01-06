@@ -3,6 +3,7 @@ import {Infobox} from './Infobox';
 import './Builds.css';
 
 export function Builds({ clusters }) {
+  console.log('build clusters', clusters);
   // const {raceBuildClusters, raceBuildTrees} = useBuilds();
 
   // useEffect(() => {

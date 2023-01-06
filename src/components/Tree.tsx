@@ -17,10 +17,15 @@ export function Tree({ race, oppRace, tree }) {
 
     const node_buildings = node.label.split(',');
     stack.push(...node_buildings);
+    const probability = node.total / tree.root.total;
 
     if (node.children.length === 0) {
       if (stack.length + offset >= 5) {
-        renderedDfs.push({offset, build: stack});
+        renderedDfs.push({
+          offset,
+          build: stack,
+          probability,
+        });
       }
       return;
     }
@@ -36,21 +41,23 @@ export function Tree({ race, oppRace, tree }) {
   const renderedBfs: any[] = [];
 
   const MAX_BRANCHES = 10;
-  const MIN_TOTAL = 25;
-  const renderNodesBfs = (node, mode = 'tree') => {
-    let queue = [{node, prefix: ''}];
+  const MIN_TOTAL = 10;
+  const renderNodesBfs = (rootNode, mode = 'tree') => {
+    let queue = [{node: rootNode, prefix: '', probability: rootNode.total / tree.root.total}];
     let branches = 0;
-    while (queue.length > 0 && branches < MAX_BRANCHES) {
+    while (queue.length > 0 && branches <= MAX_BRANCHES) {
       const {node, prefix} = queue[0];
 
-      if (branches < MAX_BRANCHES) {
-        node.children.forEach(child => {
-          if (child.total > MIN_TOTAL) {
-            queue.push({node: child, prefix: `${prefix},${node.label}`});
-            branches += 1;
-          }
-        });
-      }
+      node.children.forEach(child => {
+        if (child.total > MIN_TOTAL) {
+          queue.push({
+            node: child,
+            prefix: `${prefix},${node.label}`,
+            probability: child.total / tree.root.total,
+          });
+          branches += 1;
+        }
+      });
 
       queue = queue.slice(1);
     }
@@ -62,13 +69,22 @@ export function Tree({ race, oppRace, tree }) {
 
       const node_buildings = node.label.split(',');
       stack.push(...node_buildings);
+      const probability = node.total / tree.root.total;
 
       if (mode === 'tree') {
-        renderedBfs[renderedBfs.length -1].push({offset: prefix.split(',').length + offset, build: node_buildings});
+        renderedBfs[renderedBfs.length - 1].push({
+          offset: prefix.split(',').length + offset,
+          build: node_buildings,
+          probability,
+        });
       }
 
       if (mode === 'flat' && node.children.length === 0) {
-        renderedBfs[renderedBfs.length - 1].push({offset: prefix.split(',').length, build: stack});
+        renderedBfs[renderedBfs.length - 1].push({
+          offset: prefix.split(',').length + 1,
+          build: stack.slice(1),
+          probability,
+        });
         return;
       }
 
@@ -95,20 +111,24 @@ export function Tree({ race, oppRace, tree }) {
     }
 
     queues.current = [...queue];
-    queue.forEach(({node, prefix}) => {
+    let queueTotalProbability = 0;
+    queue.forEach(({node, prefix, probability}) => {
+      queueTotalProbability += probability;
       const build = prefix.slice(1).split(',');
-      renderedBfs.push([{offset: 0, build}]);
+      if (mode === 'flat') {
+        build.push(...node.label.split(','));
+      }
+      renderedBfs.push([{offset: 0, build, probability}]);
       dfs(node, prefix.slice(1), [], 0, mode);
     });
+    // setBranchCoverage(queueTotalProbability);
   };
 
   // tree.root.children.forEach(child => renderNodesDfs(child));
-  tree.root.children.forEach(child => renderNodesBfs(child, 'tree'));
+  const renderType = 'tree';
+  tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
-  console.log('bfs rendered', renderedBfs);
-  console.log('queue', queues.current);
-
-  const flat = renderedBfs.map((tree) => (
+  const expanded = renderedBfs.map((tree) => (
     <div className="Tree">
       {tree.map(({ offset, build }) => (
         <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
@@ -138,49 +158,54 @@ export function Tree({ race, oppRace, tree }) {
   ));
 
   const renderChildren = (node, offset = 0) => {
-    console.log('node', node);
-
     return (
       node.children.map((child) => (
-        <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
-          <details>
-              <summary className="Tree__branch-summary">
-                {child.label.split(',').map((building) => (
-                  <div className="Tree__building">
-                    <img
-                      alt={building}
-                      title={building}
-                      className="Tree__building-icon"
-                      src={`/images/buildings/${race}/${building}.png`}
-                    />
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="Tree__arrow"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
-                  
-                  </div>
-                ))}
-              </summary>
-              {renderChildren(child, 1)}
-            </details>
+        <div className="Tree__branch" style={{marginLeft: 50 * (offset + 0.5)}}>
+          <div className="Tree__branch-parent">
+            {child.label.split(',').map((building, index) => (
+              <div className="Tree__building">
+                <img
+                  alt={building}
+                  title={building}
+                  className="Tree__building-icon"
+                  src={`/images/buildings/${race}/${building}.png`}
+                />
+                {child.label.split(',').length - 1 !== index &&
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="Tree__arrow"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>}
+              </div>
+            ))}
+            {Math.ceil((child.total / node.total) * 100)}%, {child.total}
+          </div>
+          {child.children.length > 0 &&
+            <details className="Tree__branch-children">
+              <summary className="Tree__branch-summary" />
+              {renderChildren(child)}
+            </details>}
         </div>
       ))
     );
   };
 
-  return queues.current.map(queue => {
-    const prefix = queue.prefix.slice(1).split(',')
+  console.log('queues', queues.current);
+
+  queues.current.sort((a, b) => b.probability - a.probability);
+  const nested = queues.current.map(rootNode => {
+    const prefix = rootNode.prefix.slice(1).split(',');
+    prefix.push(...rootNode.node.label.split(','));
 
     return (
       <div className="Tree">
         <div className="Tree__prefix">
-          {prefix.map(building => (
+          {prefix.map((building, index) => (
             <div className="Tree__building">
               <img
                 alt={building}
@@ -188,21 +213,25 @@ export function Tree({ race, oppRace, tree }) {
                 className="Tree__building-icon"
                 src={`/images/buildings/${race}/${building}.png`}
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="Tree__arrow"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
+              {prefix.length - 1 !== index &&
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="Tree__arrow"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>}
             </div>
           ))}
+          {Math.ceil(rootNode.probability * 100)}%, {rootNode.node.total}
         </div>
-        {renderChildren(queue.node, prefix.length)}
+        {/* {renderChildren(rootNode.node, prefix.length)} */}
       </div>
     );
   });
+
+  return renderType === 'flat' ? expanded : nested;
 }

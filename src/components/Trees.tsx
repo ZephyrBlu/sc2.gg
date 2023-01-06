@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {Tree} from './Tree';
 import './Builds.css';
 import { Infobox } from './Infobox';
@@ -48,6 +49,8 @@ export function Trees({ trees }) {
   //   load();
   // }, []);
 
+  const [branchCoverage, setBranchCoverage] = useState({});
+
   return (
     <div className="Builds">
       <Infobox>
@@ -69,7 +72,7 @@ export function Trees({ trees }) {
                 alt={race}
               />
             </div>
-            {Object.entries(opponents).map(([opponentRace, opponentTree]) => (
+            {Object.entries(opponents).map(([opponentRace, opponentTree], index) => (
               <>
                 <div className="Builds__opponent-race-builds">
                   <div className="Builds__race-header">
@@ -89,7 +92,19 @@ export function Trees({ trees }) {
                     <summary>
                       Show build tree
                     </summary>
-                    <Tree race={race} oppRace={opponentRace} tree={opponentTree} />
+                    {branchCoverage[index] && 
+                      <span>
+                        Branch Coverage: {Math.ceil(branchCoverage[index] * 100)}%
+                      </span>}
+                    <Tree
+                      race={race}
+                      oppRace={opponentRace}
+                      tree={opponentTree}
+                      setBranchCoverage={(probability) => setBranchCoverage(prevState => ({
+                        ...prevState,
+                        [index]: probability,
+                      }))}
+                    />
                   </details>
                 </div>
                 <hr className="Builds__cluster-divider" />                  
