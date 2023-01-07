@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect, useLayoutEffect} from 'react';
+import {useState, useRef, useEffect, useLayoutEffect, MutableRefObject} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import {matchupRaceMapping} from './constants';
 import {useSearch} from './hooks';
@@ -14,7 +14,8 @@ const INDEXES = [
 ];
 
 export function Search() {
-  const [searchInput, setSearchInput] = useState<string>('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
   const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
     matchup: null,
     player: null,
@@ -31,22 +32,10 @@ export function Search() {
     query: null,
     replays: [],
   });
-  const {searchIndex} = useSearch();
+  const {search} = useSearch();
 
   useEffect(() => {
-    const preloadMatchups = async () => {
-      await Promise.all([
-        searchIndex('Protoss', 'race', {preload: true}),
-        searchIndex('Zerg', 'race', {preload: true}),
-        searchIndex('Terran', 'race', {preload: true}),
-      ]);
-    };
-
-    preloadMatchups();
-  }, []);
-
-  useEffect(() => {
-    const search = async () => {
+    const startSearch = async () => {
       setSearchResults({
         replays: [],
         loading: true,
@@ -60,28 +49,33 @@ export function Search() {
       let replays: Replay[][] = [];
       let searchStartTime = Date.now();
 
-      if (quickSelectOptions.player) {
-        const results = await searchIndex(quickSelectOptions.player, 'player');
-        replays.push(results);
-      }
+      // if (quickSelectOptions.player) {
+      //   const results = await search(quickSelectOptions.player, 'player');
+      //   replays.push(results);
+      // }
 
-      if (quickSelectOptions.matchup) {
-        const matchup = matchupRaceMapping[quickSelectOptions.matchup];
-        const isMirror = matchup.length === 1;
-        await Promise.all(matchup.map(async (race) => {
-          const results = await searchIndex(race, 'race', {mirror: isMirror});
-          replays.push(results);
-        }));
-      }
+      // if (quickSelectOptions.matchup) {
+      //   const matchup = matchupRaceMapping[quickSelectOptions.matchup];
+      //   const isMirror = matchup.length === 1;
+      //   await Promise.all(matchup.map(async (race) => {
+      //     const results = await searchIndex(race, 'race', {mirror: isMirror});
+      //     replays.push(results);
+      //   }));
+      // }
 
       if (searchInput) {
         const terms = searchInput.split(' ');
         let inputResults: Replay[][] = [];
 
+        // await Promise.all(terms.map(async (term) => {
+        //   const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
+        //   const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
+        //   inputResults.push(results.flat());
+        // }));
+
         await Promise.all(terms.map(async (term) => {
-          const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
-          const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
-          inputResults.push(results.flat());
+          const results = await search(term);
+          inputResults.push(results)
         }));
 
         inputResults = inputResults.filter(r => r.length > 0);
@@ -148,7 +142,7 @@ export function Search() {
       }
     };
 
-    search();
+    startSearch();
   }, [searchInput, quickSelectOptions, setSearchResults]);
 
   const calculateBuildSize = () => {
@@ -174,7 +168,17 @@ export function Search() {
     calculateBuildSize();
   }, []);
 
-  const playedAtSort = (a: Replay, b: Replay) => b.played_at - a.played_at;
+  const playedAtSort = (a: Replay, b: Replay) => {
+    if (a.played_at < b.played_at) {
+      return 1;
+    }
+
+    if (a.played_at > b.played_at) {
+      return -1;
+    }
+
+     return 0;
+  };
   const mapToReplayComponent = (replay: Replay) => (
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
@@ -214,6 +218,7 @@ export function Search() {
           className="Search__search-input"
           autoFocus
           value={searchInput}
+          ref={searchRef}
           placeholder="Search 7000+ replays for any player, race, map or tournament"
           onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
         />

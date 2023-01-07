@@ -35,7 +35,7 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
             {replay.metadata}
           </span> */}
           <span className="ReplayRecord__played-at">
-            {(new Date(replay.played_at * 1000)).toISOString().split('T')[0]}
+            {replay.played_at}
           </span>
         </div>
         <div className="ReplayRecord__players">
@@ -48,7 +48,7 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
                 className={`
                   ReplayRecord__player-info
                   ReplayRecord__player-info--${
-                    replay.winner === player.id && showBuildsAndResults ?
+                    replay.winner_id === player.id && showBuildsAndResults ?
                       'win' : 'loss'
                   }
                 `}

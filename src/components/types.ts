@@ -10,7 +10,7 @@ export type Replay = {
   players: Player[],
   builds: string[][],
   build_mappings: number[],
-  winner: number,
+  winner_id: number,
   game_length: number,
   map: string,
   played_at: number,
