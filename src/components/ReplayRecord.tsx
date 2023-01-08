@@ -1,26 +1,17 @@
 import {Fragment, useMemo} from 'react';
-// import {ReplayDetails} from './ReplayDetails';
-import {Replay} from './types';
+import type {Replay} from './types';
 import './ReplayRecord.css';
 
 interface Props {
   replay: Replay;
   buildSize: number;
-  showBuildsAndResults: boolean;
 }
 
-export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props) {
+export function ReplayRecord({ replay, buildSize }: Props) {
   // const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
 
   return (
-    <div
-      className="ReplayRecord"
-      // className={`
-      //   ReplayRecord
-      //   ${showReplayDetails ? 'ReplayRecord--selected' : ''}
-      // `}
-      // onClick={() => setShowReplayDetails(prevState => !prevState)}
-    >
+    <div className="ReplayRecord">
       <div className="ReplayRecord__preview">
         <div className="ReplayRecord__match-info">
           <span>
@@ -48,7 +39,7 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
                 className={`
                   ReplayRecord__player-info
                   ReplayRecord__player-info--${
-                    replay.winner_id === player.id && showBuildsAndResults ?
+                    replay.winner_id === player.id ?
                       'win' : 'loss'
                   }
                 `}
@@ -61,46 +52,41 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
                 <span className="ReplayRecord__player-name">
                   {player.name}
                 </span>
-                {showBuildsAndResults &&
-                  <span
-                    className={`
-                      ReplayRecord__player-result
-                      ReplayRecord__player-result--${replay.winner === player.id ? 'win' : 'loss'}
-                    `}
-                  >
-                    {replay.winner === player.id ? 'Won' : ''}
-                  </span>}
+                <span
+                  className={`
+                    ReplayRecord__player-result
+                    ReplayRecord__player-result--${replay.winner_id === player.id ? 'win' : 'loss'}
+                  `}
+                >
+                  {replay.winner_id === player.id ? 'Won' : ''}
+                </span>
               </div>
               <div className="ReplayRecord__player-build">
-                {showBuildsAndResults ? replay.builds[index]
-                    .slice(0, buildSize)
-                    .map((building, buildingIndex) => (
-                      <Fragment key={`${replay.id}-${building}-${buildingIndex}`}>
-                        <img
-                          alt={building}
-                          title={building}
-                          className="ReplayRecord__building-icon"
-                          src={`/images/buildings/${replay.players[index].race}/${building}.png`}
-                        />
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="ReplayRecord__arrow-right">
-                          <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                        </svg>
-                      </Fragment>
-                    )) : (
-                    <span className="ReplayRecord__hidden">
-                      Build and result is hidden
-                    </span>
-                  )}
+                {replay.builds[index]
+                  .slice(0, buildSize)
+                  .map(building => (
+                    <>
+                      <img
+                        alt={building}
+                        title={building}
+                        className="ReplayRecord__building-icon"
+                        src={`/images/buildings/${replay.players[index].race}/${building}.png`}
+                      />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="ReplayRecord__arrow-right">
+                        <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                      </svg>
+                    </>
+                  ))}
               </div>
             </div>
           ))}
         </div>
       </div>
-      <div className="ReplayRecord__footer">
+      {/* <div className="ReplayRecord__footer">
         <span className="ReplayRecord__tags">
             {replay.metadata ?
               replay.metadata.split(",").map((tag) => (
@@ -119,21 +105,7 @@ export function ReplayRecord({ replay, buildSize, showBuildsAndResults }: Props)
         >
           Download
         </a>
-      </div>
-      {/* <div className="ReplayRecord__related-builds">
-          {[0, 1].map(index => (
-            <a
-              key={`build-${index}`}
-              href=""
-              className="ReplayRecord__build-recommendation"
-              onClick={() => null}
-            >
-              See more builds like this
-            </a>
-          ))}
-        </div> */}
-      {/* {showReplayDetails &&
-        <ReplayDetails replay={replay} />} */}
+      </div> */}
     </div>
   );
 }

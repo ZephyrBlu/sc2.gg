@@ -1,6 +1,5 @@
 import {useState, useRef, useEffect, useLayoutEffect, MutableRefObject} from 'react';
 import {ReplayRecord} from './ReplayRecord';
-import {matchupRaceMapping} from './constants';
 import {useSearch} from './hooks';
 import type {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
@@ -21,7 +20,6 @@ export function Search() {
     player: null,
   });
   const [buildSize, setBuildSize] = useState<number>(10);
-  const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
   const searchStartedAt = useRef(0);
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
@@ -32,7 +30,7 @@ export function Search() {
     query: null,
     replays: [],
   });
-  const {search} = useSearch();
+  const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useEffect(() => {
     const startSearch = async () => {
@@ -49,34 +47,22 @@ export function Search() {
       let replays: Replay[][] = [];
       let searchStartTime = Date.now();
 
-      // if (quickSelectOptions.player) {
-      //   const results = await search(quickSelectOptions.player, 'player');
-      //   replays.push(results);
-      // }
-
-      // if (quickSelectOptions.matchup) {
-      //   const matchup = matchupRaceMapping[quickSelectOptions.matchup];
-      //   const isMirror = matchup.length === 1;
-      //   await Promise.all(matchup.map(async (race) => {
-      //     const results = await searchIndex(race, 'race', {mirror: isMirror});
-      //     replays.push(results);
-      //   }));
-      // }
-
       if (searchInput) {
         const terms = searchInput.split(' ');
         let inputResults: Replay[][] = [];
 
-        // await Promise.all(terms.map(async (term) => {
-        //   const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
-        //   const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
-        //   inputResults.push(results.flat());
-        // }));
-
         await Promise.all(terms.map(async (term) => {
-          const results = await search(term);
-          inputResults.push(results)
+          const results = await searchGames(term);
+          inputResults.push(results);
         }));
+
+        let playerSuggestions = [];
+        await Promise.all(terms.map(async (term) => {
+          const results = await searchPlayers(term);
+          playerSuggestions.push(results);
+        }));
+
+        console.log('player suggest', playerSuggestions);
 
         inputResults = inputResults.filter(r => r.length > 0);
         if (inputResults.length > 0) {
@@ -184,7 +170,6 @@ export function Search() {
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
       replay={replay}
       buildSize={buildSize}
-      showBuildsAndResults={showBuildsAndResults}
     />
   );
 
@@ -222,7 +207,7 @@ export function Search() {
           placeholder="Search 7000+ replays for any player, race, map or tournament"
           onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
         />
-        <div className="Search__quick-search">
+        {/* <div className="Search__quick-search">
           <div className="Search__matchup-quick-select">
             {Object.keys(matchupRaceMapping).map((option) => (
               <button
@@ -271,23 +256,10 @@ export function Search() {
               </button>
             ))}
           </div>
-        </div>
+        </div> */}
         <div className="Search__search-header">
-            <span className="Search__search-results">
-              {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) && buildResultsText()}
-            </span>
-          <span className="Search__search-filters">
-            <input
-              id="search-filter"
-              className="Search__filter-checkbox"
-              type="checkbox"
-              name="search-filter"
-              checked={showBuildsAndResults}
-              onChange={() => setShowBuildsAndResults(prevState => !prevState)}
-            />
-            <label className="Search__filter-label" htmlFor="search-filter">
-              Show builds and results
-            </label>
+          <span className="Search__search-results">
+            {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) && buildResultsText()}
           </span>
         </div>
       </div>

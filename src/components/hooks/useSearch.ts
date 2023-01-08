@@ -4,6 +4,7 @@ import type {Replay} from '../types';
 export function useSearch() {
   const [queryCache, setQueryCache] = useState<{[query: string]: Replay[]}>({});
   const requests = useRef<{[key: string]: number}>({});
+  const API_URL = 'https://search.sc2.gg';
 
   const debounce = async (url: string, key: string, delay: number): Promise<Replay[]> => (
     new Promise((resolve) => {
@@ -18,23 +19,43 @@ export function useSearch() {
     })
   );
 
-  const search = async (query: string): Promise<Replay[]> => {
-    const route = `https://search.sc2.gg`;
-    const params = `q=${query.toLowerCase()}`;
-    const url = `${route}?${params}`;
-
+  const search = async (url: string, endpoint: string): Promise<any> => {
     if (queryCache[url]) {
       return queryCache[url];
     }
 
-    if (requests.current[route]) {
-      clearTimeout(requests.current[route]);
+    if (requests.current[endpoint]) {
+      clearTimeout(requests.current[endpoint]);
     }
 
     const delay = 200;
-    const results = await debounce(url, route, delay);
+    const results = await debounce(url, endpoint, delay);
     return results;
   };
 
-  return {search};
+  const searchGames = async (query: string): Promise<Replay[]> => {
+    const endpoint = `${API_URL}/games`;
+    const params = `q=${query.toLowerCase()}`;
+    return await search(`${endpoint}?${params}`, endpoint);
+  };
+
+  const searchPlayers = async (query: string): Promise<any> => {
+    const endpoint = `${API_URL}/players`;
+    const params = `q=${query.toLowerCase()}`;
+    return await search(`${endpoint}?${params}`, endpoint);
+  };
+
+  const searchMaps = async (query: string): Promise<any> => {
+    const endpoint = `${API_URL}/maps`;
+    const params = `q=${query.toLowerCase()}`;
+    return await search(`${endpoint}?${params}`, endpoint);
+  };
+
+  const searchEvents = async (query: string): Promise<any> => {
+    const endpoint = `${API_URL}/events`;
+    const params = `q=${query.toLowerCase()}`;
+    return await search(`${endpoint}?${params}`, endpoint);
+  };
+
+  return {searchGames, searchPlayers, searchMaps, searchEvents};
 }

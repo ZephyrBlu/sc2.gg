@@ -93,22 +93,6 @@
   margin-top: 6px;
 }
 
-.Search__search-filters {
-  display: flex;
-  align-items: center;
-  column-gap: 5px;
-  justify-self: flex-end;
-  background-color: var(--secondary-dark-3);
-  color: var(--text);
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.Search__filter-checkbox {
-  margin: 0;
-}
-
 .Search__search-results {
   font-size: 16px;
 }
@@ -159,9 +143,5 @@
 
   .Search__default {
     font-size: 14px;
-  }
-
-  .Search__search-filters {
-    font-size: 12px;
   }
 }
