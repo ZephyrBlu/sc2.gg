@@ -294,13 +294,21 @@ export function Search() {
       <div className="Search__replay-list">
         {searchResults.replays.length > 0 &&
           searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
-        {searchResults.replays.length === 0 && !(searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
-          ? <span className="Search__default">
-              Select a matchup/player, or start typing
-            </span>
-          : searchResults.loading
-            ? <LoadingAnimation />
-            : <span className="Search__default">
+        {searchResults.loading &&
+            <LoadingAnimation />}
+        {(
+          searchResults.replays.length === 0
+          && !(searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
+        ) &&
+          <span className="Search__default">
+            Select a matchup/player, or start typing
+          </span>}
+        {(
+          searchResults.replays.length === 0
+          && (searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
+          && !searchResults.loading
+         ) &&
+            <span className="Search__default">
               No replays found for: {buildResultsText()?.slice(21)}
             </span>}
       </div>
