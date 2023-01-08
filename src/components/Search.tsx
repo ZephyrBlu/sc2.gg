@@ -18,18 +18,33 @@ export function Search() {
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
     query: {[key: string]: string | null} | null,
-    replays: Replay[],
+    results: {
+      replays: Replay[],
+      players: any[],
+      maps: any[],
+      events: any[],
+    },
   }>({
     loading: false,
     query: null,
-    replays: [],
+    results: {
+      replays: [],
+      players: [],
+      maps: [],
+      events: [],
+    },
   });
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useEffect(() => {
     const startSearch = async () => {
       setSearchResults({
-        replays: [],
+        results: {
+          replays: [],
+          players: [],
+          maps: [],
+          events: [],
+        },
         loading: true,
         query: {
           player: quickSelectOptions.player,
@@ -46,43 +61,47 @@ export function Search() {
         const urlEncodedSearchInput = encodeURIComponent(searchInput).replace(/%20/g, '+');
 
         let inputResults: Replay[][] = [];
-        const games = Promise.all(terms.map(async (term) => {
+        const gamesPromise = Promise.all(terms.map(async (term) => {
           const results = await searchGames(term);
           inputResults.push(results);
         }));
 
-        let playerSuggestions = [];
-        const players = new Promise<void>(async (resolve) => {
+        const playersPromise = new Promise<any[]>(async (resolve) => {
           const results = await searchPlayers(urlEncodedSearchInput);
-          playerSuggestions.push(results);
-          resolve();
+          resolve(results);
         });
 
-        let mapSuggestions = [];
-        const maps = new Promise<void>(async (resolve) => {
+        const mapsPromise = new Promise<any[]>(async (resolve) => {
           const results = await searchMaps(urlEncodedSearchInput);
-          mapSuggestions.push(results);
-          resolve();
+          resolve(results);
         });
 
-        let eventSuggestions = [];
-        const events = new Promise<void>(async (resolve) => {
+        const eventsPromise = new Promise<any[]>(async (resolve) => {
           const results = await searchEvents(urlEncodedSearchInput);
-          eventSuggestions.push(results);
-          resolve();
+          resolve(results);
         });
 
-        await Promise.all([
-          games,
-          players,
-          maps,
-          events,
+        const [_, players, maps, events] = await Promise.all([
+          gamesPromise,
+          playersPromise,
+          mapsPromise,
+          eventsPromise,
         ]);
 
         console.log('game results', inputResults);
-        console.log('player suggest', playerSuggestions);
-        console.log('map suggest', mapSuggestions);
-        console.log('event suggest', eventSuggestions);
+        console.log('player suggest', players);
+        console.log('map suggest', maps);
+        console.log('event suggest', events);
+
+        setSearchResults(prevState => ({
+          ...prevState,
+          results: {
+            ...prevState.results,
+            players,
+            maps,
+            events,
+          },
+        }));
 
         inputResults = inputResults.filter(r => r.length > 0);
         if (inputResults.length > 0) {
@@ -96,15 +115,18 @@ export function Search() {
       // if search results are fresher than existing results, update them
       if (searchStartTime > searchStartedAt.current) {
         if (replays.length === 0) {
-          setSearchResults({
-            replays: [],
+          setSearchResults(prevState => ({
+            results: {
+              ...prevState.results,
+              replays: [],
+            },
             loading: false,
             query: {
               player: quickSelectOptions.player,
               matchup: quickSelectOptions.matchup,
               input: searchInput,
             },
-          });
+          }));
           searchStartedAt.current = searchStartTime;
           return;
         }
@@ -135,15 +157,18 @@ export function Search() {
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
-        setSearchResults({
-          replays: orderedResults,
+        setSearchResults(prevState => ({
+          results: {
+            ...prevState.results,
+            replays: orderedResults,
+          },
           loading: false,
           query: {
             player: quickSelectOptions.player,
             matchup: quickSelectOptions.matchup,
             input: searchInput,
           },
-        });
+        }));
         searchStartedAt.current = searchStartTime;
       }
     };
