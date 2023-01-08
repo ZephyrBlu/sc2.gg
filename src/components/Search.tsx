@@ -240,6 +240,19 @@ export function Search() {
     return `${searchResults.loading ? 'Loading' : 'Showing'} results for: ${resultsQuery.join(', ')}`;
   };
 
+  const noSearchResultsPresent = (
+    searchResults.results.replays.length === 0 &&
+    searchResults.results.players.length === 0 &&
+    searchResults.results.maps.length === 0 &&
+    searchResults.results.events.length === 0
+  );
+  const anySearchResultPresent = (
+    searchResults.results.replays.length > 0 ||
+    searchResults.results.players.length > 0 ||
+    searchResults.results.maps.length > 0 ||
+    searchResults.results.events.length > 0
+  );
+
   return (
     <div className="Search">
       <div className="Search__search">
@@ -308,26 +321,31 @@ export function Search() {
           </span>
         </div>
       </div>
-      <div className="Search__replay-list">
-        {searchResults.replays.length > 0 &&
-          searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
-        {searchResults.loading &&
-            <LoadingAnimation />}
-        {(
-          searchResults.replays.length === 0
-          && !(searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
-        ) &&
+      <div className="Search__category-results-wrapper">
+        {!searchInput && noSearchResultsPresent &&
           <span className="Search__default">
             Select a matchup/player, or start typing
           </span>}
-        {(
-          searchResults.replays.length === 0
-          && (searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
-          && !searchResults.loading
-         ) &&
-            <span className="Search__default">
-              No replays found for: {buildResultsText()?.slice(21)}
-            </span>}
+        {noSearchResultsPresent && <LoadingAnimation />}
+        {anySearchResultPresent &&
+          <div className="Search__category-results">
+            <div className="Search__player-results">
+              {searchResults.results.players}
+            </div>
+            <div className="Search__map-results">
+              {searchResults.results.maps}
+            </div>
+            <div className="Search__event-results">
+              {searchResults.results.events}
+            </div>
+            <div className="Search__replay-list">
+              {searchResults.results.replays.slice(0, 25).map(mapToReplayComponent)}
+              {noSearchResultsPresent && searchInput && !searchResults.loading &&
+                <span className="Search__default">
+                  No replays found for: {buildResultsText()?.slice(21)}
+                </span>}
+            </div>
+          </div>}
       </div>
     </div>
   )
