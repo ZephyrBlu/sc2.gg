@@ -9,7 +9,7 @@ export function useSearch() {
   const debounce = async (url: string, key: string, delay: number): Promise<Replay[]> => (
     new Promise((resolve) => {
       requests.current[key] = window.setTimeout(async () => {
-        const results = await fetch(url).then(res => res.json());
+        const results = await fetch(url).then(res => res.json()).catch(() => []);
         setQueryCache(prevState => ({
           ...prevState,
           [url]: results,

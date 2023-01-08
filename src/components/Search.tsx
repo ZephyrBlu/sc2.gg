@@ -6,12 +6,6 @@ import {LoadingAnimation} from './LoadingAnimation';
 import './Search.css';
 import {compare} from './utils';
 
-const INDEXES = [
-  'player',
-  'race',
-  'map',
-];
-
 export function Search() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
@@ -49,20 +43,46 @@ export function Search() {
 
       if (searchInput) {
         const terms = searchInput.split(' ');
-        let inputResults: Replay[][] = [];
+        const urlEncodedSearchInput = encodeURIComponent(searchInput).replace(/%20/g, '+');
 
-        await Promise.all(terms.map(async (term) => {
+        let inputResults: Replay[][] = [];
+        const games = Promise.all(terms.map(async (term) => {
           const results = await searchGames(term);
           inputResults.push(results);
         }));
 
         let playerSuggestions = [];
-        await Promise.all(terms.map(async (term) => {
-          const results = await searchPlayers(term);
+        const players = new Promise<void>(async (resolve) => {
+          const results = await searchPlayers(urlEncodedSearchInput);
           playerSuggestions.push(results);
-        }));
+          resolve();
+        });
 
+        let mapSuggestions = [];
+        const maps = new Promise<void>(async (resolve) => {
+          const results = await searchMaps(urlEncodedSearchInput);
+          mapSuggestions.push(results);
+          resolve();
+        });
+
+        let eventSuggestions = [];
+        const events = new Promise<void>(async (resolve) => {
+          const results = await searchEvents(urlEncodedSearchInput);
+          eventSuggestions.push(results);
+          resolve();
+        });
+
+        await Promise.all([
+          games,
+          players,
+          maps,
+          events,
+        ]);
+
+        console.log('game results', inputResults);
         console.log('player suggest', playerSuggestions);
+        console.log('map suggest', mapSuggestions);
+        console.log('event suggest', eventSuggestions);
 
         inputResults = inputResults.filter(r => r.length > 0);
         if (inputResults.length > 0) {
