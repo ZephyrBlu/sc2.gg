@@ -322,11 +322,11 @@ export function Search() {
         </div>
       </div>
       <div className="Search__category-results-wrapper">
-        {!searchInput && noSearchResultsPresent &&
+        {!searchInput && !searchResults.loading && noSearchResultsPresent &&
           <span className="Search__default">
             Select a matchup/player, or start typing
           </span>}
-        {noSearchResultsPresent && <LoadingAnimation />}
+        {searchResults.loading && noSearchResultsPresent && <LoadingAnimation />}
         {anySearchResultPresent &&
           <div className="Search__category-results">
             <div className="Search__player-results">
