@@ -5,6 +5,7 @@ import type {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
 import './Search.css';
 import {compare} from './utils';
+import {SearchResultCategory} from './SearchResultCategory';
 
 export function Search() {
   const searchRef = useRef<HTMLInputElement>(null);
@@ -330,13 +331,49 @@ export function Search() {
         {anySearchResultPresent &&
           <div className="Search__category-results">
             <div className="Search__player-results">
-              {searchResults.results.players}
+              <SearchResultCategory
+                title="Players"
+                data={searchResults.results.players}
+                loading={searchResults.loading}
+                max={3}
+                inline
+              >
+                {searchResults.results.players.map(player => (
+                  <div className="Search__inline-player-result">
+                    {player.player}, {player.race} {player.occurrences}
+                  </div>
+                ))}
+              </SearchResultCategory>
             </div>
             <div className="Search__map-results">
-              {searchResults.results.maps}
+              <SearchResultCategory
+                title="Maps"
+                data={searchResults.results.maps}
+                loading={searchResults.loading}
+                max={3}
+                inline
+              >
+                {searchResults.results.maps.map(map => (
+                  <div className="Search__inline-player-result">
+                    {map.map}, {map.occurrences}
+                  </div>
+                ))}
+              </SearchResultCategory>
             </div>
             <div className="Search__event-results">
-              {searchResults.results.events}
+              <SearchResultCategory
+                title="Events"
+                data={searchResults.results.events}
+                loading={searchResults.loading}
+                max={3}
+                inline
+              >
+                {searchResults.results.events.map(event => (
+                  <div className="Search__inline-player-result">
+                    {event.event}, {event.occurrences}
+                  </div>
+                ))}
+              </SearchResultCategory>
             </div>
             <div className="Search__replay-list">
               {searchResults.results.replays.slice(0, 25).map(mapToReplayComponent)}

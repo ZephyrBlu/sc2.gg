@@ -1,0 +1,15 @@
+.SearchResultCategory {
+  margin-bottom: 20px;
+}
+
+.SearchResultCategory__title {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.SearchResultCategory__content {
+}
+
+.SearchResultCategory__content--inline {
+  display: flex;
+}
