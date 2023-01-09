@@ -1,7 +1,28 @@
 ---
 import AppLayout from '../layouts/AppLayout.astro';
 import {Search} from '../components/Search';
+
+const endpoints = [
+  'games',
+  'players',
+  'maps',
+  'events',
+];
+
+const [replays, players, maps, events] = await Promise.all(
+  endpoints.map(async (endpoint) => {
+    // return await fetch(`https://search.sc2.gg/${endpoint}?popular`);
+    return [];
+  })
+);
+
+const results = {
+  replays,
+  players,
+  maps,
+  events,
+};
 ---
 <AppLayout>
-  <Search client:load />
+  <Search initialResults={results} client:load />
 </AppLayout>

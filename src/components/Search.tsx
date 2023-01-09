@@ -5,36 +5,32 @@ import type {Replay} from "./types";
 import {LoadingAnimation} from './LoadingAnimation';
 import './Search.css';
 import {compare} from './utils';
-import {SearchResultCategory} from './SearchResultCategory';
 import { SearchResultsInline } from './SearchResultsInline';
 
-export function Search() {
+interface Results {
+  replays: Replay[];
+  players: any[];
+  maps: any[];
+  events: any[];
+}
+
+interface Props {
+  initialResults: Results;
+}
+
+export function Search({ initialResults }: Props) {
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
-  const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
-    matchup: null,
-    player: null,
-  });
   const [buildSize, setBuildSize] = useState<number>(10);
   const searchStartedAt = useRef(0);
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
-    query: {[key: string]: string | null} | null,
-    results: {
-      replays: Replay[],
-      players: any[],
-      maps: any[],
-      events: any[],
-    },
+    query: string | null,
+    results: Results,
   }>({
     loading: false,
     query: null,
-    results: {
-      replays: [],
-      players: [],
-      maps: [],
-      events: [],
-    },
+    results: initialResults,
   });
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
@@ -48,11 +44,7 @@ export function Search() {
           events: [],
         },
         loading: true,
-        query: {
-          player: quickSelectOptions.player,
-          matchup: quickSelectOptions.matchup,
-          input: searchInput,
-        },
+        query: searchInput,
       });
 
       let replays: Replay[][] = [];
@@ -123,11 +115,7 @@ export function Search() {
               replays: [],
             },
             loading: false,
-            query: {
-              player: quickSelectOptions.player,
-              matchup: quickSelectOptions.matchup,
-              input: searchInput,
-            },
+            query: searchInput,
           }));
           searchStartedAt.current = searchStartTime;
           return;
@@ -165,18 +153,14 @@ export function Search() {
             replays: orderedResults,
           },
           loading: false,
-          query: {
-            player: quickSelectOptions.player,
-            matchup: quickSelectOptions.matchup,
-            input: searchInput,
-          },
+          query: searchInput,
         }));
         searchStartedAt.current = searchStartTime;
       }
     };
 
     startSearch();
-  }, [searchInput, quickSelectOptions, setSearchResults]);
+  }, [searchInput, setSearchResults]);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -225,21 +209,7 @@ export function Search() {
       return;
     }
 
-    const resultsQuery = [];
-
-    if (searchResults.query.player) {
-      resultsQuery.push(searchResults.query.player);
-    }
-
-    if (searchResults.query.matchup) {
-      resultsQuery.push(searchResults.query.matchup);
-    }
-
-    if (searchResults.query.input) {
-      resultsQuery.push(`"${searchResults.query.input}"`);
-    }
-
-    return `${searchResults.loading ? 'Loading' : 'Showing'} results for: ${resultsQuery.join(', ')}`;
+    return `${searchResults.loading ? 'Loading' : 'Showing'} results for: ${searchResults.query}`;
   };
 
   const noSearchResultsPresent = (
@@ -267,59 +237,9 @@ export function Search() {
           placeholder="Search 7000+ replays for any player, race, map or tournament"
           onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
         />
-        {/* <div className="Search__quick-search">
-          <div className="Search__matchup-quick-select">
-            {Object.keys(matchupRaceMapping).map((option) => (
-              <button
-                key={option}
-                className={`
-                  Search__quick-option
-                  ${option === quickSelectOptions.matchup ?
-                    'Search__quick-option--selected' : ''}
-                `}
-                onClick={() => {
-                  let newOption: string | null = option;
-                  if (option === quickSelectOptions.matchup) {
-                    newOption = null;
-                  }
-                  setQuickSelectOptions(prevState => ({
-                    ...prevState,
-                    matchup: newOption,
-                  }));
-                }}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-          <div className="Search__player-quick-select">
-            {['Serral', 'ByuN', 'ShoWTimE', 'Maru'].map((option) => (
-              <button
-                key={option}
-                className={`
-                  Search__quick-option
-                  ${option === quickSelectOptions.player ?
-                    'Search__quick-option--selected' : ''}
-                `}
-                onClick={() => {
-                  let newOption: string | null = option;
-                  if (option === quickSelectOptions.player) {
-                    newOption = null;
-                  }
-                  setQuickSelectOptions(prevState => ({
-                    ...prevState,
-                    player: newOption,
-                  }));
-                }}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        </div> */}
         <div className="Search__search-header">
           <span className="Search__search-results">
-            {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) && buildResultsText()}
+            {searchInput && buildResultsText()}
           </span>
         </div>
       </div>
@@ -343,8 +263,8 @@ export function Search() {
                   value: player.player,
                   count: player.occurrences,
                 }))}
-                count={searchResults.results.players.length}
                 loading={searchResults.loading}
+                automaticSelection={Boolean(searchInput)}
               />
             </div>
             <div className="Search__map-results">
@@ -355,8 +275,8 @@ export function Search() {
                   value: map.map,
                   count: map.occurrences,
                 }))}
-                count={searchResults.results.maps.length}
                 loading={searchResults.loading}
+                automaticSelection={Boolean(searchInput)}
               />
             </div>
             <div className="Search__event-results">
@@ -367,8 +287,8 @@ export function Search() {
                   value: event.event,
                   count: event.occurrences,
                 }))}
-                count={searchResults.results.maps.length}
                 loading={searchResults.loading}
+                automaticSelection={Boolean(searchInput)}
               />
             </div>
             <div className="Search__replay-list">

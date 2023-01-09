@@ -11,13 +11,20 @@ type InlineResult = {
 interface Props {
   title: string;
   results: InlineResult[];
-  count: number;
   loading: boolean;
   max?: number;
   selectedValueCallback?: Function;
+  automaticSelection?: boolean;
 }
 
-export function SearchResultsInline({ title, results, count, loading, max = 3, selectedValueCallback }: Props) {
+export function SearchResultsInline({
+  title,
+  results,
+  loading,
+  max = 3,
+  selectedValueCallback,
+  automaticSelection = true,
+}: Props) {
   const [selectedResultIndex, setSelectedResultIndex] = useState(0);
 
   return (
@@ -39,7 +46,7 @@ export function SearchResultsInline({ title, results, count, loading, max = 3, s
               <div
                 className={`
                   SearchResultsInline__result-content
-                  ${selectedResultIndex === index ? 'SearchResultsInline__result-content--selected' : ''}
+                  ${automaticSelection && selectedResultIndex === index ? 'SearchResultsInline__result-content--selected' : ''}
                 `}
                 onClick={() => {
                   setSelectedResultIndex(index);
