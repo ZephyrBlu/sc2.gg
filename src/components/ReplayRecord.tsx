@@ -8,8 +8,6 @@ interface Props {
 }
 
 export function ReplayRecord({ replay, buildSize }: Props) {
-  // const [showReplayDetails, setShowReplayDetails] = useState<boolean>(false);
-
   return (
     <div className="ReplayRecord">
       <div className="ReplayRecord__preview">

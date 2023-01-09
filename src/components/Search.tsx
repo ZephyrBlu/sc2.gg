@@ -6,6 +6,7 @@ import {LoadingAnimation} from './LoadingAnimation';
 import './Search.css';
 import {compare} from './utils';
 import {SearchResultCategory} from './SearchResultCategory';
+import { SearchResultsInline } from './SearchResultsInline';
 
 export function Search() {
   const searchRef = useRef<HTMLInputElement>(null);
@@ -338,11 +339,16 @@ export function Search() {
                 max={3}
                 inline
               >
-                {searchResults.results.players.map(player => (
-                  <div className="Search__inline-player-result">
-                    {player.player}, {player.race} {player.occurrences}
-                  </div>
-                ))}
+                <SearchResultsInline
+                  results={searchResults.results.players.map(player => ({
+                    element: (
+                      <>
+                        {player.player}, {player.race}
+                      </>
+                    ),
+                    count: player.occurrences,
+                  }))}
+                />
               </SearchResultCategory>
             </div>
             <div className="Search__map-results">
@@ -353,11 +359,12 @@ export function Search() {
                 max={3}
                 inline
               >
-                {searchResults.results.maps.map(map => (
-                  <div className="Search__inline-player-result">
-                    {map.map}, {map.occurrences}
-                  </div>
-                ))}
+                <SearchResultsInline
+                  results={searchResults.results.maps.map(map => ({
+                    element: map.map,
+                    count: map.occurrences,
+                  }))}
+                />
               </SearchResultCategory>
             </div>
             <div className="Search__event-results">
@@ -368,11 +375,12 @@ export function Search() {
                 max={3}
                 inline
               >
-                {searchResults.results.events.map(event => (
-                  <div className="Search__inline-player-result">
-                    {event.event}, {event.occurrences}
-                  </div>
-                ))}
+                <SearchResultsInline
+                  results={searchResults.results.events.map(event => ({
+                    element: event.event,
+                    count: event.occurrences,
+                  }))}
+                />
               </SearchResultCategory>
             </div>
             <div className="Search__replay-list">

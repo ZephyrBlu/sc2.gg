@@ -5,17 +5,13 @@ interface Props {
   title: string;
   data: any[];
   loading: boolean;
-  max?: number;
-  inline?: boolean;
-  children: JSX.Element[];
+  children: JSX.Element;
 }
 
 export function SearchResultCategory({
   title,
   data,
   loading,
-  max,
-  inline = false,
   children,
 }: Props) {
   return (
@@ -29,11 +25,8 @@ export function SearchResultCategory({
           No results
         </span>}
       {!loading && data.length > 0 &&
-        <div className={`
-          SearchResultCategory__content
-          ${inline ? 'SearchResultCategory__content--inline' : ''}
-        `}>
-          {max ? children.slice(0, max) : children}
+        <div className="SearchResultCategory__content">
+          {children}
         </div>}
     </div>
   )
