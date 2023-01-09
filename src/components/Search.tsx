@@ -332,56 +332,44 @@ export function Search() {
         {anySearchResultPresent &&
           <div className="Search__category-results">
             <div className="Search__player-results">
-              <SearchResultCategory
+              <SearchResultsInline
                 title="Players"
-                data={searchResults.results.players}
+                results={searchResults.results.players.map(player => ({
+                  element: (
+                    <>
+                      {player.player}, {player.race}
+                    </>
+                  ),
+                  value: player.player,
+                  count: player.occurrences,
+                }))}
+                count={searchResults.results.players.length}
                 loading={searchResults.loading}
-                max={3}
-                inline
-              >
-                <SearchResultsInline
-                  results={searchResults.results.players.map(player => ({
-                    element: (
-                      <>
-                        {player.player}, {player.race}
-                      </>
-                    ),
-                    count: player.occurrences,
-                  }))}
-                />
-              </SearchResultCategory>
+              />
             </div>
             <div className="Search__map-results">
-              <SearchResultCategory
+              <SearchResultsInline
                 title="Maps"
-                data={searchResults.results.maps}
+                results={searchResults.results.maps.map(map => ({
+                  element: map.map,
+                  value: map.map,
+                  count: map.occurrences,
+                }))}
+                count={searchResults.results.maps.length}
                 loading={searchResults.loading}
-                max={3}
-                inline
-              >
-                <SearchResultsInline
-                  results={searchResults.results.maps.map(map => ({
-                    element: map.map,
-                    count: map.occurrences,
-                  }))}
-                />
-              </SearchResultCategory>
+              />
             </div>
             <div className="Search__event-results">
-              <SearchResultCategory
+              <SearchResultsInline
                 title="Events"
-                data={searchResults.results.events}
+                results={searchResults.results.events.map(event => ({
+                  element: event.event,
+                  value: event.event,
+                  count: event.occurrences,
+                }))}
+                count={searchResults.results.maps.length}
                 loading={searchResults.loading}
-                max={3}
-                inline
-              >
-                <SearchResultsInline
-                  results={searchResults.results.events.map(event => ({
-                    element: event.event,
-                    count: event.occurrences,
-                  }))}
-                />
-              </SearchResultCategory>
+              />
             </div>
             <div className="Search__replay-list">
               {searchResults.results.replays.slice(0, 25).map(mapToReplayComponent)}
