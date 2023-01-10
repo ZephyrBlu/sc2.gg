@@ -43,6 +43,10 @@
   cursor: not-allowed;
 }
 
+.SearchResultsInline__result-content:focus {
+  outline: 2px solid var(--primary-blue);
+}
+
 .SearchResultsInline__result-content--selected {
   box-shadow: 0 0 0 2px var(--primary-blue);
 }
