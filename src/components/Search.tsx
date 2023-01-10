@@ -159,7 +159,9 @@ export function Search({ initialResults }: Props) {
       }
     };
 
-    startSearch();
+    if (searchInput) {
+      startSearch();
+    }
   }, [searchInput, setSearchResults]);
 
   const calculateBuildSize = () => {
@@ -224,6 +226,9 @@ export function Search({ initialResults }: Props) {
     searchResults.results.maps.length > 0 ||
     searchResults.results.events.length > 0
   );
+
+  console.log('no search', noSearchResultsPresent);
+  console.log('any result', anySearchResultPresent);
 
   return (
     <div className="Search">
