@@ -290,7 +290,7 @@ export function Search({ initialResults }: Props) {
             />
           </div>
           <div className="Search__replay-list">
-            {searchResults.results.replays.slice(0, 25).map(mapToReplayComponent)}
+            {searchResults.results.replays.slice(0, 10).map(mapToReplayComponent)}
             {noSearchResultsPresent && searchInput && !searchResults.loading &&
               <span className="Search__default">
                 No replays found for: {buildResultsText()?.slice(21)}
