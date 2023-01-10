@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useLayoutEffect, MutableRefObject } from '
 import { ReplayRecord } from './ReplayRecord';
 import { useSearch } from './hooks';
 import type { Replay } from "./types";
-import { LoadingAnimation } from './LoadingAnimation';
 import './Search.css';
 import { compare } from './utils';
 import { SearchResultsInline } from './SearchResultsInline';
