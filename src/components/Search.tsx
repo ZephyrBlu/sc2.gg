@@ -235,6 +235,7 @@ export function Search({ initialResults }: Props) {
         <input
           type="search"
           className="Search__search-input"
+          aria-label="search"
           autoFocus
           value={searchInput}
           ref={searchRef}
