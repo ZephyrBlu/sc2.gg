@@ -71,7 +71,7 @@ export function Search({ initialResults }: Props) {
         });
 
         const mapsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
-        const results = await searchMaps(urlEncodedSearchInput);
+          const results = await searchMaps(urlEncodedSearchInput);
           resolve({value: results, cancelled: !Boolean(results)});
         });
 
@@ -101,7 +101,7 @@ export function Search({ initialResults }: Props) {
           results.events = events.value;
         }
 
-        let wasRequestCancelled = [players, maps, events].some(result => result.cancelled);
+        const wasRequestCancelled = [players, maps, events].some(result => result.cancelled);
 
         setSearchResults(prevState => ({
           ...prevState,
