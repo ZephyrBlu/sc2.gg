@@ -97,13 +97,6 @@
   font-size: 16px;
 }
 
-.Search__default {
-  font-size: 16px;
-  margin-top: 40px;
-  display: flex;
-  justify-content: center;
-}
-
 @media(max-width: 575px) {
   .Search {
     padding-bottom: 15px;
@@ -139,9 +132,5 @@
 
   .Search__search-results {
     font-size: 12px;
-  }
-
-  .Search__default {
-    font-size: 14px;
   }
 }

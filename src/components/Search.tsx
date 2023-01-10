@@ -25,27 +25,32 @@ export function Search({ initialResults }: Props) {
   const searchStartedAt = useRef(0);
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
+    searching: boolean,
     query: string | null,
     results: Results,
   }>({
     loading: false,
+    searching: false,
     query: null,
     results: initialResults,
   });
   const { searchGames, searchPlayers, searchMaps, searchEvents } = useSearch();
 
+  const noSearchResultsPresent = (
+    searchResults.results.replays.length === 0 &&
+    searchResults.results.players.length === 0 &&
+    searchResults.results.maps.length === 0 &&
+    searchResults.results.events.length === 0
+  );
+
   useEffect(() => {
     const startSearch = async () => {
-      setSearchResults({
-        results: {
-          replays: [],
-          players: [],
-          maps: [],
-          events: [],
-        },
-        loading: true,
+      setSearchResults(prevState => ({
+        ...prevState,
+        loading: noSearchResultsPresent,
+        searching: true,
         query: searchInput,
-      });
+      }));
 
       let replays: Replay[][] = [];
       let searchStartTime = Date.now();
@@ -57,22 +62,22 @@ export function Search({ initialResults }: Props) {
         let inputResults: Replay[][] = [];
         const gamesPromise = Promise.all(terms.map(async (term) => {
           const results = await searchGames(term);
-          inputResults.push(results);
+          inputResults.push(results || []);
         }));
 
-        const playersPromise = new Promise<any[]>(async (resolve) => {
+        const playersPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
           const results = await searchPlayers(urlEncodedSearchInput);
-          resolve(results);
+          resolve({value: results, cancelled: !Boolean(results)});
         });
 
-        const mapsPromise = new Promise<any[]>(async (resolve) => {
-          const results = await searchMaps(urlEncodedSearchInput);
-          resolve(results);
+        const mapsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
+        const results = await searchMaps(urlEncodedSearchInput);
+          resolve({value: results, cancelled: !Boolean(results)});
         });
 
-        const eventsPromise = new Promise<any[]>(async (resolve) => {
+        const eventsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
           const results = await searchEvents(urlEncodedSearchInput);
-          resolve(results);
+          resolve({value: results, cancelled: !Boolean(results)});
         });
 
         const [_, players, maps, events] = await Promise.all([
@@ -82,19 +87,29 @@ export function Search({ initialResults }: Props) {
           eventsPromise,
         ]);
 
-        console.log('game results', inputResults);
-        console.log('player suggest', players);
-        console.log('map suggest', maps);
-        console.log('event suggest', events);
+        let results = {};
+
+        if (players.value) {
+          results.players = players.value;
+        }
+
+        if (maps.value) {
+          results.maps = maps.value;
+        }
+
+        if (events.value) {
+          results.events = events.value;
+        }
+
+        let wasRequestCancelled = [players, maps, events].some(result => result.cancelled);
 
         setSearchResults(prevState => ({
           ...prevState,
           results: {
             ...prevState.results,
-            players,
-            maps,
-            events,
+            ...results,
           },
+          searching: wasRequestCancelled,
         }));
 
         inputResults = inputResults.filter(r => r.length > 0);
@@ -110,12 +125,12 @@ export function Search({ initialResults }: Props) {
       if (searchStartTime > searchStartedAt.current) {
         if (replays.length === 0) {
           setSearchResults(prevState => ({
+            ...prevState,
             results: {
               ...prevState.results,
               replays: [],
             },
             loading: false,
-            query: searchInput,
           }));
           searchStartedAt.current = searchStartTime;
           return;
@@ -148,12 +163,12 @@ export function Search({ initialResults }: Props) {
 
         const orderedResults = [...exactMatches, ...otherMatches];
         setSearchResults(prevState => ({
+          ...prevState,
           results: {
             ...prevState.results,
             replays: orderedResults,
           },
           loading: false,
-          query: searchInput,
         }));
         searchStartedAt.current = searchStartTime;
       }
@@ -211,21 +226,8 @@ export function Search({ initialResults }: Props) {
       return;
     }
 
-    return `${searchResults.loading ? 'Loading' : 'Showing'} results for: ${searchResults.query}`;
+    return `${searchResults.searching ? 'Loading' : 'Showing'} results for: ${searchResults.query}`;
   };
-
-  const noSearchResultsPresent = (
-    searchResults.results.replays.length === 0 &&
-    searchResults.results.players.length === 0 &&
-    searchResults.results.maps.length === 0 &&
-    searchResults.results.events.length === 0
-  );
-  const anySearchResultPresent = (
-    searchResults.results.replays.length > 0 ||
-    searchResults.results.players.length > 0 ||
-    searchResults.results.maps.length > 0 ||
-    searchResults.results.events.length > 0
-  );
 
   return (
     <div className="Search">
@@ -246,61 +248,55 @@ export function Search({ initialResults }: Props) {
         </div>
       </div>
       <div className="Search__category-results-wrapper">
-        {!searchInput && !searchResults.loading && noSearchResultsPresent &&
-          <span className="Search__default">
-            Select a matchup/player, or start typing
-          </span>}
-        {searchResults.loading && noSearchResultsPresent && <LoadingAnimation />}
-        {anySearchResultPresent &&
-          <div className="Search__category-results">
-            <div className="Search__player-results">
-              <SearchResultsInline
-                title="Players"
-                results={searchResults.results.players.map(player => ({
-                  element: (
-                    <>
-                      {player.player}, {player.race}
-                    </>
-                  ),
-                  value: player.player,
-                  count: player.occurrences,
-                }))}
-                loading={searchResults.loading}
-                automaticSelection={Boolean(searchInput)}
-              />
-            </div>
-            <div className="Search__map-results">
-              <SearchResultsInline
-                title="Maps"
-                results={searchResults.results.maps.map(map => ({
-                  element: map.map,
-                  value: map.map,
-                  count: map.occurrences,
-                }))}
-                loading={searchResults.loading}
-                automaticSelection={Boolean(searchInput)}
-              />
-            </div>
-            <div className="Search__event-results">
-              <SearchResultsInline
-                title="Events"
-                results={searchResults.results.events.map(event => ({
-                  element: event.event,
-                  value: event.event,
-                  count: event.occurrences,
-                }))}
-                loading={searchResults.loading}
-                automaticSelection={Boolean(searchInput)}
-              />
-            </div>
-            <div className="Search__replay-list">
-              {searchResults.results.replays.slice(0, 25).map(mapToReplayComponent)}
-              {noSearchResultsPresent && searchInput && !searchResults.loading &&
-                <span className="Search__default">
-                  No replays found for: {buildResultsText()?.slice(21)}
-                </span>}
-            </div>
-          </div>}
+        <div className="Search__category-results">
+          <div className="Search__player-results">
+            <SearchResultsInline
+              title="Players"
+              results={searchResults.results.players.map(player => ({
+                element: (
+                  <>
+                    {player.player}, {player.race}
+                  </>
+                ),
+                value: player.player,
+                count: player.occurrences,
+              }))}
+              loading={searchResults.loading}
+              automaticSelection={Boolean(searchInput)}
+            />
+          </div>
+          <div className="Search__map-results">
+            <SearchResultsInline
+              title="Maps"
+              results={searchResults.results.maps.map(map => ({
+                element: map.map,
+                value: map.map,
+                count: map.occurrences,
+              }))}
+              loading={searchResults.loading}
+              automaticSelection={Boolean(searchInput)}
+            />
+          </div>
+          <div className="Search__event-results">
+            <SearchResultsInline
+              title="Events"
+              results={searchResults.results.events.map(event => ({
+                element: event.event,
+                value: event.event,
+                count: event.occurrences,
+              }))}
+              loading={searchResults.loading}
+              automaticSelection={Boolean(searchInput)}
+            />
+          </div>
+          <div className="Search__replay-list">
+            {searchResults.results.replays.slice(0, 25).map(mapToReplayComponent)}
+            {noSearchResultsPresent && searchInput && !searchResults.loading &&
+              <span className="Search__default">
+                No replays found for: {buildResultsText()?.slice(21)}
+              </span>}
+          </div>
+        </div>
       </div>
     </div>
   )

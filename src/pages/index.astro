@@ -13,6 +13,12 @@ let results = {
 
 if (response.ok) {
   results = await response.json();
+
+  const occurrenceSort = (a, b) => b.occurrences - a.occurrences;
+
+  results.players.sort(occurrenceSort);
+  results.maps.sort(occurrenceSort);
+  results.events.sort(occurrenceSort);
 }
 ---
 <AppLayout>
