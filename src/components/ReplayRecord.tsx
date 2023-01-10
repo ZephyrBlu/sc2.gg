@@ -1,4 +1,4 @@
-import {Fragment, useMemo} from 'react';
+import {Image} from '@astrojs/image/components';
 import type {Replay} from './types';
 import './ReplayRecord.css';
 
@@ -42,10 +42,12 @@ export function ReplayRecord({ replay, buildSize }: Props) {
                   }
                 `}
               >
-                <img
+                <Image
                   src={`/icons/${player.race.toLowerCase()}-logo.svg`}
                   className={`ReplayRecord__matchup-race-icon ReplayRecord__race-icon--player-${player.id}`}
                   alt={player.race}
+                  width={25}
+                  height={25}
                 />
                 <span className="ReplayRecord__player-name">
                   {player.name}
@@ -64,11 +66,13 @@ export function ReplayRecord({ replay, buildSize }: Props) {
                   .slice(0, buildSize)
                   .map(building => (
                     <>
-                      <img
+                      <Image
                         alt={building}
                         title={building}
                         className="ReplayRecord__building-icon"
                         src={`/images/buildings/${replay.players[index].race}/${building}.png`}
+                        width={30}
+                        height={30}
                       />
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
