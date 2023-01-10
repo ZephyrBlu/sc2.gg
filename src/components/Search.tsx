@@ -1,10 +1,10 @@
-import {useState, useRef, useEffect, useLayoutEffect, MutableRefObject} from 'react';
-import {ReplayRecord} from './ReplayRecord';
-import {useSearch} from './hooks';
-import type {Replay} from "./types";
-import {LoadingAnimation} from './LoadingAnimation';
+import { useState, useRef, useEffect, useLayoutEffect, MutableRefObject } from 'react';
+import { ReplayRecord } from './ReplayRecord';
+import { useSearch } from './hooks';
+import type { Replay } from "./types";
+import { LoadingAnimation } from './LoadingAnimation';
 import './Search.css';
-import {compare} from './utils';
+import { compare } from './utils';
 import { SearchResultsInline } from './SearchResultsInline';
 
 interface Results {
@@ -32,7 +32,7 @@ export function Search({ initialResults }: Props) {
     query: null,
     results: initialResults,
   });
-  const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
+  const { searchGames, searchPlayers, searchMaps, searchEvents } = useSearch();
 
   useEffect(() => {
     const startSearch = async () => {
@@ -196,7 +196,7 @@ export function Search({ initialResults }: Props) {
       return -1;
     }
 
-     return 0;
+    return 0;
   };
   const mapToReplayComponent = (replay: Replay) => (
     <ReplayRecord
@@ -226,9 +226,6 @@ export function Search({ initialResults }: Props) {
     searchResults.results.maps.length > 0 ||
     searchResults.results.events.length > 0
   );
-
-  console.log('no search', noSearchResultsPresent);
-  console.log('any result', anySearchResultPresent);
 
   return (
     <div className="Search">

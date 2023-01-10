@@ -1,20 +1,30 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+name: Daily Build and Deploy
+on:
+  schedule:
+    - cron: '0 0 * * *'
 jobs:
-  Explore-GitHub-Actions:
+  build_and_publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    name: Build and Deploy to Cloudflare Pages
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
+      - name: Checkout
         uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
-      # - name: Cloudflare Pages GitHub Action
-      #   uses: cloudflare/pages-action@v1.3.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 17.9
+
+      - name: Build
+        run: yarn build
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: bba9d5d83023488919dc589de82fa009
+          projectName: sc2-gg
+          directory: /dist
