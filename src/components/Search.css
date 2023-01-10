@@ -52,6 +52,26 @@
   row-gap: 25px;
 }
 
+.Search__player-result {
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}
+
+.Search__player-result--Protoss,
+.Search__player-result--Zerg {
+  margin-left: -5px;
+}
+
+.Search__player-result--Terran {
+  margin-left: -2px;
+}
+
+.Search__race-icon {
+  height: 25px;
+  width: 25px;
+}
+
 .Search__search-results {
   font-size: 14px;
 }

@@ -60,3 +60,8 @@
 .SearchResultsInline__result-content--inline {
   display: flex;
 }
+
+.SearchResultsInline__empty {
+  font-size: 16px;
+  font-weight: 400;
+}

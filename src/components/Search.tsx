@@ -33,7 +33,7 @@ export function Search({ initialResults }: Props) {
     query: null,
     results: initialResults,
   });
-  const { searchGames, searchPlayers, searchMaps, searchEvents } = useSearch();
+  const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   const noSearchResultsPresent = (
     searchResults.results.replays.length === 0 &&
@@ -251,9 +251,19 @@ export function Search({ initialResults }: Props) {
           title="Players"
           results={searchResults.results.players.map(player => ({
             element: (
-              <>
-                {player.player}, {player.race}
-              </>
+              <span
+                className={`
+                  Search__player-result
+                  Search__player-result--${player.race}
+                `}
+              >
+                <img
+                  src={`/icons/${player.race.toLowerCase()}-logo.svg`}
+                  className="Search__race-icon"
+                  alt={player.race}
+                />
+                {player.player}
+              </span>
             ),
             value: player.player,
             count: player.occurrences,
