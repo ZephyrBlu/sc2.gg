@@ -15,6 +15,7 @@ interface Props {
   max?: number;
   selectedValueCallback?: Function;
   automaticSelection?: boolean;
+  disabled?: boolean;
 }
 
 export function SearchResultsInline({
@@ -24,8 +25,11 @@ export function SearchResultsInline({
   max = 3,
   selectedValueCallback,
   automaticSelection = true,
+  disabled = false,
 }: Props) {
-  const [selectedResultIndex, setSelectedResultIndex] = useState(0);
+  const [selectedResultIndex, setSelectedResultIndex] = useState(
+    automaticSelection ? 0 : null
+  );
 
   return (
     <div className="SearchResultsInline">
@@ -43,10 +47,10 @@ export function SearchResultsInline({
         <div className="SearchResultsInline__results">
           {results.slice(0, max).map(({element, value, count}, index) => (
             <div className="SearchResultsInline__result">
-              <div
+              <button
                 className={`
                   SearchResultsInline__result-content
-                  ${automaticSelection && selectedResultIndex === index ? 'SearchResultsInline__result-content--selected' : ''}
+                  ${selectedResultIndex === index ? 'SearchResultsInline__result-content--selected' : ''}
                 `}
                 onClick={() => {
                   setSelectedResultIndex(index);
@@ -54,9 +58,10 @@ export function SearchResultsInline({
                     selectedValueCallback(value);
                   }
                 }}
+                disabled={disabled}
               >
                 {element}
-              </div>
+              </button>
               <span className="SearchResultsInline__result-count">
                 {count} matches
               </span>

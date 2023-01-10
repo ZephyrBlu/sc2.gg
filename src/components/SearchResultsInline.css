@@ -1,5 +1,4 @@
 .SearchResultsInline {
-  margin-bottom: 20px;
 }
 
 .SearchResultsInline__header {
@@ -15,22 +14,33 @@
 
 .SearchResultsInline__results {
   display: flex;
+  column-gap: 10px;
+}
+
+.SearchResultsInline__results:first-child {
+  margin-left: 0;
 }
 
 .SearchResultsInline__result-content {
   background-color: var(--secondary-light-1);
   padding: 8px 12px;
   border-radius: 8px;
-  margin: 0 10px;
   margin-bottom: 5px;
-}
-
-.SearchResultsInline__result-content:first-child {
-  margin-left: 0;
+  text-align: center;
+  color: var(--text);
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  border: none;
+  width: 100%;
 }
 
 .SearchResultsInline__result-content:hover {
   cursor: pointer;
+}
+
+.SearchResultsInline__result-content:disabled {
+  cursor: not-allowed;
 }
 
 .SearchResultsInline__result-content--selected {

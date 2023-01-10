@@ -2,20 +2,6 @@
   padding-bottom: 30px;
 }
 
-/* .Search__header {
-  background-color: var(--primary-dark-2);
-  border: 3px solid var(--primary-blue);
-  margin: 20px 0;
-  border-radius: 10px;
-  padding: 15px;
-  font-weight: 700;
-  font-size: 32px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  row-gap: 10px;
-} */
-
 .Search__sub-heading {
   font-weight: 400;
   font-size: 12px;
@@ -23,7 +9,6 @@
 
 .Search__replay-list {
   border-radius: 8px;
-  /* box-shadow: 0 0 0 3px var(--primary-blue); */
 }
 
 .Search__search,
@@ -32,7 +17,7 @@
 }
 
 .Search__search {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .Search__search-input {
@@ -40,61 +25,36 @@
   border-radius: 8px;
   font-size: 18px;
   color: var(--text);
-  border: 2px solid var(--primary-light-3);
-  padding: 4px;
-  margin-bottom: 20px;
-}
-
-.Search__quick-search {
-}
-
-.Search__matchup-quick-select,
-.Search__player-quick-select {
-  display: flex;
-  justify-content: space-evenly;
-  column-gap: 20px;
-}
-
-.Search__matchup-quick-select {
-}
-
-.Search__player-quick-select {
-}
-
-.Search__quick-option {
-  flex-grow: 1;
-  border-radius: 15px;
+  /* border: 2px solid var(--primary-light-3); */
   border: none;
-  padding: 10px;
-  background-color: var(--secondary-dark-4);
-  color: var(--text);
-  min-width: 40px;
-  max-width: 120px;
-  transition: background-color 0.2s;
-  font-weight: 700;
-  font-size: 14px;
+  padding: 4px;
   margin-bottom: 10px;
 }
 
-.Search__quick-option:hover {
-  cursor: pointer;
-  background-color: var(--primary-light-2);
-}
-
-.Search__quick-option--selected {
-  box-shadow: 0 0 0 2px var(--primary-blue);
-  background-color: var(--primary-light-2);
+.Search__search-input:focus {
+  outline: 2px solid var(--primary-blue);
 }
 
 .Search__search-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 6px;
+}
+
+.Search__category-divider {
+  display: none;
+  margin: 20px 0;
+  border: 1px solid var(--primary-light-3);
+}
+
+.Search__category-results {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
 }
 
 .Search__search-results {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 @media(max-width: 575px) {
@@ -116,18 +76,6 @@
   .Search__search-input {
     font-size: 16px;
     margin-bottom: 10px;
-  }
-
-  .Search__matchup-quick-select,
-  .Search__player-quick-select {
-    column-gap: 5px;
-  }
-
-  .Search__quick-option {
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    padding: 6px 8px;
   }
 
   .Search__search-results {

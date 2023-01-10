@@ -223,10 +223,10 @@ export function Search({ initialResults }: Props) {
 
   const buildResultsText = () => {
     if (!searchResults.query) {
-      return;
+      return 'Start typing to search 9000+ replays for any player, map or event';
     }
 
-    return `${searchResults.searching ? 'Loading' : 'Showing'} results for: ${searchResults.query}`;
+    return `${searchResults.searching ? 'Loading' : 'Showing'} results for: "${searchResults.query}"`;
   };
 
   return (
@@ -238,65 +238,57 @@ export function Search({ initialResults }: Props) {
           autoFocus
           value={searchInput}
           ref={searchRef}
-          placeholder="Search 7000+ replays for any player, race, map or tournament"
           onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
         />
         <div className="Search__search-header">
           <span className="Search__search-results">
-            {searchInput && buildResultsText()}
+            {buildResultsText()}
           </span>
         </div>
       </div>
-      <div className="Search__category-results-wrapper">
-        <div className="Search__category-results">
-          <div className="Search__player-results">
-            <SearchResultsInline
-              title="Players"
-              results={searchResults.results.players.map(player => ({
-                element: (
-                  <>
-                    {player.player}, {player.race}
-                  </>
-                ),
-                value: player.player,
-                count: player.occurrences,
-              }))}
-              loading={searchResults.loading}
-              automaticSelection={Boolean(searchInput)}
-            />
-          </div>
-          <div className="Search__map-results">
-            <SearchResultsInline
-              title="Maps"
-              results={searchResults.results.maps.map(map => ({
-                element: map.map,
-                value: map.map,
-                count: map.occurrences,
-              }))}
-              loading={searchResults.loading}
-              automaticSelection={Boolean(searchInput)}
-            />
-          </div>
-          <div className="Search__event-results">
-            <SearchResultsInline
-              title="Events"
-              results={searchResults.results.events.map(event => ({
-                element: event.event,
-                value: event.event,
-                count: event.occurrences,
-              }))}
-              loading={searchResults.loading}
-              automaticSelection={Boolean(searchInput)}
-            />
-          </div>
-          <div className="Search__replay-list">
-            {searchResults.results.replays.slice(0, 20).map(mapToReplayComponent)}
-            {noSearchResultsPresent && searchInput && !searchResults.loading &&
-              <span className="Search__default">
-                No replays found for: {buildResultsText()?.slice(21)}
-              </span>}
-          </div>
-        </div>
+      <div className="Search__category-results">
+        <SearchResultsInline
+          title="Players"
+          results={searchResults.results.players.map(player => ({
+            element: (
+              <>
+                {player.player}, {player.race}
+              </>
+            ),
+            value: player.player,
+            count: player.occurrences,
+          }))}
+          loading={searchResults.loading}
+          automaticSelection={Boolean(searchInput)}
+        />
+        <hr className="Search__category-divider" />
+        <SearchResultsInline
+          title="Maps"
+          results={searchResults.results.maps.map(map => ({
+            element: map.map,
+            value: map.map,
+            count: map.occurrences,
+          }))}
+          loading={searchResults.loading}
+          automaticSelection={Boolean(searchInput)}
+        />
+        <hr className="Search__category-divider" />
+        <SearchResultsInline
+          title="Events"
+          results={searchResults.results.events.map(event => ({
+            element: event.event,
+            value: event.event,
+            count: event.occurrences,
+          }))}
+          loading={searchResults.loading}
+          automaticSelection={Boolean(searchInput)}
+        />
+        <hr className="Search__category-divider" />
+        {searchResults.results.replays.slice(0, 20).map(mapToReplayComponent)}
+        {noSearchResultsPresent && searchInput && !searchResults.loading &&
+          <span className="Search__default">
+            No replays found for: {buildResultsText()?.slice(21)}
+          </span>}
       </div>
     </div>
   )
