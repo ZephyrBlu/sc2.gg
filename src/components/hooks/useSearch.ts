@@ -1,14 +1,16 @@
 import {useState, useRef} from 'react';
 import type {Replay} from '../types';
 
+type SearchState = 'success' | 'cancelled' | 'error';
+
 export interface SearchResult {
   query: string;
   value: any[];
-  state: 'success' | 'cancelled' | 'error';
+  state: SearchState;
 }
 
 export function useSearch() {
-  const [queryCache, setQueryCache] = useState<{[query: string]: Replay[]}>({});
+  const [queryCache, setQueryCache] = useState<{[query: string]: SearchResult}>({});
   const requests = useRef<{[key: string]: AbortController}>({});
   const API_URL = 'https://search.sc2.gg';
 
@@ -31,20 +33,22 @@ export function useSearch() {
     const results = await fetch(url, {signal}).then(async (res) => {
       const value = await res.json();
       const state = 'success';
-      return {query: quoted(query), value, state};
+      const results: SearchResult = {query: quoted(query), value, state};
+      return results;
     }).catch((e) => {
-      let state = 'error';
+      let state: SearchState = 'error';
       if (e instanceof DOMException && e.name === "AbortError") {
         state = 'cancelled';
       }
 
-      return {query: quoted(query), value: null, state};
+      const results: SearchResult = {query: quoted(query), value: [], state};
+      return results;
     });
 
     if (results.state === 'success') {
       setQueryCache(prevState => ({
         ...prevState,
-        [url]: results.value,
+        [url]: results,
       }));
 
       if (!url.endsWith('games')) {

@@ -37,7 +37,7 @@ export function Search({ initialResults }: Props) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    if (!searchInput && params.has('q')) {
+    if (!searchRef.current?.value && params.has('q')) {
       setSearchInput(params.get('q')?.split('+').join(' ') || '');
     }
   }, []);
