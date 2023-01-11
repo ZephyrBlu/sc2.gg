@@ -7,10 +7,22 @@ import { compare } from './utils';
 import { SearchResultsInline } from './SearchResultsInline';
 
 interface Results {
-  replays: Replay[];
-  players: any[];
-  maps: any[];
-  events: any[];
+  replays: {
+    query: string;
+    value: Replay[];
+  };
+  players: {
+    query: string;
+    value: any[];
+  };
+  maps: {
+    query: string;
+    value: any[];
+  };
+  events: {
+    query: string;
+    value: any[];
+  };
 }
 
 interface Props {
@@ -36,11 +48,13 @@ export function Search({ initialResults }: Props) {
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   const noSearchResultsPresent = (
-    searchResults.results.replays.length === 0 &&
-    searchResults.results.players.length === 0 &&
-    searchResults.results.maps.length === 0 &&
-    searchResults.results.events.length === 0
+    searchResults.results.replays.value.length === 0 &&
+    searchResults.results.players.value.length === 0 &&
+    searchResults.results.maps.value.length === 0 &&
+    searchResults.results.events.value.length === 0
   );
+
+  const quoted = (string: string) => `"${string}"`;
 
   useEffect(() => {
     const startSearch = async () => {
@@ -54,70 +68,78 @@ export function Search({ initialResults }: Props) {
       let replays: Replay[][] = [];
       let searchStartTime = Date.now();
 
-      if (searchInput) {
-        const terms = searchInput.split(' ');
-        const urlEncodedSearchInput = encodeURIComponent(searchInput).replace(/%20/g, '+');
+      const terms = searchInput.split(' ');
+      const urlEncodedSearchInput = encodeURIComponent(searchInput).replace(/%20/g, '+');
 
-        let inputResults: Replay[][] = [];
-        const gamesPromise = Promise.all(terms.map(async (term) => {
-          const results = await searchGames(term);
-          inputResults.push(results || []);
-        }));
+      let inputResults: Replay[][] = [];
+      const gamesPromise = Promise.all(terms.map(async (term) => {
+        const results = await searchGames(term);
+        inputResults.push(results || []);
+      }));
 
-        const playersPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
-          const results = await searchPlayers(urlEncodedSearchInput);
-          resolve({value: results, cancelled: !Boolean(results)});
-        });
+      const playersPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
+        const results = await searchPlayers(urlEncodedSearchInput);
+        resolve({value: results, cancelled: !Boolean(results)});
+      });
 
-        const mapsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
-          const results = await searchMaps(urlEncodedSearchInput);
-          resolve({value: results, cancelled: !Boolean(results)});
-        });
+      const mapsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
+        const results = await searchMaps(urlEncodedSearchInput);
+        resolve({value: results, cancelled: !Boolean(results)});
+      });
 
-        const eventsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
-          const results = await searchEvents(urlEncodedSearchInput);
-          resolve({value: results, cancelled: !Boolean(results)});
-        });
+      const eventsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
+        const results = await searchEvents(urlEncodedSearchInput);
+        resolve({value: results, cancelled: !Boolean(results)});
+      });
 
-        const [_, players, maps, events] = await Promise.all([
-          gamesPromise,
-          playersPromise,
-          mapsPromise,
-          eventsPromise,
-        ]);
+      const [_, players, maps, events] = await Promise.all([
+        gamesPromise,
+        playersPromise,
+        mapsPromise,
+        eventsPromise,
+      ]);
 
-        let results = {};
+      let results = {};
+      const query = quoted(searchInput);
 
-        if (players.value) {
-          results.players = players.value;
-        }
+      if (players.value) {
+        results.players = {
+          query,
+          value: players.value,
+        };
+      }
 
-        if (maps.value) {
-          results.maps = maps.value;
-        }
+      if (maps.value) {
+        results.maps = {
+          query,
+          value: maps.value,
+        };
+      }
 
-        if (events.value) {
-          results.events = events.value;
-        }
+      if (events.value) {
+        results.events = {
+          query,
+          value: events.value,
+        };
+      }
 
-        const wasRequestCancelled = [players, maps, events].some(result => result.cancelled);
+      const wasRequestCancelled = [players, maps, events].some(result => result.cancelled);
 
-        setSearchResults(prevState => ({
-          ...prevState,
-          results: {
-            ...prevState.results,
-            ...results,
-          },
-          searching: wasRequestCancelled,
-        }));
+      setSearchResults(prevState => ({
+        ...prevState,
+        results: {
+          ...prevState.results,
+          ...results,
+        },
+        searching: wasRequestCancelled,
+      }));
 
-        inputResults = inputResults.filter(r => r.length > 0);
-        if (inputResults.length > 0) {
-          const inputIntersectionResults = inputResults.reduce((current, next) => {
-            return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
-          }, inputResults[0]);
-          replays.push(inputIntersectionResults);
-        }
+      inputResults = inputResults.filter(r => r.length > 0);
+      if (inputResults.length > 0) {
+        const inputIntersectionResults = inputResults.reduce((current, next) => {
+          return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
+        }, inputResults[0]);
+        replays.push(inputIntersectionResults);
       }
 
       // if search results are fresher than existing results, update them
@@ -127,7 +149,10 @@ export function Search({ initialResults }: Props) {
             ...prevState,
             results: {
               ...prevState.results,
-              replays: [],
+              replays: {
+                query: searchInput,
+                value: [],
+              },
             },
             loading: false,
           }));
@@ -165,7 +190,10 @@ export function Search({ initialResults }: Props) {
           ...prevState,
           results: {
             ...prevState.results,
-            replays: orderedResults,
+            replays: {
+              query: searchInput,
+              value: orderedResults,
+            },
           },
           loading: false,
         }));
@@ -175,6 +203,13 @@ export function Search({ initialResults }: Props) {
 
     if (searchInput) {
       startSearch();
+    } else {
+      setSearchResults(prevState => ({
+        ...prevState,
+        results: initialResults,
+        loading: false,
+        searching: false,
+      }));
     }
   }, [searchInput, setSearchResults]);
 
@@ -249,7 +284,8 @@ export function Search({ initialResults }: Props) {
       <div className="Search__category-results">
         <SearchResultsInline
           title="Players"
-          results={searchResults.results.players.map(player => ({
+          query={searchResults.results.players.query}
+          results={searchResults.results.players.value.map(player => ({
             element: (
               <span
                 className={`
@@ -274,7 +310,8 @@ export function Search({ initialResults }: Props) {
         <hr className="Search__category-divider" />
         <SearchResultsInline
           title="Maps"
-          results={searchResults.results.maps.map(map => ({
+          query={searchResults.results.maps.query}
+          results={searchResults.results.maps.value.map(map => ({
             element: map.map,
             value: map.map,
             count: map.occurrences,
@@ -285,7 +322,8 @@ export function Search({ initialResults }: Props) {
         <hr className="Search__category-divider" />
         <SearchResultsInline
           title="Events"
-          results={searchResults.results.events.map(event => ({
+          query={searchResults.results.events.query}
+          results={searchResults.results.events.value.map(event => ({
             element: event.event,
             value: event.event,
             count: event.occurrences,
@@ -294,7 +332,7 @@ export function Search({ initialResults }: Props) {
           automaticSelection={Boolean(searchInput)}
         />
         <hr className="Search__category-divider" />
-        {searchResults.results.replays.slice(0, 20).map(mapToReplayComponent)}
+        {searchResults.results.replays.value.slice(0, 20).map(mapToReplayComponent)}
         {noSearchResultsPresent && searchInput && !searchResults.loading &&
           <span className="Search__default">
             No replays found for: {buildResultsText()?.slice(21)}

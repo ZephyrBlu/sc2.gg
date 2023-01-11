@@ -5,20 +5,37 @@ import {Search} from '../components/Search';
 const response = await fetch('https://search.sc2.gg/recent?refresh');
 
 let results = {
-  replays: [],
-  players: [],
-  maps: [],
-  events: [],
+  replays: {
+    query: 'Random from last 3mo',
+    value: [],
+  },
+  players: {
+    query: 'Popular from last 3mo',
+    value: [],
+  },
+  maps: {
+    query: 'Popular from last 6mo',
+    value: [],
+  },
+  events: {
+    query: 'Popular from last 6mo',
+    value: [],
+  },
 };
 
 if (response.ok) {
-  results = await response.json();
+  const resultValues = await response.json();
+
+  results.replays.value = resultValues.replays;
+  results.players.value = resultValues.players;
+  results.maps.value = resultValues.maps;
+  results.events.value = resultValues.events;
 
   const occurrenceSort = (a, b) => b.occurrences - a.occurrences;
 
-  results.players.sort(occurrenceSort);
-  results.maps.sort(occurrenceSort);
-  results.events.sort(occurrenceSort);
+  results.players.value.sort(occurrenceSort);
+  results.maps.value.sort(occurrenceSort);
+  results.events.value.sort(occurrenceSort);
 }
 ---
 <AppLayout>

@@ -10,6 +10,7 @@ type InlineResult = {
 
 interface Props {
   title: string;
+  query: string;
   results: InlineResult[];
   loading: boolean;
   max?: number;
@@ -20,6 +21,7 @@ interface Props {
 
 export function SearchResultsInline({
   title,
+  query,
   results,
   loading,
   max = 3,
@@ -37,12 +39,15 @@ export function SearchResultsInline({
         <h3 className="SearchResultsInline__title">
           {title}
         </h3>
+        <span className="SearchResultsInline__query">
+          {query}
+        </span>
+        {!loading && results.length === 0 &&
+          <span className="SearchResultsInline__no-results">
+            No results
+          </span>}
       </span>
       {loading && <LoadingAnimation />}
-      {!loading && results.length === 0 &&
-        <span className="SearchResultsInline__empty">
-          No results
-        </span>}
       {!loading && results.length > 0 &&
         <div className="SearchResultsInline__results">
           {results.slice(0, max).map(({element, value, count}, index) => (
@@ -53,7 +58,12 @@ export function SearchResultsInline({
                   ${selectedResultIndex === index ? 'SearchResultsInline__result-content--selected' : ''}
                 `}
                 onClick={() => {
-                  setSelectedResultIndex(index);
+                  setSelectedResultIndex(prevState => (
+                    prevState === index
+                      ? null
+                      : index
+                  ));
+
                   if (selectedValueCallback) {
                     selectedValueCallback(value);
                   }
