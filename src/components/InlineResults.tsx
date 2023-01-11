@@ -5,33 +5,31 @@ import './InlineResults.css';
 type InlineResult = {
   element: JSX.Element,
   value: string,
-  count: number,
+  count?: number,
 }
 
 interface Props {
   title: string;
-  query?: string;
+  query: string;
+  state: 'success' | 'cancelled' | 'error';
   results: InlineResult[];
   loading: boolean;
   max?: number;
   selectedValueCallback?: Function;
-  automaticSelection?: boolean;
   disabled?: boolean;
 }
 
 export function InlineResults({
   title,
   query,
+  state,
   results,
   loading,
   max = 3,
   selectedValueCallback,
-  automaticSelection = true,
   disabled = false,
 }: Props) {
-  const [selectedResultIndex, setSelectedResultIndex] = useState(
-    automaticSelection ? 0 : null
-  );
+  const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(null);
 
   return (
     <div className="InlineResults">
@@ -43,9 +41,13 @@ export function InlineResults({
           <span className="InlineResults__query">
             {query}
           </span>}
-        {!loading && results.length === 0 &&
+        {!loading && results.length === 0 && state === 'success' &&
           <span className="InlineResults__no-results">
             No results
+          </span>}
+        {!loading && state === 'error' &&
+          <span className="InlineResults__failed">
+            Search failed
           </span>}
       </span>
       {loading && <LoadingAnimation />}
@@ -73,9 +75,10 @@ export function InlineResults({
               >
                 {element}
               </button>
-              <span className="InlineResults__result-count">
-                {count} matches
-              </span>
+              {count &&
+                <span className="InlineResults__result-count">
+                  {count} matches
+                </span>}
             </div>
           ))}
         </div>}

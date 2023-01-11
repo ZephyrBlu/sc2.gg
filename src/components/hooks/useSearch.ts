@@ -1,12 +1,20 @@
 import {useState, useRef} from 'react';
 import type {Replay} from '../types';
 
+export interface SearchResult {
+  query: string;
+  value: any[];
+  state: 'success' | 'cancelled' | 'error';
+}
+
 export function useSearch() {
   const [queryCache, setQueryCache] = useState<{[query: string]: Replay[]}>({});
   const requests = useRef<{[key: string]: AbortController}>({});
   const API_URL = 'https://search.sc2.gg';
 
-  const search = async (url: string, endpoint: string): Promise<any> => {
+  const quoted = (string: string) => `"${string}"`;
+
+  const search = async (query: string, url: string, endpoint: string): Promise<any> => {
     if (queryCache[url]) {
       return queryCache[url];
     }
@@ -20,12 +28,23 @@ export function useSearch() {
 
     requests.current[endpoint] = controller;
 
-    const results = await fetch(url, {signal}).then(res => res.json()).catch(() => null);
+    const results = await fetch(url, {signal}).then(async (res) => {
+      const value = await res.json();
+      const state = 'success';
+      return {query: quoted(query), value, state};
+    }).catch((e) => {
+      let state = 'error';
+      if (e instanceof DOMException && e.name === "AbortError") {
+        state = 'cancelled';
+      }
+
+      return {query: quoted(query), value: null, state};
+    });
 
     if (results) {
       setQueryCache(prevState => ({
         ...prevState,
-        [url]: results,
+        [url]: results.value,
       }));
     }
 
@@ -35,25 +54,25 @@ export function useSearch() {
   const searchGames = async (query: string): Promise<Replay[]> => {
     const endpoint = `${API_URL}/games`;
     const params = `q=${query.toLowerCase()}`;
-    return await search(`${endpoint}?${params}`, endpoint);
+    return await search(query, `${endpoint}?${params}`, endpoint);
   };
 
   const searchPlayers = async (query: string): Promise<any> => {
     const endpoint = `${API_URL}/players`;
     const params = `q=${query.toLowerCase()}`;
-    return await search(`${endpoint}?${params}`, endpoint);
+    return await search(query, `${endpoint}?${params}`, endpoint);
   };
 
   const searchMaps = async (query: string): Promise<any> => {
     const endpoint = `${API_URL}/maps`;
     const params = `q=${query.toLowerCase()}`;
-    return await search(`${endpoint}?${params}`, endpoint);
+    return await search(query, `${endpoint}?${params}`, endpoint);
   };
 
   const searchEvents = async (query: string): Promise<any> => {
     const endpoint = `${API_URL}/events`;
     const params = `q=${query.toLowerCase()}`;
-    return await search(`${endpoint}?${params}`, endpoint);
+    return await search(query, `${endpoint}?${params}`, endpoint);
   };
 
   return {searchGames, searchPlayers, searchMaps, searchEvents};

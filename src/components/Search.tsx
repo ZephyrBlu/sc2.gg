@@ -1,28 +1,16 @@
 import { useState, useRef, useEffect, useLayoutEffect, MutableRefObject } from 'react';
 import { ReplayRecord } from './ReplayRecord';
-import { useSearch } from './hooks';
+import { SearchResult, useSearch } from './hooks';
 import type { Replay } from "./types";
 import './Search.css';
 import { compare } from './utils';
 import { InlineResults } from './InlineResults';
 
 interface Results {
-  replays: {
-    query: string;
-    value: Replay[];
-  };
-  players: {
-    query: string;
-    value: any[];
-  };
-  maps: {
-    query: string;
-    value: any[];
-  };
-  events: {
-    query: string;
-    value: any[];
-  };
+  replays: SearchResult;
+  players: SearchResult;
+  maps: SearchResult;
+  events: SearchResult;
 }
 
 interface Props {
@@ -54,8 +42,6 @@ export function Search({ initialResults }: Props) {
     searchResults.results.events.value.length === 0
   );
 
-  const quoted = (string: string) => `"${string}"`;
-
   useEffect(() => {
     const startSearch = async () => {
       setSearchResults(prevState => ({
@@ -77,19 +63,19 @@ export function Search({ initialResults }: Props) {
         inputResults.push(results || []);
       }));
 
-      const playersPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
+      const playersPromise = new Promise<SearchResult>(async (resolve) => {
         const results = await searchPlayers(urlEncodedSearchInput);
-        resolve({value: results, cancelled: !Boolean(results)});
+        resolve(results);
       });
 
-      const mapsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
+      const mapsPromise = new Promise<SearchResult>(async (resolve) => {
         const results = await searchMaps(urlEncodedSearchInput);
-        resolve({value: results, cancelled: !Boolean(results)});
+        resolve(results);
       });
 
-      const eventsPromise = new Promise<{value: any[], cancelled: boolean}>(async (resolve) => {
-        const results = await searchEvents(urlEncodedSearchInput);
-        resolve({value: results, cancelled: !Boolean(results)});
+      const eventsPromise = new Promise<SearchResult>(async (resolve) => {
+        const result = await searchEvents(urlEncodedSearchInput);
+        resolve(result);
       });
 
       const [_, players, maps, events] = await Promise.all([
@@ -99,31 +85,28 @@ export function Search({ initialResults }: Props) {
         eventsPromise,
       ]);
 
-      let results = {};
-      const query = quoted(searchInput);
+      let results: {[key: string]: SearchResult} = {players, maps, events};
 
-      if (players.value) {
-        results.players = {
-          query,
-          value: players.value,
-        };
+      // if search fails or is cancelled, set result value to previous value
+
+      if (players.state !== 'success') {
+        results.players.query = searchResults.results.players.query;
+        results.players.value = searchResults.results.players.value;
       }
 
-      if (maps.value) {
-        results.maps = {
-          query,
-          value: maps.value,
-        };
+      if (maps.state !== 'success') {
+        results.maps.query = searchResults.results.maps.query;
+        results.maps.value = searchResults.results.maps.value;
       }
 
-      if (events.value) {
-        results.events = {
-          query,
-          value: events.value,
-        };
+      if (events.state !== 'success') {
+        results.events.query = searchResults.results.events.query;
+        results.events.value = searchResults.results.events.value;
       }
 
-      const wasRequestCancelled = [players, maps, events].some(result => result.cancelled);
+      console.log('results', results);
+
+      const wasAnyRequestCancelled = [players, maps, events].some(result => result.state === 'cancelled');
 
       setSearchResults(prevState => ({
         ...prevState,
@@ -131,7 +114,7 @@ export function Search({ initialResults }: Props) {
           ...prevState.results,
           ...results,
         },
-        searching: wasRequestCancelled,
+        searching: wasAnyRequestCancelled,
       }));
 
       inputResults = inputResults.filter(r => r.length > 0);
@@ -152,6 +135,7 @@ export function Search({ initialResults }: Props) {
               replays: {
                 query: searchInput,
                 value: [],
+                state: 'success',
               },
             },
             loading: false,
@@ -193,6 +177,7 @@ export function Search({ initialResults }: Props) {
             replays: {
               query: searchInput,
               value: orderedResults,
+              state: 'success',
             },
           },
           loading: false,
@@ -201,15 +186,15 @@ export function Search({ initialResults }: Props) {
       }
     };
 
-    if (searchInput) {
+    if (searchInput && searchInput.length > 2) {
       startSearch();
     } else {
-      setSearchResults(prevState => ({
-        ...prevState,
+      setSearchResults({
+        query: '',
         results: initialResults,
         loading: false,
         searching: false,
-      }));
+      });
     }
   }, [searchInput, setSearchResults]);
 
@@ -285,6 +270,7 @@ export function Search({ initialResults }: Props) {
         <InlineResults
           title="Players"
           query={searchResults.results.players.query}
+          state={searchResults.results.players.state}
           results={searchResults.results.players.value.map(player => ({
             element: (
               <span
@@ -305,31 +291,30 @@ export function Search({ initialResults }: Props) {
             count: player.occurrences,
           }))}
           loading={searchResults.loading}
-          automaticSelection={Boolean(searchInput)}
         />
         <hr className="Search__category-divider" />
         <InlineResults
           title="Maps"
           query={searchResults.results.maps.query}
+          state={searchResults.results.maps.state}
           results={searchResults.results.maps.value.map(map => ({
             element: map.map,
             value: map.map,
             count: map.occurrences,
           }))}
           loading={searchResults.loading}
-          automaticSelection={Boolean(searchInput)}
         />
         <hr className="Search__category-divider" />
         <InlineResults
           title="Events"
           query={searchResults.results.events.query}
+          state={searchResults.results.events.state}
           results={searchResults.results.events.value.map(event => ({
             element: event.event,
             value: event.event,
             count: event.occurrences,
           }))}
           loading={searchResults.loading}
-          automaticSelection={Boolean(searchInput)}
         />
         <hr className="Search__category-divider" />
         {searchResults.results.replays.value.slice(0, 20).map(mapToReplayComponent)}
