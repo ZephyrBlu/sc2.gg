@@ -131,8 +131,6 @@ export function Search({ initialResults }: Props) {
         results.events.value = searchResults.results.events.value;
       }
 
-      console.log('results', results);
-
       const wasAnyRequestCancelled = [players, maps, events].some(result => result.state === 'cancelled');
 
       setSearchResults(prevState => ({
@@ -296,7 +294,7 @@ export function Search({ initialResults }: Props) {
       <div className="Search__category-results">
         <InlineResults
           title="Players"
-          query={searchResults.results.players.query}
+          // query={searchResults.results.players.query}
           state={searchResults.results.players.state}
           results={searchResults.results.players.value.map(player => ({
             element: (
@@ -322,7 +320,7 @@ export function Search({ initialResults }: Props) {
         <hr className="Search__category-divider" />
         <InlineResults
           title="Maps"
-          query={searchResults.results.maps.query}
+          // query={searchResults.results.maps.query}
           state={searchResults.results.maps.state}
           results={searchResults.results.maps.value.map(map => ({
             element: map.map,
@@ -334,7 +332,7 @@ export function Search({ initialResults }: Props) {
         <hr className="Search__category-divider" />
         <InlineResults
           title="Events"
-          query={searchResults.results.events.query}
+          // query={searchResults.results.events.query}
           state={searchResults.results.events.state}
           results={searchResults.results.events.value.map(event => ({
             element: event.event,

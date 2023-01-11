@@ -10,7 +10,7 @@ type InlineResult = {
 
 interface Props {
   title: string;
-  query: string;
+  query?: string;
   state: 'success' | 'cancelled' | 'error';
   results: InlineResult[];
   loading: boolean;
