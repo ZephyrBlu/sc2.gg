@@ -12,7 +12,7 @@ export function useSearch() {
   const requests = useRef<{[key: string]: AbortController}>({});
   const API_URL = 'https://search.sc2.gg';
 
-  const quoted = (string: string) => `"${string}"`;
+  const quoted = (string: string) => `"${string.split('+').join(' ')}"`;
 
   const search = async (query: string, url: string, endpoint: string): Promise<any> => {
     if (queryCache[url]) {
@@ -47,9 +47,11 @@ export function useSearch() {
         [url]: results.value,
       }));
 
-      const appUrl = new URL(window.location.href);
-      appUrl.searchParams.set('q', query);
-      window.history.pushState({}, '', appUrl);
+      if (!url.endsWith('games')) {
+        const appUrl = new URL(window.location.href);
+        appUrl.searchParams.set('q', query.split('+').join(' '));
+        window.history.pushState({}, '', appUrl);
+      }
     }
 
     return results;

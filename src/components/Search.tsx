@@ -38,7 +38,7 @@ export function Search({ initialResults }: Props) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (!searchInput && params.has('q')) {
-      setSearchInput(params.get('q') || '');
+      setSearchInput(params.get('q')?.split('+').join(' ') || '');
     }
   }, []);
 
@@ -62,7 +62,7 @@ export function Search({ initialResults }: Props) {
       let searchStartTime = Date.now();
 
       const terms = searchInput.split(' ');
-      const urlEncodedSearchInput = encodeURIComponent(searchInput).replace(/%20/g, '+');
+      const urlEncodedSearchInput = encodeURIComponent(searchInput.trim()).replace(/%20/, '+');
 
       let inputResults: Replay[][] = [];
       const gamesPromise = Promise.all(terms.map(async (term) => {
