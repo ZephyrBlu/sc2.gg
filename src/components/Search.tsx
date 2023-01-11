@@ -4,7 +4,7 @@ import { useSearch } from './hooks';
 import type { Replay } from "./types";
 import './Search.css';
 import { compare } from './utils';
-import { SearchResultsInline } from './SearchResultsInline';
+import { InlineResults } from './InlineResults';
 
 interface Results {
   replays: {
@@ -282,7 +282,7 @@ export function Search({ initialResults }: Props) {
         </div>
       </div>
       <div className="Search__category-results">
-        <SearchResultsInline
+        <InlineResults
           title="Players"
           query={searchResults.results.players.query}
           results={searchResults.results.players.value.map(player => ({
@@ -308,7 +308,7 @@ export function Search({ initialResults }: Props) {
           automaticSelection={Boolean(searchInput)}
         />
         <hr className="Search__category-divider" />
-        <SearchResultsInline
+        <InlineResults
           title="Maps"
           query={searchResults.results.maps.query}
           results={searchResults.results.maps.value.map(map => ({
@@ -320,7 +320,7 @@ export function Search({ initialResults }: Props) {
           automaticSelection={Boolean(searchInput)}
         />
         <hr className="Search__category-divider" />
-        <SearchResultsInline
+        <InlineResults
           title="Events"
           query={searchResults.results.events.query}
           results={searchResults.results.events.value.map(event => ({

@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {LoadingAnimation} from './LoadingAnimation';
-import './SearchResultsInline.css';
+import './InlineResults.css';
 
 type InlineResult = {
   element: JSX.Element,
@@ -19,7 +19,7 @@ interface Props {
   disabled?: boolean;
 }
 
-export function SearchResultsInline({
+export function InlineResults({
   title,
   query,
   results,
@@ -34,29 +34,29 @@ export function SearchResultsInline({
   );
 
   return (
-    <div className="SearchResultsInline">
-      <span className="SearchResultsInline__header">
-        <h3 className="SearchResultsInline__title">
+    <div className="InlineResults">
+      <span className="InlineResults__header">
+        <h3 className="InlineResults__title">
           {title}
         </h3>
         {query &&
-          <span className="SearchResultsInline__query">
+          <span className="InlineResults__query">
             {query}
           </span>}
         {!loading && results.length === 0 &&
-          <span className="SearchResultsInline__no-results">
+          <span className="InlineResults__no-results">
             No results
           </span>}
       </span>
       {loading && <LoadingAnimation />}
       {!loading && results.length > 0 &&
-        <div className="SearchResultsInline__results">
+        <div className="InlineResults__results">
           {results.slice(0, max).map(({element, value, count}, index) => (
-            <div className="SearchResultsInline__result">
+            <div className="InlineResults__result">
               <button
                 className={`
-                  SearchResultsInline__result-content
-                  ${selectedResultIndex === index ? 'SearchResultsInline__result-content--selected' : ''}
+                  InlineResults__result-content
+                  ${selectedResultIndex === index ? 'InlineResults__result-content--selected' : ''}
                 `}
                 onClick={() => {
                   setSelectedResultIndex(prevState => (
@@ -73,7 +73,7 @@ export function SearchResultsInline({
               >
                 {element}
               </button>
-              <span className="SearchResultsInline__result-count">
+              <span className="InlineResults__result-count">
                 {count} matches
               </span>
             </div>
