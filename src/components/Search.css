@@ -33,6 +33,7 @@
 .Search__search-input:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--primary-blue);
+  -webkit-box-shadow: 0 0 0 2px var(--primary-blue);
 }
 
 .Search__search-header {
