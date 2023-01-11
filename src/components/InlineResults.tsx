@@ -10,7 +10,8 @@ type InlineResult = {
 
 interface Props {
   title: string;
-  query?: string;
+  initial: boolean;
+  description: string;
   state: 'success' | 'cancelled' | 'error';
   results: InlineResult[];
   loading: boolean;
@@ -21,7 +22,8 @@ interface Props {
 
 export function InlineResults({
   title,
-  query,
+  initial,
+  description,
   state,
   results,
   loading,
@@ -37,9 +39,10 @@ export function InlineResults({
         <h3 className="InlineResults__title">
           {title}
         </h3>
-        {query &&
+        {(initial || selectedResultIndex) &&
           <span className="InlineResults__query">
-            {query}
+            {initial && description}
+            {!!selectedResultIndex && results[selectedResultIndex].value}
           </span>}
         {!loading && results.length === 0 && state === 'success' &&
           <span className="InlineResults__no-results">

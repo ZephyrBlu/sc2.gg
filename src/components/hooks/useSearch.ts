@@ -50,12 +50,6 @@ export function useSearch() {
         ...prevState,
         [url]: results,
       }));
-
-      if (!url.endsWith('games')) {
-        const appUrl = new URL(window.location.href);
-        appUrl.searchParams.set('q', query.split('+').join(' '));
-        window.history.pushState({}, '', appUrl);
-      }
     }
 
     return results;

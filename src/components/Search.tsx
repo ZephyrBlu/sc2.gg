@@ -36,10 +36,17 @@ export function Search({ initialResults }: Props) {
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (!searchRef.current?.value && params.has('q')) {
-      setSearchInput(params.get('q')?.split('+').join(' ') || '');
-    }
+    const updateSearchInput = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('q')) {
+        setSearchInput(params.get('q')?.split('+').join(' ') || '');
+      }
+    };
+
+    updateSearchInput();
+
+    window.addEventListener('popstate', updateSearchInput);
+    return () => window.removeEventListener('popstate', updateSearchInput);
   }, []);
 
   const noSearchResultsPresent = (
@@ -141,6 +148,18 @@ export function Search({ initialResults }: Props) {
         },
         searching: wasAnyRequestCancelled,
       }));
+
+      const wasAnyRequestSuccessful = [players, maps, events].some(result => result.state === 'success');
+
+      const params = new URLSearchParams(window.location.search);
+      if (
+        wasAnyRequestSuccessful &&
+        searchInput.trim() !== params.get('q')?.split('+').join(' ')
+      ) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('q', searchInput.trim());
+        window.history.pushState({}, '', url);
+      }
 
       inputResults = inputResults.filter(r => r.length > 0);
       if (inputResults.length > 0) {
@@ -294,7 +313,8 @@ export function Search({ initialResults }: Props) {
       <div className="Search__category-results">
         <InlineResults
           title="Players"
-          // query={searchResults.results.players.query}
+          initial={!searchInput}
+          description={searchResults.results.players.query}
           state={searchResults.results.players.state}
           results={searchResults.results.players.value.map(player => ({
             element: (
@@ -320,7 +340,8 @@ export function Search({ initialResults }: Props) {
         <hr className="Search__category-divider" />
         <InlineResults
           title="Maps"
-          // query={searchResults.results.maps.query}
+          initial={!searchInput}
+          description={searchResults.results.maps.query}
           state={searchResults.results.maps.state}
           results={searchResults.results.maps.value.map(map => ({
             element: map.map,
@@ -332,7 +353,8 @@ export function Search({ initialResults }: Props) {
         <hr className="Search__category-divider" />
         <InlineResults
           title="Events"
-          // query={searchResults.results.events.query}
+          initial={!searchInput}
+          description={searchResults.results.events.query}
           state={searchResults.results.events.state}
           results={searchResults.results.events.value.map(event => ({
             element: event.event,

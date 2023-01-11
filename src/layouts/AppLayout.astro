@@ -47,6 +47,10 @@ import '../components/index.css';
       font-size: 24px;
     }
 
+    .AppLayout__home {
+      text-decoration: none;
+    }
+
     .AppLayout__nav {
       display: flex;
       justify-content: space-around;
@@ -83,7 +87,9 @@ import '../components/index.css';
   <body>
     <div class="AppLayout">
       <header class="AppLayout__header">
-        StarCraft 2 Games
+        <a class="AppLayout__home" href="/">
+          StarCraft 2 Games
+        </a>
       </header>
       <!-- <nav class="AppLayout__nav">
         <a class="AppLayout__link" href="/">Search</a>
