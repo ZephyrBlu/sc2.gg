@@ -99,6 +99,26 @@ export function Search({ initialResults }: Props) {
       if (players.state !== 'success') {
         results.players.query = searchResults.results.players.query;
         results.players.value = searchResults.results.players.value;
+      } else {
+        const exactMatches: Replay[] = [];
+        const otherMatches: Replay[] = [];
+        const terms = searchInput.split(' ');
+        results.players.value.forEach((player) => {
+          let exact = false;
+          // any exact name match should rank replay higher
+          const exactMatch = terms.some((term: string) => compare(player.player, term));
+          if (!exact && exactMatch) {
+            exactMatches.push(player);
+            exact = true;
+          }
+
+          if (!exact) {
+            otherMatches.push(player);
+          }
+        });
+
+        const orderedResults = [...exactMatches, ...otherMatches];
+        results.players.value = orderedResults;
       }
 
       if (maps.state !== 'success') {
