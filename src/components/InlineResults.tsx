@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {LoadingAnimation} from './LoadingAnimation';
 import './InlineResults.css';
 
@@ -32,6 +32,10 @@ export function InlineResults({
   disabled = false,
 }: Props) {
   const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setSelectedResultIndex(null);
+  }, [results])
 
   return (
     <div className="InlineResults">
