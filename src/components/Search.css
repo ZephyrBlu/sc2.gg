@@ -23,7 +23,6 @@
 .Search__search-input {
   background-color: var(--primary-light-1);
   border-radius: 8px;
-  -webkit-border-radius: 8px;
   font-size: 18px;
   color: var(--text);
   border: none;
@@ -32,7 +31,9 @@
 }
 
 .Search__search-input:focus {
-  outline: 2px solid var(--primary-blue);
+  /* outline: 2px solid var(--primary-blue); */
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-blue);
 }
 
 .Search__search-header {
