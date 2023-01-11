@@ -10,5 +10,5 @@ export default defineConfig({
     // react(),
     preact({compat: true}),
     // image(),
-  ]
+  ],
 });

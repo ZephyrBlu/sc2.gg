@@ -10,7 +10,7 @@ type InlineResult = {
 
 interface Props {
   title: string;
-  query: string;
+  query?: string;
   results: InlineResult[];
   loading: boolean;
   max?: number;
@@ -39,9 +39,10 @@ export function SearchResultsInline({
         <h3 className="SearchResultsInline__title">
           {title}
         </h3>
-        <span className="SearchResultsInline__query">
-          {query}
-        </span>
+        {query &&
+          <span className="SearchResultsInline__query">
+            {query}
+          </span>}
         {!loading && results.length === 0 &&
           <span className="SearchResultsInline__no-results">
             No results

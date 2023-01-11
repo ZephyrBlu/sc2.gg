@@ -23,6 +23,7 @@
 .Search__search-input {
   background-color: var(--primary-light-1);
   border-radius: 8px;
+  -webkit-border-radius: 8px;
   font-size: 18px;
   color: var(--text);
   border: none;
