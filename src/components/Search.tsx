@@ -35,6 +35,13 @@ export function Search({ initialResults }: Props) {
   });
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (!searchInput && params.has('q')) {
+      setSearchInput(params.get('q') || '');
+    }
+  }, []);
+
   const noSearchResultsPresent = (
     searchResults.results.replays.value.length === 0 &&
     searchResults.results.players.value.length === 0 &&

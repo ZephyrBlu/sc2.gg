@@ -41,11 +41,15 @@ export function useSearch() {
       return {query: quoted(query), value: null, state};
     });
 
-    if (results) {
+    if (results.state === 'success') {
       setQueryCache(prevState => ({
         ...prevState,
         [url]: results.value,
       }));
+
+      const appUrl = new URL(window.location.href);
+      appUrl.searchParams.set('q', query);
+      window.history.pushState({}, '', appUrl);
     }
 
     return results;
