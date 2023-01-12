@@ -286,7 +286,7 @@ export function Search({ initialResults }: Props) {
 
   const buildResultsText = () => {
     if (!searchResults.query) {
-      return 'Search 9000+ games for any replay, player, map or event';
+      return 'Search 9000+ games for any player, map or event';
     }
 
     return `${searchResults.searching ? 'Loading' : 'Showing'} results for: "${searchResults.query}"`;

@@ -125,7 +125,7 @@ export function Tree({ race, oppRace, tree }) {
   };
 
   // tree.root.children.forEach(child => renderNodesDfs(child));
-  const renderType = 'tree';
+  const renderType = 'flat';
   tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
   const expanded = renderedBfs.map((tree) => (
@@ -228,7 +228,7 @@ export function Tree({ race, oppRace, tree }) {
           ))}
           {Math.ceil(rootNode.probability * 100)}%, {rootNode.node.total}
         </div>
-        {/* {renderChildren(rootNode.node, prefix.length)} */}
+        {renderChildren(rootNode.node, prefix.length)}
       </div>
     );
   });

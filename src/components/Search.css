@@ -102,4 +102,17 @@
   .Search__search-results {
     font-size: 12px;
   }
+
+  .Search__player-result--Protoss,
+  .Search__player-result--Zerg {
+    margin-left: -2px;
+  }
+
+  .Search__player-result--Terran {
+    margin-left: 0;
+  }
+
+  .Search__player-result {
+    margin-right: 5px;
+  }
 }

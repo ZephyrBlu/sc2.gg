@@ -76,3 +76,22 @@
 .InlineResults__result-content--inline {
   display: flex;
 }
+
+@media(max-width: 575px) {
+  .InlineResults__results {
+    column-gap: 8px;
+    overflow-x: auto;
+    padding: 2px;
+  }
+
+  .InlineResults__result-content {
+    font-size: 12px;
+    padding: 6px;
+    white-space: nowrap;
+  }
+
+  .InlineResults__result-count {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}

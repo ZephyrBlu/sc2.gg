@@ -27,7 +27,7 @@ export function InlineResults({
   state,
   results,
   loading,
-  max = 3,
+  max = 5,
   selectedValueCallback,
   disabled = false,
 }: Props) {
