@@ -79,6 +79,11 @@
 }
 
 @media(max-width: 575px) {
+  .InlineResults__header {
+    margin-bottom: 5px;
+    height: 20px;
+  }
+
   .InlineResults__title {
     font-size: 16px;
   }
