@@ -42,12 +42,6 @@
   justify-content: space-between;
 }
 
-.Search__category-divider {
-  display: none;
-  margin: 20px 0;
-  border: 1px solid var(--primary-light-3);
-}
-
 .Search__category-results {
   display: flex;
   flex-direction: column;

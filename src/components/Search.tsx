@@ -321,7 +321,6 @@ export function Search({ initialResults }: Props) {
           }))}
           loading={searchResults.loading}
         />
-        <hr className="Search__category-divider" />
         <InlineResults
           title="Maps"
           initial={!searchInput}
@@ -334,7 +333,6 @@ export function Search({ initialResults }: Props) {
           }))}
           loading={searchResults.loading}
         />
-        <hr className="Search__category-divider" />
         <InlineResults
           title="Events"
           initial={!searchInput}
@@ -347,7 +345,6 @@ export function Search({ initialResults }: Props) {
           }))}
           loading={searchResults.loading}
         />
-        <hr className="Search__category-divider" />
         {searchResults.results.replays.value.slice(0, 20).map(mapToReplayComponent)}
         {noSearchResultsPresent && searchInput && !searchResults.loading &&
           <span className="Search__default">

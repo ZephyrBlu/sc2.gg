@@ -6,6 +6,7 @@
   align-items: center;
   column-gap: 20px;
   margin-bottom: 10px;
+  height: 30px;
 }
 
 .InlineResults__title {
@@ -103,5 +104,9 @@
   .InlineResults__result-count {
     font-size: 12px;
     white-space: nowrap;
+  }
+
+  .InlineResults__no-results {
+    font-size: 12px;
   }
 }
