@@ -90,6 +90,7 @@
 
   .InlineResults__query {
     font-size: 12px;
+    padding: 2px 8px;
   }
 
   .InlineResults__results {
