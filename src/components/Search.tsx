@@ -67,7 +67,7 @@ export function Search({ initialResults }: Props) {
 
       let searchStartTime = Date.now();
 
-      const urlEncodedSearchInput = encodeURIComponent(searchInput.trim()).replace(/%20/, '+');
+      const urlEncodedSearchInput = encodeURIComponent(searchInput.trim()).replaceAll(/%20/g, '+');
 
       const gamesPromise = new Promise<SearchResult<Replay>>(async (resolve) => {
         const results = await searchGames(urlEncodedSearchInput, {fuzzy: true});
@@ -180,7 +180,6 @@ export function Search({ initialResults }: Props) {
         const exactMatches: Replay[] = [];
         const otherMatches: Replay[] = [];
         const terms = searchInput.split(' ');
-        console.log('replays', replays);
         replays.value.forEach((replay) => {
           let exact = false;
           replay.players.forEach((player) => {
