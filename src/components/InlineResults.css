@@ -88,6 +88,9 @@
 
   .InlineResults__results {
     overflow-x: auto;
+    padding-top: 2px;
+    padding-left: 2px;
+    margin-left: -2px;
     padding-bottom: 6px;
   }
 
