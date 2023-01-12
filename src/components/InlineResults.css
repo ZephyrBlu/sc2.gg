@@ -93,12 +93,12 @@
   .InlineResults__results {
     column-gap: 8px;
     overflow-x: auto;
-    padding: 4px;
+    padding: 5px 0;
   }
 
   .InlineResults__result-content {
     font-size: 12px;
-    padding: 6px;
+    padding: 6px 8px;
     white-space: nowrap;
   }
 
