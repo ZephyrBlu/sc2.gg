@@ -91,7 +91,7 @@
   }
 
   .Search__search {
-    margin-bottom: 6px;
+    margin-bottom: 10px;
   }
 
   .Search__search-input {
@@ -101,6 +101,10 @@
 
   .Search__search-results {
     font-size: 12px;
+  }
+
+  .Search__category-results {
+    row-gap: 15px;
   }
 
   .Search__player-result--Protoss,

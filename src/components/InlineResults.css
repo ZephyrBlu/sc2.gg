@@ -78,10 +78,22 @@
 }
 
 @media(max-width: 575px) {
+  .InlineResults__header {
+    margin-bottom: 5px;
+  }
+
+  .InlineResults__title {
+    font-size: 16px;
+  }
+
+  .InlineResults__query {
+    font-size: 12px;
+  }
+
   .InlineResults__results {
     column-gap: 8px;
     overflow-x: auto;
-    padding: 2px;
+    padding: 4px;
   }
 
   .InlineResults__result-content {
