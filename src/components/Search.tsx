@@ -7,10 +7,10 @@ import { compare } from './utils';
 import { InlineResults } from './InlineResults';
 
 interface Results {
-  replays: SearchResult;
-  players: SearchResult;
-  maps: SearchResult;
-  events: SearchResult;
+  replays: SearchResult<Replay>;
+  players: SearchResult<any>;
+  maps: SearchResult<any>;
+  events: SearchResult<any>;
 }
 
 interface Props {
@@ -65,41 +65,38 @@ export function Search({ initialResults }: Props) {
         query: searchInput,
       }));
 
-      let replays: Replay[][] = [];
       let searchStartTime = Date.now();
 
-      const terms = searchInput.split(' ');
       const urlEncodedSearchInput = encodeURIComponent(searchInput.trim()).replace(/%20/, '+');
 
-      let inputResults: Replay[][] = [];
-      const gamesPromise = Promise.all(terms.map(async (term) => {
-        const results = await searchGames(term);
-        inputResults.push(results || []);
-      }));
+      const gamesPromise = new Promise<SearchResult<Replay>>(async (resolve) => {
+        const results = await searchGames(urlEncodedSearchInput, {fuzzy: true});
+        resolve(results);
+      });
 
-      const playersPromise = new Promise<SearchResult>(async (resolve) => {
+      const playersPromise = new Promise<SearchResult<any>>(async (resolve) => {
         const results = await searchPlayers(urlEncodedSearchInput);
         resolve(results);
       });
 
-      const mapsPromise = new Promise<SearchResult>(async (resolve) => {
+      const mapsPromise = new Promise<SearchResult<any>>(async (resolve) => {
         const results = await searchMaps(urlEncodedSearchInput);
         resolve(results);
       });
 
-      const eventsPromise = new Promise<SearchResult>(async (resolve) => {
+      const eventsPromise = new Promise<SearchResult<any>>(async (resolve) => {
         const result = await searchEvents(urlEncodedSearchInput);
         resolve(result);
       });
 
-      const [_, players, maps, events] = await Promise.all([
+      const [replays, players, maps, events] = await Promise.all([
         gamesPromise,
         playersPromise,
         mapsPromise,
         eventsPromise,
       ]);
 
-      let results: {[key: string]: SearchResult} = {players, maps, events};
+      let results: {[key: string]: SearchResult<any>} = {players, maps, events};
 
       // if search fails or is cancelled, set result value to previous value
 
@@ -161,14 +158,6 @@ export function Search({ initialResults }: Props) {
         window.history.pushState({}, '', url);
       }
 
-      inputResults = inputResults.filter(r => r.length > 0);
-      if (inputResults.length > 0) {
-        const inputIntersectionResults = inputResults.reduce((current, next) => {
-          return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
-        }, inputResults[0]);
-        replays.push(inputIntersectionResults);
-      }
-
       // if search results are fresher than existing results, update them
       if (searchStartTime > searchStartedAt.current) {
         if (replays.length === 0) {
@@ -188,16 +177,11 @@ export function Search({ initialResults }: Props) {
           return;
         }
 
-        replays = replays.filter(r => r.length > 0);
-        const intersectionResults = replays.reduce((current, next) => {
-          return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
-        }, replays[0]);
-        intersectionResults.sort(playedAtSort);
-
         const exactMatches: Replay[] = [];
         const otherMatches: Replay[] = [];
         const terms = searchInput.split(' ');
-        intersectionResults.forEach((replay) => {
+        console.log('replays', replays);
+        replays.value.forEach((replay) => {
           let exact = false;
           replay.players.forEach((player) => {
             // any exact name match should rank replay higher
