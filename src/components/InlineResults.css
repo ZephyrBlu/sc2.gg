@@ -78,10 +78,6 @@
 }
 
 @media(max-width: 575px) {
-  .InlineResults__header {
-    margin-bottom: 5px;
-  }
-
   .InlineResults__title {
     font-size: 16px;
   }
@@ -91,9 +87,8 @@
   }
 
   .InlineResults__results {
-    column-gap: 8px;
     overflow-x: auto;
-    padding: 5px 0;
+    padding-bottom: 6px;
   }
 
   .InlineResults__result-content {
