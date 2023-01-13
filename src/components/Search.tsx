@@ -27,6 +27,7 @@ export function Search({ initialResults }: Props) {
     maps: false,
     events: false,
   });
+  const [showCategorySelectionDropdown, setShowCategorySelectionDropdown] = useState(false);
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
     searching: boolean,
@@ -305,11 +306,21 @@ export function Search({ initialResults }: Props) {
   const noCategoriesSelected = Object.values(selectedCategories).every(selected => !selected);
 
   return (
-    <div className="Search">
+    <div
+      className="Search"
+      onClick={() => {
+        if (showCategorySelectionDropdown) {
+          setShowCategorySelectionDropdown(false);
+        }}
+      }
+    >
       <div className="Search__search">
         <div className="Search__search-box">
-          <details className="Search__search-type">
-            <summary className="Search__selected-search-type">
+          <details className="Search__search-type" open={showCategorySelectionDropdown}>
+            <summary
+              className="Search__selected-search-type"
+              onClick={() => setShowCategorySelectionDropdown(prevState => !prevState)}
+            >
               {allCategoriesSelected && 'All'}
               {noCategoriesSelected && 'Games'}
               {!allCategoriesSelected && !noCategoriesSelected &&
