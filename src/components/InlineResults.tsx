@@ -48,10 +48,10 @@ export function InlineResults({
         <h3 className="InlineResults__title">
           {title}
         </h3>
-        {(initial || (selectedResultIndex !== null && results[selectedResultIndex])) &&
+        {((initial && selectedResultIndex === null) || (selectedResultIndex !== null && results[selectedResultIndex])) &&
           <span className="InlineResults__query">
             {initial && selectedResultIndex === null && description}
-            {selectedResultIndex !== null && results[selectedResultIndex].value}
+            {selectedResultIndex !== null && results[selectedResultIndex] && results[selectedResultIndex].value}
           </span>}
         {!loading && results.length === 0 && state === 'success' &&
           <span className="InlineResults__no-results">

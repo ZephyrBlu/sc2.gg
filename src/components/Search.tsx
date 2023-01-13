@@ -24,8 +24,8 @@ export function Search({ initialResults }: Props) {
   const searchStartedAt = useRef(0);
   const [selectedCategories, setSelectedCategories] = useState<{[key: string]: boolean}>({
     players: true,
-    maps: true,
-    events: true,
+    maps: false,
+    events: false,
   });
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
@@ -301,15 +301,19 @@ export function Search({ initialResults }: Props) {
 
   const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
 
+  const allCategoriesSelected = Object.values(selectedCategories).every(selected => selected);
+  const noCategoriesSelected = Object.values(selectedCategories).every(selected => !selected);
+
   return (
     <div className="Search">
       <div className="Search__search">
         <div className="Search__search-box">
           <details className="Search__search-type">
             <summary className="Search__selected-search-type">
-              {Object.values(selectedCategories).every(category => category)
-                ? 'All'
-                : Object.entries(selectedCategories)
+              {allCategoriesSelected && 'All'}
+              {noCategoriesSelected && 'Games'}
+              {!allCategoriesSelected && !noCategoriesSelected &&
+                Object.entries(selectedCategories)
                   .filter(([_, selected]) => selected)
                   .map(([category, _]) => capitalize(category))
                   .join(', ')}
@@ -319,18 +323,14 @@ export function Search({ initialResults }: Props) {
                 <span
                   className="Search__search-type-option"
                   onClick={(event) => {
-                    const onlyCategorySelected = Object.entries(selectedCategories)
-                      .filter(([c, _]) => category !== c)
-                      .every(([_, s]) => !s);
+                    // const onlyCategorySelected = Object.entries(selectedCategories)
+                    //   .filter(([c, _]) => category !== c)
+                    //   .every(([_, s]) => !s);
 
-                    if (!onlyCategorySelected) {
-                      setSelectedCategories(prevState => ({
-                        ...prevState,
-                        [category]: !prevState[category],
-                      }));
-                    } else {
-                      event.preventDefault();
-                    }
+                    setSelectedCategories(prevState => ({
+                      ...prevState,
+                      [category]: !prevState[category],
+                    }));
                   }}
                 >
                   <input
@@ -364,83 +364,86 @@ export function Search({ initialResults }: Props) {
         </div>
       </div>
       <div className="Search__category-results">
-        <InlineResults
-          title="Players"
-          initial={!searchInput}
-          description={searchResults.results.players.query}
-          state={searchResults.results.players.state}
-          results={searchResults.results.players.value.map(player => ({
-            element: (
-              <span
-                className={`
-                  Search__player-result
-                  Search__player-result--${player.race}
-                `}
-              >
-                <img
-                  src={`/icons/${player.race.toLowerCase()}-logo.svg`}
-                  className="Search__race-icon"
-                  alt={player.race}
-                />
-                {player.player}
-              </span>
-            ),
-            value: player.player,
-            count: player.occurrences,
-          }))}
-          loading={searchResults.loading}
-          selected={selectedResults.player?.index}
-          onSelection={(result) => setSelectedResults(prevState => ({
-            ...prevState,
-            players: result,
-          }))}
-          onDeselection={() => setSelectedResults(prevState => ({
-            ...prevState,
-            players: null,
-          }))}
-        />
-        <InlineResults
-          title="Maps"
-          initial={!searchInput}
-          description={searchResults.results.maps.query}
-          state={searchResults.results.maps.state}
-          results={searchResults.results.maps.value.map(map => ({
-            element: map.map,
-            value: map.map,
-            count: map.occurrences,
-          }))}
-          loading={searchResults.loading}
-          selected={selectedResults.maps?.index}
-          onSelection={(result) => setSelectedResults(prevState => ({
-            ...prevState,
-            maps: result,
-          }))}
-          onDeselection={() => setSelectedResults(prevState => ({
-            ...prevState,
-            maps: null,
-          }))}
-        />
-        <InlineResults
-          title="Events"
-          initial={!searchInput}
-          description={searchResults.results.events.query}
-          state={searchResults.results.events.state}
-          results={searchResults.results.events.value.map(event => ({
-            element: event.event,
-            value: event.event,
-            count: event.occurrences,
-          }))}
-          loading={searchResults.loading}
-          selected={selectedResults.events?.index}
-          onSelection={(result) => setSelectedResults(prevState => ({
-            ...prevState,
-            events: result,
-          }))}
-          onDeselection={() => setSelectedResults(prevState => ({
-            ...prevState,
-            events: null,
-          }))}
-        />
+        {selectedCategories.players &&
+          <InlineResults
+            title="Players"
+            initial={!searchInput}
+            description={searchResults.results.players.query}
+            state={searchResults.results.players.state}
+            results={searchResults.results.players.value.map(player => ({
+              element: (
+                <span
+                  className={`
+                    Search__player-result
+                    Search__player-result--${player.race}
+                  `}
+                >
+                  <img
+                    src={`/icons/${player.race.toLowerCase()}-logo.svg`}
+                    className="Search__race-icon"
+                    alt={player.race}
+                  />
+                  {player.player}
+                </span>
+              ),
+              value: player.player,
+              count: player.occurrences,
+            }))}
+            loading={searchResults.loading}
+            selected={selectedResults.player?.index}
+            onSelection={(result) => setSelectedResults(prevState => ({
+              ...prevState,
+              players: result,
+            }))}
+            onDeselection={() => setSelectedResults(prevState => ({
+              ...prevState,
+              players: null,
+            }))}
+          />}
+        {selectedCategories.maps &&
+          <InlineResults
+            title="Maps"
+            initial={!searchInput}
+            description={searchResults.results.maps.query}
+            state={searchResults.results.maps.state}
+            results={searchResults.results.maps.value.map(map => ({
+              element: map.map,
+              value: map.map,
+              count: map.occurrences,
+            }))}
+            loading={searchResults.loading}
+            selected={selectedResults.maps?.index}
+            onSelection={(result) => setSelectedResults(prevState => ({
+              ...prevState,
+              maps: result,
+            }))}
+            onDeselection={() => setSelectedResults(prevState => ({
+              ...prevState,
+              maps: null,
+            }))}
+          />}
+        {selectedCategories.events && 
+          <InlineResults
+            title="Events"
+            initial={!searchInput}
+            description={searchResults.results.events.query}
+            state={searchResults.results.events.state}
+            results={searchResults.results.events.value.map(event => ({
+              element: event.event,
+              value: event.event,
+              count: event.occurrences,
+            }))}
+            loading={searchResults.loading}
+            selected={selectedResults.events?.index}
+            onSelection={(result) => setSelectedResults(prevState => ({
+              ...prevState,
+              events: result,
+            }))}
+            onDeselection={() => setSelectedResults(prevState => ({
+              ...prevState,
+              events: null,
+            }))}
+          />}
         {searchResults.results.replays.value.slice(0, 20).map(mapToReplayComponent)}
         {noSearchResultsPresent && searchInput && !searchResults.loading &&
           <span className="Search__default">
