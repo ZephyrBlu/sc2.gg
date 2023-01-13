@@ -308,8 +308,17 @@ export function Search({ initialResults }: Props) {
   return (
     <div
       className="Search"
-      onClick={() => {
-        if (showCategorySelectionDropdown) {
+      onClick={(event) => {
+        const dropdownClassList = [
+          'Search__search-type-selection-dropdown',
+          'Search__search-type-option',
+          'Search__search-type-checkbox',
+          'Search__search-type-label',
+        ];
+        if (
+          showCategorySelectionDropdown &&
+          !dropdownClassList.includes(event.target?.classList[0])
+        ) {
           setShowCategorySelectionDropdown(false);
         }}
       }
@@ -351,7 +360,10 @@ export function Search({ initialResults }: Props) {
                     name={`search-${category}`}
                     checked={selected}
                   />
-                  <label className="Search__search-type-label" for={`search-${category}`}>
+                  <label
+                    className="Search__search-type-label" 
+                    for={`search-${category}`}
+                  >
                     {capitalize(category)}
                   </label>
                 </span>  
