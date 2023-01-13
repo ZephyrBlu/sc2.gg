@@ -22,6 +22,12 @@ export function Search({ initialResults }: Props) {
   const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
   const [buildSize, setBuildSize] = useState<number>(10);
   const searchStartedAt = useRef(0);
+  const [selectedCategories, setSelectedCategories] = useState<{[key: string]: boolean}>({
+    all: true,
+    players: false,
+    maps: false,
+    events: false,
+  });
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
     searching: boolean,
@@ -289,18 +295,49 @@ export function Search({ initialResults }: Props) {
     return `${searchResults.searching ? 'Loading' : 'Showing'} results for: "${searchResults.query}"`;
   };
 
+  const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
+
   return (
     <div className="Search">
       <div className="Search__search">
-        <input
-          type="search"
-          className="Search__search-input"
-          aria-label="search"
-          autoFocus
-          value={searchInput}
-          ref={searchRef}
-          onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
-        />
+        <div className="Search__search-box">
+          <details className="Search__search-type">
+            <summary className="Search__selected-search-type">
+              {Object.entries(selectedCategories)
+                .filter(([_, selected]) => selected)
+                .map(([category, _]) => capitalize(category))
+                .join(', ')}
+            </summary>
+            <div className="Search__search-type-selection-dropdown">
+              {Object.entries(selectedCategories).map(([category, selected]) => (
+                <span
+                  className="Search__search-type-option"
+                  onClick={() => null} // set checkbox, uncheck all if non-all selected, prevent unselecting everything
+                >
+                  <input
+                    type="checkbox"
+                    id={`search-${category}`}
+                    className="Search__search-type-checkbox"
+                    name={`search-${category}`}
+                    checked={selected}
+                  />
+                  <label className="Search__search-type-label" for={`search-${category}`}>
+                    {capitalize(category)}
+                  </label>
+                </span>  
+              ))}
+            </div>
+          </details>
+          <input
+            type="search"
+            className="Search__search-input"
+            aria-label="search"
+            autoFocus
+            value={searchInput}
+            ref={searchRef}
+            onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
+          />
+        </div>
         <div className="Search__search-header">
           <span className="Search__search-results">
             {buildResultsText()}
