@@ -312,7 +312,12 @@ export function Search({ initialResults }: Props) {
               {Object.entries(selectedCategories).map(([category, selected]) => (
                 <span
                   className="Search__search-type-option"
-                  onClick={() => null} // set checkbox, uncheck all if non-all selected, prevent unselecting everything
+                  onClick={() => {
+                    setSelectedCategories(prevState => ({
+                      ...prevState,
+                      [category]: !prevState[category],
+                    }));
+                  }} // set checkbox, uncheck all if non-all selected, prevent unselecting everything
                 >
                   <input
                     type="checkbox"
