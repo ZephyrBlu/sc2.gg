@@ -74,6 +74,11 @@ export function Search({ initialResults }: Props) {
 
   useEffect(() => {
     const startSearch = async () => {
+      setSelectedResults({
+        players: null,
+        maps: null,
+        events: null,
+      });
       setSearchResults(prevState => ({
         ...prevState,
         loading: noSearchResultsPresent,

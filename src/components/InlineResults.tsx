@@ -48,7 +48,7 @@ export function InlineResults({
         <h3 className="InlineResults__title">
           {title}
         </h3>
-        {(initial || selectedResultIndex !== null) &&
+        {(initial || (selectedResultIndex !== null && results[selectedResultIndex])) &&
           <span className="InlineResults__query">
             {initial && selectedResultIndex === null && description}
             {selectedResultIndex !== null && results[selectedResultIndex].value}
