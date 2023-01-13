@@ -9,6 +9,13 @@ export interface SearchResult<T> {
   state: SearchState;
 }
 
+export interface SearchOptions {
+  fuzzy: boolean;
+  player?: string | null;
+  map?: string | null;
+  event?: string | null;
+}
+
 export function useSearch() {
   const [queryCache, setQueryCache] = useState<{[query: string]: SearchResult<any>}>({});
   const requests = useRef<{[key: string]: AbortController}>({});
@@ -55,15 +62,31 @@ export function useSearch() {
     return results;
   };
 
-  const searchGames = async (query: string, opts: any  = {}): Promise<SearchResult<Replay>> => {
+  const searchGames = async (
+    query: string,
+    opts: SearchOptions = {fuzzy: true},
+  ): Promise<SearchResult<Replay>> => {
     const endpoint = `${API_URL}/games`;
 
-    let params = `q=${query.toLowerCase()}`;
+    const params = new URLSearchParams();
     if (opts.fuzzy === true) {
-      params += '&fuzzy';
+      params.set('q', query.toLowerCase());
+      params.set('fuzzy', '');
     }
 
-    return await search(query, `${endpoint}?${params}`, endpoint);
+    if (opts.player) {
+      params.set('player_name', opts.player);
+    }
+
+    if (opts.map) {
+      params.set('map_name', opts.map);
+    }
+
+    if (opts.event) {
+      params.set('event_name', opts.event);
+    }
+
+    return await search(query, `${endpoint}?${params.toString()}`, endpoint);
   };
 
   const searchPlayers = async (query: string): Promise<SearchResult<any>> => {

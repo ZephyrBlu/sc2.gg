@@ -8,6 +8,11 @@ type InlineResult = {
   count?: number,
 }
 
+export interface SelectedResult {
+  value: string;
+  index: number;
+}
+
 interface Props {
   title: string;
   initial: boolean;
@@ -16,7 +21,8 @@ interface Props {
   results: InlineResult[];
   loading: boolean;
   max?: number;
-  selectedValueCallback?: Function;
+  selected?: number | null;
+  onSelected?: (result: SelectedResult) => void;
   disabled?: boolean;
 }
 
@@ -28,14 +34,11 @@ export function InlineResults({
   results,
   loading,
   max = 5,
-  selectedValueCallback,
+  selected = null,
+  onSelected,
   disabled = false,
 }: Props) {
-  const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    setSelectedResultIndex(null);
-  }, [results])
+  const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(selected);
 
   return (
     <div className="InlineResults">
@@ -74,8 +77,8 @@ export function InlineResults({
                       : index
                   ));
 
-                  if (selectedValueCallback) {
-                    selectedValueCallback(value);
+                  if (onSelected) {
+                    onSelected({value, index});
                   }
                 }}
                 disabled={disabled}

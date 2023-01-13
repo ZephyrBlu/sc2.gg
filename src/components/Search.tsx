@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect, useLayoutEffect, MutableRefObject } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { ReplayRecord } from './ReplayRecord';
-import { SearchResult, useSearch } from './hooks';
+import { SearchResult, SearchOptions, useSearch } from './hooks';
 import type { Replay } from "./types";
 import './Search.css';
 import { compare } from './utils';
-import { InlineResults } from './InlineResults';
+import { InlineResults, SelectedResult } from './InlineResults';
 
 interface Results {
   replays: SearchResult<Replay>;
@@ -33,6 +33,11 @@ export function Search({ initialResults }: Props) {
     query: null,
     results: initialResults,
   });
+  const [selectedResults, setSelectedResults] = useState<{[key: string]: SelectedResult | null}>({
+    players: null,
+    maps: null,
+    events: null,
+  });
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useEffect(() => {
@@ -56,6 +61,12 @@ export function Search({ initialResults }: Props) {
     searchResults.results.events.value.length === 0
   );
 
+  const anyResultsSelected = (
+    selectedResults.players ||
+    selectedResults.maps ||
+    selectedResults.events
+  );
+
   useEffect(() => {
     const startSearch = async () => {
       setSearchResults(prevState => ({
@@ -70,7 +81,14 @@ export function Search({ initialResults }: Props) {
       const urlEncodedSearchInput = encodeURIComponent(searchInput.trim()).replaceAll(/%20/g, '+');
 
       const gamesPromise = new Promise<SearchResult<Replay>>(async (resolve) => {
-        const results = await searchGames(urlEncodedSearchInput, {fuzzy: true});
+        const searchOptions: SearchOptions = {
+          fuzzy: !anyResultsSelected,
+          player: selectedResults.players?.value,
+          map: selectedResults.maps?.value,
+          event: selectedResults.events?.value,
+        };
+
+        const results = await searchGames(searchInput.trim(), searchOptions);
         resolve(results);
       });
 
@@ -137,14 +155,16 @@ export function Search({ initialResults }: Props) {
 
       const wasAnyRequestCancelled = [players, maps, events].some(result => result.state === 'cancelled');
 
-      setSearchResults(prevState => ({
-        ...prevState,
-        results: {
-          ...prevState.results,
-          ...results,
-        },
-        searching: wasAnyRequestCancelled,
-      }));
+      if (searchInput) {
+        setSearchResults(prevState => ({
+          ...prevState,
+          results: {
+            ...prevState.results,
+            ...results,
+          },
+          searching: wasAnyRequestCancelled,
+        }));
+      }
 
       const wasAnyRequestSuccessful = [players, maps, events].some(result => result.state === 'success');
 
@@ -160,23 +180,6 @@ export function Search({ initialResults }: Props) {
 
       // if search results are fresher than existing results, update them
       if (searchStartTime > searchStartedAt.current) {
-        if (replays.length === 0) {
-          setSearchResults(prevState => ({
-            ...prevState,
-            results: {
-              ...prevState.results,
-              replays: {
-                query: searchInput,
-                value: [],
-                state: 'success',
-              },
-            },
-            loading: false,
-          }));
-          searchStartedAt.current = searchStartTime;
-          return;
-        }
-
         const exactMatches: Replay[] = [];
         const otherMatches: Replay[] = [];
         const terms = searchInput.split(' ');
@@ -213,7 +216,10 @@ export function Search({ initialResults }: Props) {
       }
     };
 
-    if (searchInput && searchInput.length > 2) {
+    if (
+      (searchInput && searchInput.length > 2) ||
+      anyResultsSelected
+    ) {
       startSearch();
     } else {
       setSearchResults({
@@ -223,7 +229,7 @@ export function Search({ initialResults }: Props) {
         searching: false,
       });
     }
-  }, [searchInput, setSearchResults]);
+  }, [searchInput, selectedResults]);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -248,17 +254,6 @@ export function Search({ initialResults }: Props) {
     calculateBuildSize();
   }, []);
 
-  const playedAtSort = (a: Replay, b: Replay) => {
-    if (a.played_at < b.played_at) {
-      return 1;
-    }
-
-    if (a.played_at > b.played_at) {
-      return -1;
-    }
-
-    return 0;
-  };
   const mapToReplayComponent = (replay: Replay) => (
     <ReplayRecord
       key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
@@ -319,6 +314,11 @@ export function Search({ initialResults }: Props) {
             count: player.occurrences,
           }))}
           loading={searchResults.loading}
+          selected={selectedResults.player?.index}
+          onSelected={(result) => setSelectedResults(prevState => ({
+            ...prevState,
+            players: result,
+          }))}
         />
         <InlineResults
           title="Maps"
@@ -331,6 +331,11 @@ export function Search({ initialResults }: Props) {
             count: map.occurrences,
           }))}
           loading={searchResults.loading}
+          selected={selectedResults.maps?.index}
+          onSelected={(result) => setSelectedResults(prevState => ({
+            ...prevState,
+            maps: result,
+          }))}
         />
         <InlineResults
           title="Events"
@@ -343,6 +348,11 @@ export function Search({ initialResults }: Props) {
             count: event.occurrences,
           }))}
           loading={searchResults.loading}
+          selected={selectedResults.events?.index}
+          onSelected={(result) => setSelectedResults(prevState => ({
+            ...prevState,
+            events: result,
+          }))}
         />
         {searchResults.results.replays.value.slice(0, 20).map(mapToReplayComponent)}
         {noSearchResultsPresent && searchInput && !searchResults.loading &&
