@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {LoadingAnimation} from './LoadingAnimation';
 import './InlineResults.css';
 
@@ -22,7 +22,8 @@ interface Props {
   loading: boolean;
   max?: number;
   selected?: number | null;
-  onSelected?: (result: SelectedResult) => void;
+  onSelection?: (result: SelectedResult) => void;
+  onDeselection?: (result: SelectedResult) => void;
   disabled?: boolean;
 }
 
@@ -35,7 +36,8 @@ export function InlineResults({
   loading,
   max = 5,
   selected = null,
-  onSelected,
+  onSelection,
+  onDeselection,
   disabled = false,
 }: Props) {
   const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(selected);
@@ -71,15 +73,18 @@ export function InlineResults({
                   ${selectedResultIndex === index ? 'InlineResults__result-content--selected' : ''}
                 `}
                 onClick={() => {
+                  if (selectedResultIndex === index && onDeselection) {
+                    onDeselection({value, index});
+                  } else if (onSelection) {
+                    onSelection({value, index});
+                  }
+
                   setSelectedResultIndex(prevState => (
                     prevState === index
                       ? null
                       : index
                   ));
 
-                  if (onSelected) {
-                    onSelected({value, index});
-                  }
                 }}
                 disabled={disabled}
               >

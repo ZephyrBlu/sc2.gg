@@ -180,33 +180,13 @@ export function Search({ initialResults }: Props) {
 
       // if search results are fresher than existing results, update them
       if (searchStartTime > searchStartedAt.current) {
-        const exactMatches: Replay[] = [];
-        const otherMatches: Replay[] = [];
-        const terms = searchInput.split(' ');
-        replays.value.forEach((replay) => {
-          let exact = false;
-          replay.players.forEach((player) => {
-            // any exact name match should rank replay higher
-            const exactMatch = terms.some((term: string) => compare(player.name, term));
-            if (!exact && exactMatch) {
-              exactMatches.push(replay);
-              exact = true;
-            }
-          });
-
-          if (!exact) {
-            otherMatches.push(replay);
-          }
-        });
-
-        const orderedResults = [...exactMatches, ...otherMatches];
         setSearchResults(prevState => ({
           ...prevState,
           results: {
             ...prevState.results,
             replays: {
               query: searchInput,
-              value: orderedResults,
+              value: replays.value,
               state: 'success',
             },
           },
@@ -229,7 +209,46 @@ export function Search({ initialResults }: Props) {
         searching: false,
       });
     }
-  }, [searchInput, selectedResults]);
+  }, [searchInput]);
+
+  useEffect(() => {
+    const startGameSearch = async () => {
+      let searchStartTime = Date.now();
+
+      const replays = await new Promise<SearchResult<Replay>>(async (resolve) => {
+        const searchOptions: SearchOptions = {
+          fuzzy: false,
+          player: selectedResults.players?.value,
+          map: selectedResults.maps?.value,
+          event: selectedResults.events?.value,
+        };
+
+        const results = await searchGames(searchInput.trim(), searchOptions);
+        resolve(results);
+      });
+
+      // if search results are fresher than existing results, update them
+      if (searchStartTime > searchStartedAt.current) {
+        setSearchResults(prevState => ({
+          ...prevState,
+          results: {
+            ...prevState.results,
+            replays: {
+              query: searchInput,
+              value: replays.value,
+              state: 'success',
+            },
+          },
+          loading: false,
+        }));
+        searchStartedAt.current = searchStartTime;
+      }
+    }
+
+    if (anyResultsSelected) {
+      startGameSearch();
+    }
+  }, [selectedResults]);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
@@ -315,9 +334,13 @@ export function Search({ initialResults }: Props) {
           }))}
           loading={searchResults.loading}
           selected={selectedResults.player?.index}
-          onSelected={(result) => setSelectedResults(prevState => ({
+          onSelection={(result) => setSelectedResults(prevState => ({
             ...prevState,
             players: result,
+          }))}
+          onDeselection={() => setSelectedResults(prevState => ({
+            ...prevState,
+            players: null,
           }))}
         />
         <InlineResults
@@ -332,9 +355,13 @@ export function Search({ initialResults }: Props) {
           }))}
           loading={searchResults.loading}
           selected={selectedResults.maps?.index}
-          onSelected={(result) => setSelectedResults(prevState => ({
+          onSelection={(result) => setSelectedResults(prevState => ({
             ...prevState,
             maps: result,
+          }))}
+          onDeselection={() => setSelectedResults(prevState => ({
+            ...prevState,
+            maps: null,
           }))}
         />
         <InlineResults
@@ -349,9 +376,13 @@ export function Search({ initialResults }: Props) {
           }))}
           loading={searchResults.loading}
           selected={selectedResults.events?.index}
-          onSelected={(result) => setSelectedResults(prevState => ({
+          onSelection={(result) => setSelectedResults(prevState => ({
             ...prevState,
             events: result,
+          }))}
+          onDeselection={() => setSelectedResults(prevState => ({
+            ...prevState,
+            events: null,
           }))}
         />
         {searchResults.results.replays.value.slice(0, 20).map(mapToReplayComponent)}
