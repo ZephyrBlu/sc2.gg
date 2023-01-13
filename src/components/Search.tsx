@@ -308,20 +308,20 @@ export function Search({ initialResults }: Props) {
   return (
     <div
       className="Search"
-      // onClick={(event) => {
-      //   const dropdownClassList = [
-      //     'Search__search-type-selection-dropdown',
-      //     'Search__search-type-option',
-      //     'Search__search-type-checkbox',
-      //     'Search__search-type-label',
-      //   ];
-      //   if (
-      //     showCategorySelectionDropdown &&
-      //     !dropdownClassList.includes(event.target?.classList[0])
-      //   ) {
-      //     setShowCategorySelectionDropdown(false);
-      //   }}
-      // }
+      onClick={(event) => {
+        const dropdownClassList = [
+          'Search__search-type-selection-dropdown',
+          'Search__search-type-option',
+          'Search__search-type-checkbox',
+          'Search__search-type-label',
+        ];
+        if (
+          showCategorySelectionDropdown &&
+          !dropdownClassList.includes(event.target?.classList[0])
+        ) {
+          setShowCategorySelectionDropdown(false);
+        }}
+      }
     >
       <div className="Search__search">
         <div className="Search__search-box">
@@ -340,25 +340,23 @@ export function Search({ initialResults }: Props) {
             </summary>
             <div className="Search__search-type-selection-dropdown">
               {Object.entries(selectedCategories).map(([category, selected]) => (
-                <span
-                  className="Search__search-type-option"
-                  onClick={(event) => {
-                    // const onlyCategorySelected = Object.entries(selectedCategories)
-                    //   .filter(([c, _]) => category !== c)
-                    //   .every(([_, s]) => !s);
-
-                    setSelectedCategories(prevState => ({
-                      ...prevState,
-                      [category]: !prevState[category],
-                    }));
-                  }}
-                >
+                <span className="Search__search-type-option">
                   <input
                     type="checkbox"
                     id={`search-${category}`}
                     className="Search__search-type-checkbox"
                     name={`search-${category}`}
                     checked={selected}
+                    onClick={(event) => {
+                      // const onlyCategorySelected = Object.entries(selectedCategories)
+                      //   .filter(([c, _]) => category !== c)
+                      //   .every(([_, s]) => !s);
+  
+                      setSelectedCategories(prevState => ({
+                        ...prevState,
+                        [category]: !prevState[category],
+                      }));
+                    }}
                   />
                   <label
                     className="Search__search-type-label" 
