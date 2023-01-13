@@ -308,20 +308,20 @@ export function Search({ initialResults }: Props) {
   return (
     <div
       className="Search"
-      onClick={(event) => {
-        const dropdownClassList = [
-          'Search__search-type-selection-dropdown',
-          'Search__search-type-option',
-          'Search__search-type-checkbox',
-          'Search__search-type-label',
-        ];
-        if (
-          showCategorySelectionDropdown &&
-          !dropdownClassList.includes(event.target?.classList[0])
-        ) {
-          setShowCategorySelectionDropdown(false);
-        }}
-      }
+      // onClick={(event) => {
+      //   const dropdownClassList = [
+      //     'Search__search-type-selection-dropdown',
+      //     'Search__search-type-option',
+      //     'Search__search-type-checkbox',
+      //     'Search__search-type-label',
+      //   ];
+      //   if (
+      //     showCategorySelectionDropdown &&
+      //     !dropdownClassList.includes(event.target?.classList[0])
+      //   ) {
+      //     setShowCategorySelectionDropdown(false);
+      //   }}
+      // }
     >
       <div className="Search__search">
         <div className="Search__search-box">
