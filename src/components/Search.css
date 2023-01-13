@@ -52,6 +52,7 @@
   display: flex;
   align-items: center;
   column-gap: 5px;
+  margin: -2px 0;
 }
 
 .Search__player-result--Protoss,
@@ -99,18 +100,5 @@
 
   .Search__category-results {
     row-gap: 10px;
-  }
-
-  .Search__player-result--Protoss,
-  .Search__player-result--Zerg {
-    margin-left: -2px;
-  }
-
-  .Search__player-result--Terran {
-    margin-left: 0;
-  }
-
-  .Search__player-result {
-    margin-right: 5px;
   }
 }
