@@ -41,6 +41,7 @@
 
 .Search__selected-search-type::marker {
   content: '';
+  /* display: inline; */
 }
 
 .Search__selected-search-type:hover {

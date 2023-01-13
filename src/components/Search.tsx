@@ -23,10 +23,9 @@ export function Search({ initialResults }: Props) {
   const [buildSize, setBuildSize] = useState<number>(10);
   const searchStartedAt = useRef(0);
   const [selectedCategories, setSelectedCategories] = useState<{[key: string]: boolean}>({
-    all: true,
-    players: false,
-    maps: false,
-    events: false,
+    players: true,
+    maps: true,
+    events: true,
   });
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
@@ -303,21 +302,34 @@ export function Search({ initialResults }: Props) {
         <div className="Search__search-box">
           <details className="Search__search-type">
             <summary className="Search__selected-search-type">
-              {Object.entries(selectedCategories)
-                .filter(([_, selected]) => selected)
-                .map(([category, _]) => capitalize(category))
-                .join(', ')}
+              {Object.values(selectedCategories).every(category => category)
+                ? 'All'
+                : Object.entries(selectedCategories)
+                  .filter(([_, selected]) => selected)
+                  .map(([category, _]) => capitalize(category))
+                  .join(', ')}
             </summary>
             <div className="Search__search-type-selection-dropdown">
               {Object.entries(selectedCategories).map(([category, selected]) => (
                 <span
                   className="Search__search-type-option"
-                  onClick={() => {
-                    setSelectedCategories(prevState => ({
-                      ...prevState,
-                      [category]: !prevState[category],
-                    }));
-                  }} // set checkbox, uncheck all if non-all selected, prevent unselecting everything
+                  onClick={(event) => {
+                    console.log('span click');
+                    const onlyCategorySelected = Object.entries(selectedCategories)
+                      .filter(([c, _]) => category !== c)
+                      .every(([_, s]) => !s);
+
+                    console.log('onlycate', onlyCategorySelected);
+
+                    if (!onlyCategorySelected) {
+                      setSelectedCategories(prevState => ({
+                        ...prevState,
+                        [category]: !prevState[category],
+                      }));
+                    } else {
+                      event.preventDefault();
+                    }
+                  }}
                 >
                   <input
                     type="checkbox"
