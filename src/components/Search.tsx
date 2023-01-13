@@ -314,12 +314,9 @@ export function Search({ initialResults }: Props) {
                 <span
                   className="Search__search-type-option"
                   onClick={(event) => {
-                    console.log('span click');
                     const onlyCategorySelected = Object.entries(selectedCategories)
                       .filter(([c, _]) => category !== c)
                       .every(([_, s]) => !s);
-
-                    console.log('onlycate', onlyCategorySelected);
 
                     if (!onlyCategorySelected) {
                       setSelectedCategories(prevState => ({
