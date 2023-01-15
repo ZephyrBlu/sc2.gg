@@ -64,7 +64,7 @@ export function InlineResults({
           {title}
         </h3>
         <span className="InlineResults__modifiers">
-          {!input && description &&
+          {!input && selectedResultIndex === null && modifiers.length === 0 && description &&
             <span className="InlineResults__modifier InlineResults__modifier--description">
               {description}
             </span>}
@@ -72,7 +72,7 @@ export function InlineResults({
             <span className="InlineResults__modifier InlineResults__modifier--result-selected">
               {results[selectedResultIndex].value}
             </span>}
-          {!selectedResultIndex && modifiers && modifiers.length > 0 &&
+          {selectedResultIndex === null  && modifiers && modifiers.length > 0 &&
             modifiers.map((modifier) => (
               <span className="InlineResults__modifier">
                 {modifier}
