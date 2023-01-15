@@ -81,18 +81,28 @@ export function useSearch() {
       setQuery(query, params);
     }
 
+    let anySpecificOptions = false;
+
     if (opts.player) {
       params.set('player_name', opts.player);
+      anySpecificOptions = true;
     }
 
     if (opts.map) {
       params.set('map_name', opts.map);
+      anySpecificOptions = true;
     }
 
     if (opts.event) {
       params.set('event_name', opts.event);
+      anySpecificOptions = true;
     }
     
+    // if there are specific search criteria, don't perform fuzzy search
+    if (anySpecificOptions) {
+      params.delete('q');
+    }
+
     return params.toString();
   };
 

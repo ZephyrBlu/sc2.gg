@@ -13,6 +13,11 @@ export interface SelectedResult {
   index: number;
 }
 
+export interface DeselectedResult {
+  value: string | null;
+  index: number | null;
+}
+
 interface Props {
   title: string;
   input: string;
@@ -24,7 +29,7 @@ interface Props {
   max?: number;
   selected?: number | null;
   onSelection?: (result: SelectedResult) => void;
-  onDeselection?: (result: SelectedResult) => void;
+  onDeselection?: (result: DeselectedResult) => void;
   disabled?: boolean;
 }
 
@@ -49,9 +54,7 @@ export function InlineResults({
       const index = selectedResultIndex;
       const value = index ? results[selectedResultIndex]?.value : null;
 
-      if (index && value) {
-        onDeselection({value, index});
-      }
+      onDeselection({value, index});
     }
 
     setSelectedResultIndex(null);

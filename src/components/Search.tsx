@@ -375,7 +375,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
                       //   .filter(([c, _]) => category !== c)
                       //   .every(([_, s]) => !s);
   
-                      setSelectedCategories(prevState => {
+                      setSelectedCategories((prevState) => {
                         const updatedSelection = {
                           ...prevState,
                           [category]: !prevState[category],
