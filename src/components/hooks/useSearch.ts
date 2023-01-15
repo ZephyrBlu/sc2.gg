@@ -10,7 +10,7 @@ export interface SearchResult<T> {
 }
 
 export interface SearchOptions {
-  fuzzy: boolean;
+  fuzzy?: boolean;
   player?: string | null;
   map?: string | null;
   event?: string | null;
@@ -62,16 +62,21 @@ export function useSearch() {
     return results;
   };
 
-  const searchGames = async (
-    query: string,
-    opts: SearchOptions = {fuzzy: true},
-  ): Promise<SearchResult<Replay>> => {
-    const endpoint = `${API_URL}/games`;
-
-    const params = new URLSearchParams();
-    if (opts.fuzzy === true) {
+  const setQuery = (query: string, params: URLSearchParams) => {
+    if (query.length > 2) {
       params.set('q', query.toLowerCase());
-      params.set('fuzzy', '');
+    }
+  };
+
+  const buildParams = (query: string, opts: SearchOptions = {}) => {
+    const params = new URLSearchParams();
+    if (typeof opts.fuzzy === 'boolean') {
+      if (opts.fuzzy === true) {
+        setQuery(query, params);
+        params.set('fuzzy', '');
+      }
+    } else {
+      setQuery(query, params);
     }
 
     if (opts.player) {
@@ -85,25 +90,43 @@ export function useSearch() {
     if (opts.event) {
       params.set('event_name', opts.event);
     }
-
-    return await search(query, `${endpoint}?${params.toString()}`, endpoint);
+    
+    return params.toString();
   };
 
-  const searchPlayers = async (query: string): Promise<SearchResult<any>> => {
+  const searchGames = async (
+    query: string,
+    opts: SearchOptions = {},
+  ): Promise<SearchResult<Replay>> => {
+    const endpoint = `${API_URL}/games`;
+    const params = buildParams(query, opts);
+    return await search(query, `${endpoint}?${params}`, endpoint);
+  };
+
+  const searchPlayers = async (
+    query: string,
+    opts: SearchOptions = {},
+  ): Promise<SearchResult<any>> => {
     const endpoint = `${API_URL}/players`;
-    const params = `q=${query.toLowerCase()}`;
+    const params = buildParams(query, opts);
     return await search(query, `${endpoint}?${params}`, endpoint);
   };
 
-  const searchMaps = async (query: string): Promise<SearchResult<any>> => {
+  const searchMaps = async (
+    query: string,
+    opts: SearchOptions = {},
+  ): Promise<SearchResult<any>> => {
     const endpoint = `${API_URL}/maps`;
-    const params = `q=${query.toLowerCase()}`;
+    const params = buildParams(query, opts);
     return await search(query, `${endpoint}?${params}`, endpoint);
   };
 
-  const searchEvents = async (query: string): Promise<SearchResult<any>> => {
+  const searchEvents = async (
+    query: string,
+    opts: SearchOptions = {},
+  ): Promise<SearchResult<any>> => {
     const endpoint = `${API_URL}/events`;
-    const params = `q=${query.toLowerCase()}`;
+    const params = buildParams(query, opts);
     return await search(query, `${endpoint}?${params}`, endpoint);
   };
 

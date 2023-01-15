@@ -83,8 +83,7 @@ export function Search({ initialResults }: Props) {
       }));
 
       let searchStartTime = Date.now();
-
-      const urlEncodedSearchInput = encodeURIComponent(searchInput.trim()).replaceAll(/%20/g, '+');
+      const resultsPromises: (Promise<SearchResult<any>> | Promise<{}>)[] = [];
 
       const gamesPromise = new Promise<SearchResult<Replay>>(async (resolve) => {
         const searchOptions: SearchOptions = {
@@ -93,34 +92,56 @@ export function Search({ initialResults }: Props) {
           map: selectedResults.maps?.value,
           event: selectedResults.events?.value,
         };
-
         const results = await searchGames(searchInput.trim(), searchOptions);
         resolve(results);
       });
+      resultsPromises.push(gamesPromise);
 
-      const playersPromise = new Promise<SearchResult<any>>(async (resolve) => {
-        const results = await searchPlayers(urlEncodedSearchInput);
-        resolve(results);
-      });
+      if (!selectedResults.players) {
+        const playersPromise = new Promise<SearchResult<any>>(async (resolve) => {
+          const searchOptions: SearchOptions = {
+            map: selectedResults.maps?.value,
+            event: selectedResults.events?.value,
+          };
+          const results = await searchPlayers(searchInput.trim(), searchOptions);
+          resolve(results);
+        });
+        resultsPromises.push(playersPromise);
+      } else {
+        resultsPromises.push(new Promise((resolve) => resolve({})));
+      }
 
-      const mapsPromise = new Promise<SearchResult<any>>(async (resolve) => {
-        const results = await searchMaps(urlEncodedSearchInput);
-        resolve(results);
-      });
+      if (!selectedResults.maps) {
+        const mapsPromise = new Promise<SearchResult<any>>(async (resolve) => {
+          const searchOptions: SearchOptions = {
+            player: selectedResults.players?.value,
+            event: selectedResults.events?.value,
+          };
+          const results = await searchMaps(searchInput.trim(), searchOptions);
+          resolve(results);
+        });
+        resultsPromises.push(mapsPromise);
+      } else {
+        resultsPromises.push(new Promise((resolve) => resolve({})));
+      }
 
-      const eventsPromise = new Promise<SearchResult<any>>(async (resolve) => {
-        const result = await searchEvents(urlEncodedSearchInput);
-        resolve(result);
-      });
+      if (!selectedResults.events) {
+        const eventsPromise = new Promise<SearchResult<any>>(async (resolve) => {
+          const searchOptions: SearchOptions = {
+            player: selectedResults.players?.value,
+            map: selectedResults.map?.value,
+          };
+          const result = await searchEvents(searchInput.trim(), searchOptions);
+          resolve(result);
+        });
+        resultsPromises.push(eventsPromise);
+      } else {
+        resultsPromises.push(new Promise((resolve) => resolve({})));
+      }
 
-      const [replays, players, maps, events] = await Promise.all([
-        gamesPromise,
-        playersPromise,
-        mapsPromise,
-        eventsPromise,
-      ]);
+      const [replays, players, maps, events] = await Promise.all(resultsPromises);
 
-      let results: {[key: string]: SearchResult<any>} = {players, maps, events};
+      let results: {[key: string]: SearchResult<any> | {}} = {players, maps, events};
 
       // if search fails or is cancelled, set result value to previous value
 
@@ -161,7 +182,7 @@ export function Search({ initialResults }: Props) {
 
       const wasAnyRequestCancelled = [players, maps, events].some(result => result.state === 'cancelled');
 
-      if (searchInput) {
+      if (searchInput || anyResultsSelected) {
         setSearchResults(prevState => ({
           ...prevState,
           results: {
@@ -176,6 +197,7 @@ export function Search({ initialResults }: Props) {
 
       const params = new URLSearchParams(window.location.search);
       if (
+        searchInput.length > 2 &&
         wasAnyRequestSuccessful &&
         searchInput.trim() !== params.get('q')?.split('+').join(' ')
       ) {
@@ -215,46 +237,7 @@ export function Search({ initialResults }: Props) {
         searching: false,
       });
     }
-  }, [searchInput]);
-
-  useEffect(() => {
-    const startGameSearch = async () => {
-      let searchStartTime = Date.now();
-
-      const replays = await new Promise<SearchResult<Replay>>(async (resolve) => {
-        const searchOptions: SearchOptions = {
-          fuzzy: false,
-          player: selectedResults.players?.value,
-          map: selectedResults.maps?.value,
-          event: selectedResults.events?.value,
-        };
-
-        const results = await searchGames(searchInput.trim(), searchOptions);
-        resolve(results);
-      });
-
-      // if search results are fresher than existing results, update them
-      if (searchStartTime > searchStartedAt.current) {
-        setSearchResults(prevState => ({
-          ...prevState,
-          results: {
-            ...prevState.results,
-            replays: {
-              query: searchInput,
-              value: replays.value,
-              state: 'success',
-            },
-          },
-          loading: false,
-        }));
-        searchStartedAt.current = searchStartTime;
-      }
-    }
-
-    if (anyResultsSelected) {
-      startGameSearch();
-    }
-  }, [selectedResults]);
+  }, [searchInput, selectedResults]);
 
   const calculateBuildSize = () => {
     if (window.innerWidth < 340) {
