@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {LoadingAnimation} from './LoadingAnimation';
 import './InlineResults.css';
 
@@ -15,7 +15,7 @@ export interface SelectedResult {
 
 interface Props {
   title: string;
-  initial: boolean;
+  input: string;
   description: string;
   state: 'success' | 'cancelled' | 'error';
   results: InlineResult[];
@@ -29,7 +29,7 @@ interface Props {
 
 export function InlineResults({
   title,
-  initial,
+  input,
   description,
   state,
   results,
@@ -42,15 +42,28 @@ export function InlineResults({
 }: Props) {
   const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(selected);
 
+  useEffect(() => {
+    if (onDeselection) {
+      const index = selectedResultIndex;
+      const value = index ? results[selectedResultIndex]?.value : null;
+
+      if (index && value) {
+        onDeselection({value, index});
+      }
+    }
+
+    setSelectedResultIndex(null);
+  }, [input]);
+
   return (
     <div className="InlineResults">
       <span className="InlineResults__header">
         <h3 className="InlineResults__title">
           {title}
         </h3>
-        {((initial && selectedResultIndex === null) || (selectedResultIndex !== null && results[selectedResultIndex])) &&
+        {((!input && selectedResultIndex === null) || (selectedResultIndex !== null && results[selectedResultIndex])) &&
           <span className="InlineResults__query">
-            {initial && selectedResultIndex === null && description}
+            {!input && selectedResultIndex === null && description}
             {selectedResultIndex !== null && results[selectedResultIndex] && results[selectedResultIndex].value}
           </span>}
         {!loading && results.length === 0 && state === 'success' &&

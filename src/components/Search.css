@@ -40,7 +40,6 @@
 }
 
 .Search__selected-search-type::marker {
-  content: '';
 }
 
 .Search__selected-search-type:hover {

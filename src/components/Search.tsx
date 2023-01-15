@@ -75,11 +75,6 @@ export function Search({ initialResults }: Props) {
 
   useEffect(() => {
     const startSearch = async () => {
-      setSelectedResults({
-        players: null,
-        maps: null,
-        events: null,
-      });
       setSearchResults(prevState => ({
         ...prevState,
         loading: noSearchResultsPresent,
@@ -388,7 +383,7 @@ export function Search({ initialResults }: Props) {
         {selectedCategories.players &&
           <InlineResults
             title="Players"
-            initial={!searchInput}
+            input={searchInput}
             description={searchResults.results.players.query}
             state={searchResults.results.players.state}
             results={searchResults.results.players.value.map(player => ({
@@ -424,7 +419,7 @@ export function Search({ initialResults }: Props) {
         {selectedCategories.maps &&
           <InlineResults
             title="Maps"
-            initial={!searchInput}
+            input={searchInput}
             description={searchResults.results.maps.query}
             state={searchResults.results.maps.state}
             results={searchResults.results.maps.value.map(map => ({
@@ -446,7 +441,7 @@ export function Search({ initialResults }: Props) {
         {selectedCategories.events && 
           <InlineResults
             title="Events"
-            initial={!searchInput}
+            input={searchInput}
             description={searchResults.results.events.query}
             state={searchResults.results.events.state}
             results={searchResults.results.events.value.map(event => ({
