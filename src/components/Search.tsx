@@ -6,7 +6,7 @@ import './Search.css';
 import { compare } from './utils';
 import { InlineResults, SelectedResult } from './InlineResults';
 
-interface Results {
+export interface Results {
   replays: SearchResult<Replay>;
   players: SearchResult<any>;
   maps: SearchResult<any>;
@@ -15,9 +15,15 @@ interface Results {
 
 interface Props {
   initialResults: Results;
+  resultsDescriptions: {
+    replays: string;
+    players: string;
+    maps: string;
+    events: string;
+  };
 }
 
-export function Search({ initialResults }: Props) {
+export function Search({ initialResults, resultsDescriptions }: Props) {
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
   const [buildSize, setBuildSize] = useState<number>(10);
@@ -378,7 +384,7 @@ export function Search({ initialResults }: Props) {
           <InlineResults
             title="Players"
             input={searchInput}
-            description={searchResults.results.players.query}
+            description={resultsDescriptions.players}
             state={searchResults.results.players.state}
             results={searchResults.results.players.value.map(player => ({
               element: (
@@ -414,7 +420,7 @@ export function Search({ initialResults }: Props) {
           <InlineResults
             title="Maps"
             input={searchInput}
-            description={searchResults.results.maps.query}
+            description={resultsDescriptions.maps}
             state={searchResults.results.maps.state}
             results={searchResults.results.maps.value.map(map => ({
               element: map.map,
@@ -436,7 +442,7 @@ export function Search({ initialResults }: Props) {
           <InlineResults
             title="Events"
             input={searchInput}
-            description={searchResults.results.events.query}
+            description={resultsDescriptions.events}
             state={searchResults.results.events.state}
             results={searchResults.results.events.value.map(event => ({
               element: event.event,

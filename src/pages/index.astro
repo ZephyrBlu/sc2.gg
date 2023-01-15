@@ -1,31 +1,38 @@
 ---
 import AppLayout from '../layouts/AppLayout.astro';
-import {Search} from '../components/Search';
+import {Results, Search} from '../components/Search';
 
 const response = await fetch('https://search.sc2.gg/recent?refresh');
 
-let results = {
+let results: Results = {
   replays: {
-    query: 'Random in the last 3mo',
+    query: '',
     value: [],
     state: 'success',
   },
   players: {
-    query: 'Popular in the last 3mo',
+    query: '',
     value: [],
     state: 'success',
   },
   maps: {
-    query: 'Popular in the last 6mo',
+    query: '',
     value: [],
     state: 'success',
   },
   events: {
-    query: 'Popular in the last 6mo',
+    query: '',
     value: [],
     state: 'success',
   },
 };
+
+const descriptions = {
+  replays: 'Recent',
+  players: 'Recent',
+  maps: 'Recent',
+  events: 'Recent',
+}
 
 if (response.ok) {
   const resultValues = await response.json();
@@ -43,5 +50,5 @@ if (response.ok) {
 }
 ---
 <AppLayout>
-  <Search initialResults={results} client:load />
+  <Search initialResults={results} resultsDescriptions={descriptions} client:load />
 </AppLayout>

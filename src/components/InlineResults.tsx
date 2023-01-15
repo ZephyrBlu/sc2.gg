@@ -61,11 +61,16 @@ export function InlineResults({
         <h3 className="InlineResults__title">
           {title}
         </h3>
-        {((!input && selectedResultIndex === null) || (selectedResultIndex !== null && results[selectedResultIndex])) &&
-          <span className="InlineResults__query">
-            {!input && selectedResultIndex === null && description}
-            {selectedResultIndex !== null && results[selectedResultIndex] && results[selectedResultIndex].value}
-          </span>}
+        <span className="InlineResults__modifiers">
+          {!input && description &&
+            <span className="InlineResults__modifier InlineResults__modifier--description">
+              {description}
+            </span>}
+          {selectedResultIndex !== null && results[selectedResultIndex] &&
+            <span className="InlineResults__modifier InlineResults__modifier--result-selected">
+              {results[selectedResultIndex].value}
+            </span>}
+        </span>
         {!loading && results.length === 0 && state === 'success' &&
           <span className="InlineResults__no-results">
             No results
