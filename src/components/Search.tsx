@@ -22,10 +22,17 @@ export function Search({ initialResults }: Props) {
   const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
   const [buildSize, setBuildSize] = useState<number>(10);
   const searchStartedAt = useRef(0);
-  const [selectedCategories, setSelectedCategories] = useState<{[key: string]: boolean}>({
-    players: true,
-    maps: false,
-    events: false,
+  const [selectedCategories, setSelectedCategories] = useState<{[key: string]: boolean}>(() => {
+    const serializedSearchCategories = localStorage.getItem('searchCategories');
+    if (serializedSearchCategories) {
+      return JSON.parse(serializedSearchCategories);
+    }
+
+    return {
+      players: true,
+      maps: false,
+      events: false,
+    };
   });
   const [showCategorySelectionDropdown, setShowCategorySelectionDropdown] = useState(false);
   const [searchResults, setSearchResults] = useState<{
@@ -330,10 +337,14 @@ export function Search({ initialResults }: Props) {
                       //   .filter(([c, _]) => category !== c)
                       //   .every(([_, s]) => !s);
   
-                      setSelectedCategories(prevState => ({
-                        ...prevState,
-                        [category]: !prevState[category],
-                      }));
+                      setSelectedCategories(prevState => {
+                        const updatedSelection = {
+                          ...prevState,
+                          [category]: !prevState[category],
+                        };
+                        localStorage.setItem('searchCategories', JSON.stringify(updatedSelection));
+                        return updatedSelection;
+                      });
                     }}
                   />
                   <label
