@@ -310,6 +310,14 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const allCategoriesSelected = Object.values(selectedCategories).every(selected => selected);
   const noCategoriesSelected = Object.values(selectedCategories).every(selected => !selected);
 
+  const buildModifiers = (excludeCategory: string) => (
+    Object.entries(selectedResults)
+      .filter(([category, _]) => !compare(category, excludeCategory))
+        .map(([_, selected]) => selected)
+      .filter((selected): selected is SelectedResult => !!selected)
+        .map(({value}) => capitalize(value))
+  );
+
   return (
     <div
       className="Search"
@@ -399,6 +407,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
             title="Players"
             input={searchInput}
             description={resultsDescriptions.players}
+            modifiers={buildModifiers('players')}
             state={searchResults.results.players.state}
             results={searchResults.results.players.value.map(player => ({
               element: (
@@ -435,6 +444,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
             title="Maps"
             input={searchInput}
             description={resultsDescriptions.maps}
+            modifiers={buildModifiers('maps')}
             state={searchResults.results.maps.state}
             results={searchResults.results.maps.value.map(map => ({
               element: map.map,
@@ -457,6 +467,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
             title="Events"
             input={searchInput}
             description={resultsDescriptions.events}
+            modifiers={buildModifiers('events')}
             state={searchResults.results.events.state}
             results={searchResults.results.events.value.map(event => ({
               element: event.event,

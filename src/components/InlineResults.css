@@ -15,15 +15,20 @@
 
 .InlineResults__modifiers {
   display: flex;
-  column-gap: 5px;
+  column-gap: 10px;
 }
 
 .InlineResults__modifier {
-  padding: 4px 12px;
+  padding: 6px 12px;
   border-radius: 15px;
   font-size: 14px;
   font-weight: 400;
-  border: 2px solid var(--primary-light-3);
+  box-shadow: 0 0 0 2px inset var(--primary-light-3);
+}
+
+.InlineResults__modifier--result-selected {
+  background-color: var(--green-highlight);
+  box-shadow: none;
 }
 
 .InlineResults__no-results {

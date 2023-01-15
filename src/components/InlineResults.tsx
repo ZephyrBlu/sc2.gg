@@ -17,6 +17,7 @@ interface Props {
   title: string;
   input: string;
   description: string;
+  modifiers: string[];
   state: 'success' | 'cancelled' | 'error';
   results: InlineResult[];
   loading: boolean;
@@ -31,6 +32,7 @@ export function InlineResults({
   title,
   input,
   description,
+  modifiers,
   state,
   results,
   loading,
@@ -70,6 +72,12 @@ export function InlineResults({
             <span className="InlineResults__modifier InlineResults__modifier--result-selected">
               {results[selectedResultIndex].value}
             </span>}
+          {!selectedResultIndex && modifiers && modifiers.length > 0 &&
+            modifiers.map((modifier) => (
+              <span className="InlineResults__modifier">
+                {modifier}
+              </span>
+            ))}
         </span>
         {!loading && results.length === 0 && state === 'success' &&
           <span className="InlineResults__no-results">
