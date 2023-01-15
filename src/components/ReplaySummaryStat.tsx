@@ -1,7 +1,7 @@
-import {Replay} from './types';
+import type {Replay} from './types';
 import './ReplaySummaryStat.css';
 
-interface Props {
+type Props = {
   replay: Replay;
   statKey: string;
   statName: string;

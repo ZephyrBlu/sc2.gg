@@ -4,7 +4,7 @@ type BlockResult = {
   count?: number,
 }
 
-interface Props {
+type Props = {
   title: string;
   query?: string;
   results: BlockResult[];

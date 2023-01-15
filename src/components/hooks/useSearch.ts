@@ -3,13 +3,13 @@ import type {Replay} from '../types';
 
 type SearchState = 'success' | 'cancelled' | 'error';
 
-export interface SearchResult<T> {
+export type SearchResult<T> = {
   query: string;
   value: T[];
   state: SearchState;
 }
 
-export interface SearchOptions {
+export type SearchOptions = {
   fuzzy?: boolean;
   player?: string | null;
   map?: string | null;

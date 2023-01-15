@@ -8,17 +8,17 @@ type InlineResult = {
   count?: number,
 }
 
-export interface SelectedResult {
+export type SelectedResult = {
   value: string;
-  index: number;
+  index: number | null;
 }
 
-export interface DeselectedResult {
+export type DeselectedResult = {
   value: string | null;
   index: number | null;
 }
 
-interface Props {
+type Props = {
   title: string;
   input: string;
   description: string;

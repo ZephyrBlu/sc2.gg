@@ -8,14 +8,18 @@ import { InlineResults, SelectedResult } from './InlineResults';
 
 type SelectionCategories = 'players' | 'maps' | 'events';
 
-export interface Results {
+type SelectedResults = {
+  [key in SelectionCategories]: SelectedResult | null;
+}
+
+export type Results = {
   replays: SearchResult<Replay>;
   players: SearchResult<any>;
   maps: SearchResult<any>;
   events: SearchResult<any>;
 }
 
-interface Props {
+type Props = {
   initialResults: Results;
   resultsDescriptions: {
     replays: string;
@@ -24,6 +28,34 @@ interface Props {
     events: string;
   };
 }
+
+const buildInitialResultSelection = () => {
+  let initialSelection: SelectedResults = {
+    players: null,
+    maps: null,
+    events: null,
+  };
+
+  if (typeof window === 'undefined') {
+    return initialSelection;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get('player')) {
+    initialSelection.players = {value: params.get('player')!, index: null};
+  }
+
+  if (params.get('maps')) {
+    initialSelection.maps = {value: params.get('maps')!, index: null};
+  }
+
+  if (params.get('events')) {
+    initialSelection.events = {value: params.get('events')!, index: null};
+  }
+
+  return initialSelection;
+};
 
 export function Search({ initialResults, resultsDescriptions }: Props) {
   const searchRef = useRef<HTMLInputElement>(null);
@@ -54,21 +86,18 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     query: null,
     results: initialResults,
   });
-  const [selectedResults, setSelectedResults] = useState<{
-    [key in SelectionCategories]: SelectedResult | null
-  }>({
-    players: null,
-    maps: null,
-    events: null,
-  });
+  const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useEffect(() => {
     const updateSearchInput = () => {
       const params = new URLSearchParams(window.location.search);
-      if (params.has('q')) {
-        setSearchInput(params.get('q')?.split('+').join(' ') || '');
+      if (params.get('q')) {
+        setSearchInput(params.get('q')!.split('+').join(' '));
       }
+
+      const initialSelection = buildInitialResultSelection();
+      setSelectedResults(initialSelection);
     };
 
     updateSearchInput();
@@ -439,7 +468,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
               count: player.occurrences,
             }))}
             loading={searchResults.loading}
-            selected={selectedResults.player?.index}
+            selected={selectedResults.players?.index}
             onSelection={(result) => setSelectedResults(prevState => ({
               ...prevState,
               players: result,

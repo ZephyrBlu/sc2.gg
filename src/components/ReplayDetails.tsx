@@ -3,7 +3,7 @@ import {ReplaySummaryStat} from "./ReplaySummaryStat";
 import type {Replay} from "./types";
 import './ReplayDetails.css';
 
-interface Props {
+type Props = {
   replay: Replay;
 }
 

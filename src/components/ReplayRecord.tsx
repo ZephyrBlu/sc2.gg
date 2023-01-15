@@ -2,7 +2,7 @@
 import type {Replay} from './types';
 import './ReplayRecord.css';
 
-interface Props {
+type Props = {
   replay: Replay;
   buildSize: number;
 }
