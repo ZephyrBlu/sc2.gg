@@ -193,7 +193,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         results.events.value = searchResults.results.events.value;
       }
 
-      const wasAnyRequestCancelled = [players, maps, events].some(result => result.state === 'cancelled');
+      const wasAnyRequestCancelled = [replays, players, maps, events].some(result => result.state === 'cancelled');
 
       if (searchInput || anyResultsSelected) {
         setSearchResults(prevState => ({
@@ -206,16 +206,30 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         }));
       }
 
-      const wasAnyRequestSuccessful = [players, maps, events].some(result => result.state === 'success');
-
-      const params = new URLSearchParams(window.location.search);
-      if (
-        searchInput.length > 2 &&
-        wasAnyRequestSuccessful &&
-        searchInput.trim() !== params.get('q')?.split('+').join(' ')
-      ) {
+      const wasAnyRequestSuccessful = [replays, players, maps, events].some(result => result.state === 'success');
+      if (wasAnyRequestSuccessful) {
+        const params = new URLSearchParams(window.location.search);
         const url = new URL(window.location.href);
-        url.searchParams.set('q', searchInput.trim());
+
+        if (
+          searchInput.trim().length > 2 &&
+          searchInput.trim() !== params.get('q')?.split('+').join(' ')
+        ) {
+          url.searchParams.set('q', searchInput.trim().toLowerCase());
+        }
+
+        if (selectedResults.players) {
+          url.searchParams.set('player', selectedResults.players.value.toLowerCase());
+        }
+
+        if (selectedResults.maps) {
+          url.searchParams.set('map', selectedResults.maps.value.toLowerCase());
+        }
+
+        if (selectedResults.events) {
+          url.searchParams.set('event', selectedResults.events.value.toLowerCase());
+        }
+
         window.history.pushState({}, '', url);
       }
 
@@ -238,7 +252,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     };
 
     if (
-      (searchInput && searchInput.length > 2) ||
+      (searchInput && searchInput.trim().length > 2) ||
       anyResultsSelected
     ) {
       startSearch();
