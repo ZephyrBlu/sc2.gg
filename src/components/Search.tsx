@@ -46,12 +46,12 @@ const buildInitialResultSelection = () => {
     initialSelection.players = {value: params.get('player')!, index: null};
   }
 
-  if (params.get('maps')) {
-    initialSelection.maps = {value: params.get('maps')!, index: null};
+  if (params.get('map')) {
+    initialSelection.maps = {value: params.get('map')!, index: null};
   }
 
-  if (params.get('events')) {
-    initialSelection.events = {value: params.get('events')!, index: null};
+  if (params.get('event')) {
+    initialSelection.events = {value: params.get('event')!, index: null};
   }
 
   return initialSelection;
@@ -89,8 +89,14 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
-  useEffect(() => {
+  console.log('rendering selected results', selectedResults);
+
+  useLayoutEffect(() => {
     const updateSearchInput = () => {
+      if (typeof window === 'undefined') {
+        return;
+      }
+
       const params = new URLSearchParams(window.location.search);
       if (params.get('q')) {
         setSearchInput(params.get('q')!.split('+').join(' '));
@@ -243,6 +249,8 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
       if (wasAnyRequestSuccessful) {
         const params = new URLSearchParams(window.location.search);
         const url = new URL(window.location.href);
+
+        console.log('searching selected results', selectedResults);
 
         if (
           searchInput.trim().length > 2 &&

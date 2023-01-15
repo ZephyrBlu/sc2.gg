@@ -50,11 +50,17 @@ export function InlineResults({
   const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(selected);
 
   useEffect(() => {
-    if (onDeselection) {
+    if (input && onDeselection) {
       const index = selectedResultIndex;
       const value = index ? results[selectedResultIndex]?.value : null;
 
-      onDeselection({value, index});
+      const params = new URLSearchParams(window.location.search);
+      const rawQuery = params.get('q') || '';
+      const query = rawQuery.split('+').join(' ');
+
+      if (query !== input) {
+        onDeselection({value, index});
+      }
     }
 
     setSelectedResultIndex(null);
