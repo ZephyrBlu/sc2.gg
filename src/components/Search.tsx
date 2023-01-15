@@ -6,6 +6,8 @@ import './Search.css';
 import { compare } from './utils';
 import { InlineResults, SelectedResult } from './InlineResults';
 
+type SelectionCategories = 'players' | 'maps' | 'events';
+
 export interface Results {
   replays: SearchResult<Replay>;
   players: SearchResult<any>;
@@ -28,7 +30,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
   const [buildSize, setBuildSize] = useState<number>(10);
   const searchStartedAt = useRef(0);
-  const [selectedCategories, setSelectedCategories] = useState<{[key: string]: boolean}>(() => {
+  const [selectedCategories, setSelectedCategories] = useState<{[key in SelectionCategories]: boolean}>(() => {
     const serializedSearchCategories = localStorage.getItem('searchCategories');
     if (serializedSearchCategories) {
       return JSON.parse(serializedSearchCategories);
@@ -52,7 +54,9 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     query: null,
     results: initialResults,
   });
-  const [selectedResults, setSelectedResults] = useState<{[key: string]: SelectedResult | null}>({
+  const [selectedResults, setSelectedResults] = useState<{
+    [key in SelectionCategories]: SelectedResult | null
+  }>({
     players: null,
     maps: null,
     events: null,
@@ -142,7 +146,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         const eventsPromise = new Promise<SearchResult<any>>(async (resolve) => {
           const searchOptions: SearchOptions = {
             player: selectedResults.players?.value,
-            map: selectedResults.map?.value,
+            map: selectedResults.maps?.value,
           };
           const result = await searchEvents(searchInput.trim(), searchOptions);
           resolve(result);
@@ -220,14 +224,20 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
 
         if (selectedResults.players) {
           url.searchParams.set('player', selectedResults.players.value.toLowerCase());
+        } else {
+          url.searchParams.delete('player');
         }
 
         if (selectedResults.maps) {
           url.searchParams.set('map', selectedResults.maps.value.toLowerCase());
+        } else {
+          url.searchParams.delete('map');
         }
 
         if (selectedResults.events) {
           url.searchParams.set('event', selectedResults.events.value.toLowerCase());
+        } else {
+          url.searchParams.delete('event');
         }
 
         window.history.pushState({}, '', url);
