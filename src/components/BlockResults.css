@@ -17,6 +17,11 @@
   padding: 4px 8px;
 }
 
+.Search__search-type-label--block {
+  display: flex;
+  align-items: center;
+}
+
 .Search__race-icon--block {
   width: 20px;
   height: 20px;
