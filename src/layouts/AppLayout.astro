@@ -9,7 +9,9 @@ import '../components/index.css';
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StarCraft 2 Tournament Games</title>
+    <title>sc2.gg - Search for StarCraft 2</title>
+    <meta name="sc2.gg - Search Engine for StarCraft 2 Games | Easily Find SC2 Games" content="Search 9000+ StarCraft 2 (SC2) games for replays, players, maps and events" />
+    <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
   </head>
   <style>
     .AppLayout {
@@ -37,13 +39,17 @@ import '../components/index.css';
     }
 
     .AppLayout__header {
-      background-color: var(--primary-dark-2);
-      margin: 10px 0;
-      /* border-radius: 10px;
-      border: 3px solid var(--primary-blue);
-      padding: 6px 12px; */
+      margin: 15px 0;
       font-weight: 700;
       font-size: 24px;
+    }
+
+    .AppLayout__header:hover {
+      text-decoration: underline;
+    }
+
+    .AppLayout__home {
+      text-decoration: none;
     }
 
     .AppLayout__nav {
@@ -73,6 +79,10 @@ import '../components/index.css';
     }
 
     @media(max-width: 575px) {
+      .AppLayout__header {
+        margin-bottom: 10px;
+      }
+
       .AppLayout__link {
         font-size: 14px;
         padding: 6px 12px;
@@ -82,13 +92,15 @@ import '../components/index.css';
   <body>
     <div class="AppLayout">
       <header class="AppLayout__header">
-        StarCraft 2 Games
+        <a class="AppLayout__home" href="/">
+          StarCraft 2 Games
+        </a>
       </header>
-      <nav class="AppLayout__nav">
+      <!-- <nav class="AppLayout__nav">
         <a class="AppLayout__link" href="/">Search</a>
         <a class="AppLayout__link" href="/builds">Builds</a>
         <a class="AppLayout__link" href="/trees">Trees</a>
-      </nav>
+      </nav> -->
       <div class="AppLayout__container">
         <slot />
       </div>

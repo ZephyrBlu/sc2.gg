@@ -1,0 +1,35 @@
+.BlockResults__matchup-selector {
+  display: flex;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.BlockResults__race-selector {
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+  padding-bottom: 8px;
+  padding-top: 2px;
+}
+
+.InlineResults__result-content--block {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.Search__search-type-label--block {
+  display: flex;
+  align-items: center;
+}
+
+.Search__race-icon--block {
+  width: 20px;
+  height: 20px;
+}
+
+@media(max-width: 575px) {
+  .BlockResults__matchup-selector {
+    margin: 0;
+  }
+}

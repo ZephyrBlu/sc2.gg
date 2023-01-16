@@ -1,303 +1,527 @@
-import {useState, useRef, useEffect, useLayoutEffect} from 'react';
-import {ReplayRecord} from './ReplayRecord';
-import {matchupRaceMapping} from './constants';
-import {useSearch} from './hooks';
-import type {Replay} from "./types";
-import {LoadingAnimation} from './LoadingAnimation';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { SearchResult, SearchOptions, useSearch } from './hooks';
+import type { Replay } from "./types";
 import './Search.css';
-import {compare} from './utils';
+import { compare } from './utils';
+import { InlineResults, SelectedResult } from './InlineResults';
+import { BlockResults } from './BlockResults';
 
-const INDEXES = [
-  'player',
-  'race',
-  'map',
-];
+type SelectionCategories = 'players' | 'maps' | 'events' | 'matchup';
 
-export function Search() {
-  const [searchInput, setSearchInput] = useState<string>('');
-  const [quickSelectOptions, setQuickSelectOptions] = useState<{[option: string]: string | null}>({
+type SelectedResults = {
+  [key in SelectionCategories]: SelectedResult | null;
+}
+
+export type Results = {
+  replays: SearchResult<Replay>;
+  players: SearchResult<any>;
+  maps: SearchResult<any>;
+  events: SearchResult<any>;
+}
+
+type Props = {
+  initialResults: Results;
+  resultsDescriptions: {
+    replays: string;
+    players: string;
+    maps: string;
+    events: string;
+  };
+}
+
+const buildInitialResultSelection = () => {
+  let initialSelection: SelectedResults = {
+    players: null,
+    maps: null,
+    events: null,
     matchup: null,
-    player: null,
-  });
-  const [buildSize, setBuildSize] = useState<number>(10);
-  const [showBuildsAndResults, setShowBuildsAndResults] = useState<boolean>(true);
+  };
+
+  if (typeof window === 'undefined') {
+    return initialSelection;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get('player')) {
+    initialSelection.players = {value: params.get('player')!, index: null};
+  }
+
+  if (params.get('map')) {
+    initialSelection.maps = {value: params.get('map')!, index: null};
+  }
+
+  if (params.get('event')) {
+    initialSelection.events = {value: params.get('event')!, index: null};
+  }
+
+  const races = [
+    'protoss',
+    'terran',
+    'zerg',
+  ];
+  if (
+    params.get('matchup') &&
+    races.some(race => params.get('matchup')!.toLowerCase().includes(race))
+  ) {
+    initialSelection.matchup = {value: params.get('matchup')!, index: null};
+  }
+
+  return initialSelection;
+};
+
+export function Search({ initialResults, resultsDescriptions }: Props) {
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
   const searchStartedAt = useRef(0);
+  const [selectedCategories, setSelectedCategories] = useState<{[key in SelectionCategories]: boolean}>(() => {
+    const serializedSearchCategories = localStorage.getItem('searchCategories');
+    if (serializedSearchCategories) {
+      return JSON.parse(serializedSearchCategories);
+    }
+
+    return {
+      players: true,
+      maps: false,
+      events: false,
+    };
+  });
+  const [showCategorySelectionDropdown, setShowCategorySelectionDropdown] = useState(false);
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
-    query: {[key: string]: string | null} | null,
-    replays: Replay[],
+    query: string | null,
+    results: Results,
   }>({
     loading: false,
     query: null,
-    replays: [],
+    results: initialResults,
   });
-  const {searchIndex} = useSearch();
+  const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
+  const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
-  useEffect(() => {
-    const preloadMatchups = async () => {
-      await Promise.all([
-        searchIndex('Protoss', 'race', {preload: true}),
-        searchIndex('Zerg', 'race', {preload: true}),
-        searchIndex('Terran', 'race', {preload: true}),
-      ]);
+  useLayoutEffect(() => {
+    const updateSearchInput = () => {
+      if (typeof window === 'undefined') {
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('q')) {
+        setSearchInput(params.get('q')!.split('+').join(' '));
+      }
+
+      const initialSelection = buildInitialResultSelection();
+      setSelectedResults(initialSelection);
     };
 
-    preloadMatchups();
+    updateSearchInput();
+
+    window.addEventListener('popstate', updateSearchInput);
+    return () => window.removeEventListener('popstate', updateSearchInput);
   }, []);
 
+  const anyResultsSelected = (
+    selectedResults.players ||
+    selectedResults.maps ||
+    selectedResults.events ||
+    selectedResults.matchup
+  );
+
   useEffect(() => {
-    const search = async () => {
-      setSearchResults({
-        replays: [],
+    const startSearch = async () => {
+      setSearchResults(prevState => ({
+        ...prevState,
         loading: true,
-        query: {
-          player: quickSelectOptions.player,
-          matchup: quickSelectOptions.matchup,
-          input: searchInput,
-        },
-      });
+        query: searchInput,
+      }));
 
-      let replays: Replay[][] = [];
       let searchStartTime = Date.now();
+      const resultsPromises: (Promise<SearchResult<any>> | Promise<{}>)[] = [];
 
-      if (quickSelectOptions.player) {
-        const results = await searchIndex(quickSelectOptions.player, 'player');
-        replays.push(results);
+      const gamesPromise = new Promise<SearchResult<Replay>>(async (resolve) => {
+        const searchOptions: SearchOptions = {
+          fuzzy: !anyResultsSelected,
+          player: selectedResults.players?.value,
+          map: selectedResults.maps?.value,
+          event: selectedResults.events?.value,
+          matchup: selectedResults.matchup?.value,
+        };
+        const results = await searchGames(searchInput.trim(), searchOptions);
+        resolve(results);
+      });
+      resultsPromises.push(gamesPromise);
+
+      if (!selectedResults.players) {
+        const playersPromise = new Promise<SearchResult<any>>(async (resolve) => {
+          const searchOptions: SearchOptions = {
+            map: selectedResults.maps?.value,
+            event: selectedResults.events?.value,
+          };
+          const results = await searchPlayers(searchInput.trim(), searchOptions);
+          resolve(results);
+        });
+        resultsPromises.push(playersPromise);
+      } else {
+        resultsPromises.push(new Promise((resolve) => resolve({})));
       }
 
-      if (quickSelectOptions.matchup) {
-        const matchup = matchupRaceMapping[quickSelectOptions.matchup];
-        const isMirror = matchup.length === 1;
-        await Promise.all(matchup.map(async (race) => {
-          const results = await searchIndex(race, 'race', {mirror: isMirror});
-          replays.push(results);
-        }));
+      if (!selectedResults.maps) {
+        const mapsPromise = new Promise<SearchResult<any>>(async (resolve) => {
+          const searchOptions: SearchOptions = {
+            player: selectedResults.players?.value,
+            event: selectedResults.events?.value,
+          };
+          const results = await searchMaps(searchInput.trim(), searchOptions);
+          resolve(results);
+        });
+        resultsPromises.push(mapsPromise);
+      } else {
+        resultsPromises.push(new Promise((resolve) => resolve({})));
       }
 
-      if (searchInput) {
-        const terms = searchInput.split(' ');
-        let inputResults: Replay[][] = [];
-
-        await Promise.all(terms.map(async (term) => {
-          const inputQuery = encodeURIComponent(term).replace(/%20/g, '+');
-          const results = await Promise.all(INDEXES.map(index => searchIndex(inputQuery, index)));
-          inputResults.push(results.flat());
-        }));
-
-        inputResults = inputResults.filter(r => r.length > 0);
-        if (inputResults.length > 0) {
-          const inputIntersectionResults = inputResults.reduce((current, next) => {
-            return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
-          }, inputResults[0]);
-          replays.push(inputIntersectionResults);
-        }
+      if (!selectedResults.events) {
+        const eventsPromise = new Promise<SearchResult<any>>(async (resolve) => {
+          const searchOptions: SearchOptions = {
+            player: selectedResults.players?.value,
+            map: selectedResults.maps?.value,
+          };
+          const result = await searchEvents(searchInput.trim(), searchOptions);
+          resolve(result);
+        });
+        resultsPromises.push(eventsPromise);
+      } else {
+        resultsPromises.push(new Promise((resolve) => resolve({})));
       }
 
-      // if search results are fresher than existing results, update them
-      if (searchStartTime > searchStartedAt.current) {
-        if (replays.length === 0) {
-          setSearchResults({
-            replays: [],
-            loading: false,
-            query: {
-              player: quickSelectOptions.player,
-              matchup: quickSelectOptions.matchup,
-              input: searchInput,
-            },
-          });
-          searchStartedAt.current = searchStartTime;
-          return;
-        }
+      const [replays, players, maps, events] = await Promise.all(resultsPromises);
 
-        replays = replays.filter(r => r.length > 0);
-        const intersectionResults = replays.reduce((current, next) => {
-          return current.filter(value => next.map(r => r.content_hash).includes(value.content_hash))
-        }, replays[0]);
-        intersectionResults.sort(playedAtSort);
+      let results: {[key: string]: SearchResult<any> | {}} = {players, maps, events};
 
+      // if search fails or is cancelled, set result value to previous value
+
+      if (players.state !== 'success') {
+        results.players.query = searchResults.results.players.query;
+        results.players.value = searchResults.results.players.value;
+      } else {
         const exactMatches: Replay[] = [];
         const otherMatches: Replay[] = [];
         const terms = searchInput.split(' ');
-        intersectionResults.forEach((replay) => {
+        results.players.value.forEach((player) => {
           let exact = false;
-          replay.players.forEach((player) => {
-            // any exact name match should rank replay higher
-            const exactMatch = terms.some((term: string) => compare(player.name, term));
-            if (!exact && exactMatch) {
-              exactMatches.push(replay);
-              exact = true;
-            }
-          });
+          // any exact name match should rank replay higher
+          const exactMatch = terms.some((term: string) => compare(player.player, term));
+          if (!exact && exactMatch) {
+            exactMatches.push(player);
+            exact = true;
+          }
 
           if (!exact) {
-            otherMatches.push(replay);
+            otherMatches.push(player);
           }
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
-        setSearchResults({
-          replays: orderedResults,
-          loading: false,
-          query: {
-            player: quickSelectOptions.player,
-            matchup: quickSelectOptions.matchup,
-            input: searchInput,
+        results.players.value = orderedResults;
+      }
+
+      if (maps.state !== 'success') {
+        results.maps.query = searchResults.results.maps.query;
+        results.maps.value = searchResults.results.maps.value;
+      }
+
+      if (events.state !== 'success') {
+        results.events.query = searchResults.results.events.query;
+        results.events.value = searchResults.results.events.value;
+      }
+
+      if (searchInput || anyResultsSelected) {
+        setSearchResults(prevState => ({
+          ...prevState,
+          results: {
+            ...prevState.results,
+            ...results,
           },
-        });
+        }));
+      }
+
+      const wasAnyRequestSuccessful = [replays, players, maps, events].some(result => result.state === 'success');
+      if (wasAnyRequestSuccessful) {
+        const params = new URLSearchParams(window.location.search);
+        const url = new URL(window.location.href);
+
+        if (
+          searchInput.trim().length > 2 &&
+          searchInput.trim() !== params.get('q')?.split('+').join(' ')
+        ) {
+          url.searchParams.set('q', searchInput.trim().toLowerCase());
+        } else {
+          url.searchParams.delete('q');
+        }
+
+        if (selectedResults.players) {
+          url.searchParams.set('player', selectedResults.players.value);
+        } else {
+          url.searchParams.delete('player');
+        }
+
+        if (selectedResults.maps) {
+          url.searchParams.set('map', selectedResults.maps.value);
+        } else {
+          url.searchParams.delete('map');
+        }
+
+        if (selectedResults.events) {
+          url.searchParams.set('event', selectedResults.events.value);
+        } else {
+          url.searchParams.delete('event');
+        }
+
+        if (selectedResults.matchup) {
+          url.searchParams.set('matchup', selectedResults.matchup.value);
+        } else {
+          url.searchParams.delete('matchup');
+        }
+
+        window.history.pushState({}, '', url);
+      }
+
+      // if search results are fresher than existing results, update them
+      if (searchStartTime > searchStartedAt.current) {
+        setSearchResults(prevState => ({
+          ...prevState,
+          results: {
+            ...prevState.results,
+            replays: {
+              query: searchInput,
+              value: replays.value,
+              state: 'success',
+            },
+          },
+          loading: false,
+        }));
         searchStartedAt.current = searchStartTime;
       }
     };
 
-    search();
-  }, [searchInput, quickSelectOptions, setSearchResults]);
-
-  const calculateBuildSize = () => {
-    if (window.innerWidth < 340) {
-      setBuildSize(4);
-    } else if (window.innerWidth < 370) {
-      setBuildSize(5);
-    } else if (window.innerWidth < 390) {
-      setBuildSize(6);
-    } else if (window.innerWidth < 430) {
-      setBuildSize(7);
-    } else if (window.innerWidth < 500) {
-      setBuildSize(8);
-    } else if (window.innerWidth < 560) {
-      setBuildSize(10);
+    if (
+      (searchInput && searchInput.trim().length > 2) ||
+      anyResultsSelected
+    ) {
+      startSearch();
     } else {
-      setBuildSize(10);
+      setSearchResults({
+        query: '',
+        results: initialResults,
+        loading: false,
+      });
     }
-  };
-
-  useLayoutEffect(() => {
-    window.addEventListener("resize", calculateBuildSize);
-    calculateBuildSize();
-  }, []);
-
-  const playedAtSort = (a: Replay, b: Replay) => b.played_at - a.played_at;
-  const mapToReplayComponent = (replay: Replay) => (
-    <ReplayRecord
-      key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
-      replay={replay}
-      buildSize={buildSize}
-      showBuildsAndResults={showBuildsAndResults}
-    />
-  );
+  }, [searchInput, selectedResults]);
 
   const buildResultsText = () => {
     if (!searchResults.query) {
-      return;
+      return 'Search 9000+ games for any player, map or event';
     }
 
-    const resultsQuery = [];
-
-    if (searchResults.query.player) {
-      resultsQuery.push(searchResults.query.player);
-    }
-
-    if (searchResults.query.matchup) {
-      resultsQuery.push(searchResults.query.matchup);
-    }
-
-    if (searchResults.query.input) {
-      resultsQuery.push(`"${searchResults.query.input}"`);
-    }
-
-    return `${searchResults.loading ? 'Loading' : 'Showing'} results for: ${resultsQuery.join(', ')}`;
+    return `${searchResults.loading ? 'Loading' : 'Showing'} results for: "${searchResults.query}"`;
   };
 
+  const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
+
+  const allCategoriesSelected = Object.values(selectedCategories).every(selected => selected);
+  const noCategoriesSelected = Object.values(selectedCategories).every(selected => !selected);
+
+  const buildModifiers = (excludeCategory: string = '') => (
+    Object.entries(selectedResults)
+      .filter(([category, _]) => category !== 'matchup')
+      .filter(([category, _]) => !compare(category, excludeCategory))
+        .map(([_, selected]) => selected)
+      .filter((selected): selected is SelectedResult => !!selected)
+        .map(({value}) => value)
+  );
+
   return (
-    <div className="Search">
+    <div
+      className="Search"
+      onClick={(event) => {
+        const dropdownClassList = [
+          'Search__search-type-selection-dropdown',
+          'Search__search-type-option',
+          'Search__search-type-checkbox',
+          'Search__search-type-label',
+        ];
+        if (
+          showCategorySelectionDropdown &&
+          !dropdownClassList.includes(event.target?.classList[0])
+        ) {
+          setShowCategorySelectionDropdown(false);
+        }}
+      }
+    >
       <div className="Search__search">
-        <input
-          type="search"
-          className="Search__search-input"
-          autoFocus
-          value={searchInput}
-          placeholder="Search 7000+ replays for any player, race, map or tournament"
-          onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
-        />
-        <div className="Search__quick-search">
-          <div className="Search__matchup-quick-select">
-            {Object.keys(matchupRaceMapping).map((option) => (
-              <button
-                key={option}
-                className={`
-                  Search__quick-option
-                  ${option === quickSelectOptions.matchup ?
-                    'Search__quick-option--selected' : ''}
-                `}
-                onClick={() => {
-                  let newOption: string | null = option;
-                  if (option === quickSelectOptions.matchup) {
-                    newOption = null;
-                  }
-                  setQuickSelectOptions(prevState => ({
-                    ...prevState,
-                    matchup: newOption,
-                  }));
-                }}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-          <div className="Search__player-quick-select">
-            {['Serral', 'ByuN', 'ShoWTimE', 'Maru'].map((option) => (
-              <button
-                key={option}
-                className={`
-                  Search__quick-option
-                  ${option === quickSelectOptions.player ?
-                    'Search__quick-option--selected' : ''}
-                `}
-                onClick={() => {
-                  let newOption: string | null = option;
-                  if (option === quickSelectOptions.player) {
-                    newOption = null;
-                  }
-                  setQuickSelectOptions(prevState => ({
-                    ...prevState,
-                    player: newOption,
-                  }));
-                }}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+        <div className="Search__search-box">
+          <details className="Search__search-type" open={showCategorySelectionDropdown}>
+            <summary
+              className="Search__selected-search-type"
+              onClick={() => setShowCategorySelectionDropdown(prevState => !prevState)}
+            >
+              {allCategoriesSelected && 'All'}
+              {noCategoriesSelected && 'Games'}
+              {!allCategoriesSelected && !noCategoriesSelected &&
+                Object.entries(selectedCategories)
+                  .filter(([_, selected]) => selected)
+                  .map(([category, _]) => capitalize(category))
+                  .join(', ')}
+            </summary>
+            <div className="Search__search-type-selection-dropdown">
+              {Object.entries(selectedCategories).map(([category, selected]) => (
+                <span className="Search__search-type-option">
+                  <input
+                    type="checkbox"
+                    id={`search-${category}`}
+                    className="Search__search-type-checkbox"
+                    name={`search-${category}`}
+                    checked={selected}
+                    onClick={(event) => {
+                      // const onlyCategorySelected = Object.entries(selectedCategories)
+                      //   .filter(([c, _]) => category !== c)
+                      //   .every(([_, s]) => !s);
+  
+                      setSelectedCategories((prevState) => {
+                        const updatedSelection = {
+                          ...prevState,
+                          [category]: !prevState[category],
+                        };
+                        localStorage.setItem('searchCategories', JSON.stringify(updatedSelection));
+                        return updatedSelection;
+                      });
+                    }}
+                  />
+                  <label
+                    className="Search__search-type-label" 
+                    for={`search-${category}`}
+                  >
+                    {capitalize(category)}
+                  </label>
+                </span>  
+              ))}
+            </div>
+          </details>
+          <input
+            type="search"
+            className="Search__search-input"
+            aria-label="search"
+            autoFocus
+            value={searchInput}
+            ref={searchRef}
+            onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
+          />
         </div>
         <div className="Search__search-header">
-            <span className="Search__search-results">
-              {(searchInput || quickSelectOptions.matchup || quickSelectOptions.player) && buildResultsText()}
-            </span>
-          <span className="Search__search-filters">
-            <input
-              id="search-filter"
-              className="Search__filter-checkbox"
-              type="checkbox"
-              name="search-filter"
-              checked={showBuildsAndResults}
-              onChange={() => setShowBuildsAndResults(prevState => !prevState)}
-            />
-            <label className="Search__filter-label" htmlFor="search-filter">
-              Show builds and results
-            </label>
+          <span className="Search__search-results">
+            {buildResultsText()}
           </span>
         </div>
       </div>
-      <div className="Search__replay-list">
-        {searchResults.replays.length > 0 &&
-          searchResults.replays.slice(0, 25).map(mapToReplayComponent)}
-        {searchResults.replays.length === 0 && !(searchInput || quickSelectOptions.matchup || quickSelectOptions.player)
-          ? <span className="Search__default">
-              Select a matchup/player, or start typing
-            </span>
-          : searchResults.loading
-            ? <LoadingAnimation />
-            : <span className="Search__default">
-              No replays found for: {buildResultsText()?.slice(21)}
-            </span>}
+      <div className="Search__category-results">
+        {selectedCategories.players &&
+          <InlineResults
+            title="Players"
+            input={searchInput}
+            description={resultsDescriptions.players}
+            modifiers={buildModifiers('players')}
+            state={searchResults.results.players.state}
+            results={searchResults.results.players.value.map(player => ({
+              element: (
+                <span
+                  className={`
+                    Search__player-result
+                    Search__player-result--${player.race}
+                  `}
+                >
+                  <img
+                    src={`/icons/${player.race.toLowerCase()}-logo.svg`}
+                    className="Search__race-icon"
+                    alt={player.race}
+                  />
+                  {player.player}
+                </span>
+              ),
+              value: player.player,
+              count: player.occurrences,
+            }))}
+            loading={searchResults.loading}
+            selected={selectedResults.players?.index}
+            onSelection={(result) => setSelectedResults(prevState => ({
+              ...prevState,
+              players: result,
+            }))}
+            onDeselection={() => setSelectedResults(prevState => ({
+              ...prevState,
+              players: null,
+            }))}
+          />}
+        {selectedCategories.maps &&
+          <InlineResults
+            title="Maps"
+            input={searchInput}
+            description={resultsDescriptions.maps}
+            modifiers={buildModifiers('maps')}
+            state={searchResults.results.maps.state}
+            results={searchResults.results.maps.value.map(map => ({
+              element: map.map,
+              value: map.map,
+              count: map.occurrences,
+            }))}
+            loading={searchResults.loading}
+            selected={selectedResults.maps?.index}
+            onSelection={(result) => setSelectedResults(prevState => ({
+              ...prevState,
+              maps: result,
+            }))}
+            onDeselection={() => setSelectedResults(prevState => ({
+              ...prevState,
+              maps: null,
+            }))}
+          />}
+        {selectedCategories.events && 
+          <InlineResults
+            title="Events"
+            input={searchInput}
+            description={resultsDescriptions.events}
+            modifiers={buildModifiers('events')}
+            state={searchResults.results.events.state}
+            results={searchResults.results.events.value.map(event => ({
+              element: event.event,
+              value: event.event,
+              count: event.occurrences,
+            }))}
+            loading={searchResults.loading}
+            selected={selectedResults.events?.index}
+            onSelection={(result) => setSelectedResults(prevState => ({
+              ...prevState,
+              events: result,
+            }))}
+            onDeselection={() => setSelectedResults(prevState => ({
+              ...prevState,
+              events: null,
+            }))}
+          />}
+        <BlockResults
+          title="Replays"
+          input={searchInput}
+          description={resultsDescriptions.replays}
+          loading={searchResults.loading}
+          results={searchResults.results.replays.value}
+          modifiers={buildModifiers('replays')}
+          state={searchResults.results.replays.state}
+          selectedMatchup={selectedResults.matchup?.value || null}
+          setSelectedMatchup={(matchup: string | null) => (
+            setSelectedResults(prevState => ({
+              ...prevState,
+              matchup: matchup ? {value: matchup, index: null} : null,
+            })
+          ))}
+        />
       </div>
     </div>
   )

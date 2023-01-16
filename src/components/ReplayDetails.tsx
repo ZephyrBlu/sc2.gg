@@ -1,8 +1,9 @@
+// import {Image} from '@astrojs/image/components';
 import {ReplaySummaryStat} from "./ReplaySummaryStat";
-import {Replay} from "./types";
+import type {Replay} from "./types";
 import './ReplayDetails.css';
 
-interface Props {
+type Props = {
   replay: Replay;
 }
 
@@ -33,9 +34,9 @@ export function ReplayDetails({ replay }: Props) {
           {replay.players.map((player) => (
             <div key={player.id} className="ReplayDetails__player">
               <img
-                  className="ReplayDetails__player-icon"
-                  src={`/icons/${player.race.toLowerCase()}-logo.svg`}
-                  alt={player.race}
+                className="ReplayDetails__player-icon"
+                src={`/icons/${player.race.toLowerCase()}-logo.svg`}
+                alt={player.race}
               />
               <span className="ReplayDetails__player-name">
                   {player.name.slice(clanTagIndex(player.name))}
