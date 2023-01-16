@@ -355,7 +355,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const allCategoriesSelected = Object.values(selectedCategories).every(selected => selected);
   const noCategoriesSelected = Object.values(selectedCategories).every(selected => !selected);
 
-  const buildModifiers = (excludeCategory: string) => (
+  const buildModifiers = (excludeCategory: string = '') => (
     Object.entries(selectedResults)
       .filter(([category, _]) => !compare(category, excludeCategory))
         .map(([_, selected]) => selected)

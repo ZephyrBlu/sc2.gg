@@ -15,7 +15,7 @@ export type Replay = {
   map: string,
   played_at: number,
   summary_stats?: any,
-  metadata: string,
+  event: string,
 }
 
 export type Build = any;

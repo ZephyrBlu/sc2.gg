@@ -20,9 +20,6 @@ export function ReplayRecord({ replay, buildSize }: Props) {
               {Math.ceil(replay.game_length / 60)}min
             </span>
           </span>
-          {/* <span className="ReplayRecord__tournament-info">
-            {replay.metadata}
-          </span> */}
           <span className="ReplayRecord__played-at">
             {replay.played_at}
           </span>
@@ -84,18 +81,11 @@ export function ReplayRecord({ replay, buildSize }: Props) {
           ))}
         </div>
       </div>
-      {/* <div className="ReplayRecord__footer">
+      <div className="ReplayRecord__footer">
         <span className="ReplayRecord__tags">
-            {replay.metadata ?
-              replay.metadata.split(",").map((tag) => (
-                <div key={tag} className="ReplayRecord__tag">
-                  {tag}
-                </div>
-              )) : (
-                <span className="ReplayRecord__no-tags">
-                  No tags
-                </span>
-              )}
+          <div className="ReplayRecord__tag">
+            {replay.event}
+          </div>
         </span>
         <a
           className="ReplayRecord__download"
@@ -103,7 +93,7 @@ export function ReplayRecord({ replay, buildSize }: Props) {
         >
           Download
         </a>
-      </div> */}
+      </div>
     </div>
   );
 }
