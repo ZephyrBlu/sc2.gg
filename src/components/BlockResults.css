@@ -1,6 +1,7 @@
 .BlockResults__matchup-selector {
   display: flex;
   font-size: 12px;
+  margin-bottom: 10px;
 }
 
 .BlockResults__race-selector {
@@ -25,4 +26,10 @@
 .Search__race-icon--block {
   width: 20px;
   height: 20px;
+}
+
+@media(max-width: 575px) {
+  .BlockResults__matchup-selector {
+    margin: 0;
+  }
 }

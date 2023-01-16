@@ -234,8 +234,6 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         results.events.value = searchResults.results.events.value;
       }
 
-      const wasAnyRequestCancelled = [replays, players, maps, events].some(result => result.state === 'cancelled');
-
       if (searchInput || anyResultsSelected) {
         setSearchResults(prevState => ({
           ...prevState,
