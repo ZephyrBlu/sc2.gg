@@ -86,10 +86,6 @@ a, a:visited {
   color: var(--text);
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
 ::-webkit-scrollbar {
   width: 18px;
   visibility: hidden;

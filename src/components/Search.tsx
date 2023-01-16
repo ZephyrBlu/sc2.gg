@@ -62,7 +62,7 @@ const buildInitialResultSelection = () => {
   ];
   if (
     params.get('matchup') &&
-    races.some(race => params.get('matchup')!.includes(race))
+    races.some(race => params.get('matchup')!.toLowerCase().includes(race))
   ) {
     initialSelection.matchup = {value: params.get('matchup')!, index: null};
   }
@@ -517,10 +517,12 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           modifiers={buildModifiers('replays')}
           state={searchResults.results.replays.state}
           selectedMatchup={selectedResults.matchup?.value || null}
-          setSelectedMatchup={(matchup: string) => setSelectedResults(prevState => ({
-            ...prevState,
-            matchup: {value: matchup, index: null},
-          }))}
+          setSelectedMatchup={(matchup: string | null) => (
+            setSelectedResults(prevState => ({
+              ...prevState,
+              matchup: matchup ? {value: matchup, index: null} : null,
+            })
+          ))}
         />
       </div>
     </div>

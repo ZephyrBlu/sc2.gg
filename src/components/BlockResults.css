@@ -5,6 +5,7 @@
 
 .BlockResults__race-selector {
   display: flex;
+  align-items: center;
   column-gap: 5px;
   padding-bottom: 8px;
   padding-top: 2px;

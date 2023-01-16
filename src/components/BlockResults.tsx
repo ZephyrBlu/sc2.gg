@@ -23,7 +23,7 @@ type Props = {
   results: any[];
   modifiers: string[];
   selectedMatchup: string | null;
-  setSelectedMatchup: Dispatch<string>;
+  setSelectedMatchup: Dispatch<string | null>;
   max?: number;
 }
 
@@ -93,9 +93,7 @@ export function BlockResults({
 
     matchup.sort();
 
-    if (matchup.length > 0) {
-      setSelectedMatchup(matchup.join(''));
-    }
+    setSelectedMatchup(matchup.join('') || null);
   }, [selectedRace]);
 
   const mapToReplayComponent = (replay: Replay) => (
@@ -188,6 +186,31 @@ export function BlockResults({
               ) : 'Select race'}
             </summary>
             <div className="Search__search-type-selection-dropdown">
+              <span className="Search__search-type-option">
+                <input
+                  type="radio"
+                  id="search-none-player"
+                  className="Search__search-type-checkbox"
+                  name="race-selection-player"
+                  checked={selectedRace.player === null}
+                  onClick={() => {
+                    setSelectedRace(prevState => ({
+                      ...prevState,
+                      player: null,
+                    }));
+                    setShowRaceSelectDropdown(prevState => ({
+                      ...prevState,
+                      player: false,
+                    }));
+                  }}
+                />
+                <label
+                  className="Search__search-type-label"
+                  for="search-none"
+                >
+                  None
+                </label>
+              </span>
               {races.map(race => (
                 <span className="Search__search-type-option">
                   <input
@@ -226,6 +249,7 @@ export function BlockResults({
               ))}
             </div>
           </details>
+          vs
           <details className="Search__search-type" open={showRaceSelectDropdown.opponent}>
             <summary
               className="Search__selected-search-type"
@@ -250,6 +274,31 @@ export function BlockResults({
               ) : 'Select race'}
             </summary>
             <div className="Search__search-type-selection-dropdown">
+              <span className="Search__search-type-option">
+                <input
+                  type="radio"
+                  id="search-none-opponent"
+                  className="Search__search-type-checkbox"
+                  name="race-selection-opponent"
+                  checked={selectedRace.opponent === null}
+                  onClick={() => {
+                    setSelectedRace(prevState => ({
+                      ...prevState,
+                      opponent: null,
+                    }));
+                    setShowRaceSelectDropdown(prevState => ({
+                      ...prevState,
+                      opponent: false,
+                    }));
+                  }}
+                />
+                <label
+                  className="Search__search-type-label"
+                  for="search-none"
+                >
+                  None
+                </label>
+              </span>
               {races.map(race => (
                 <span className="Search__search-type-option">
                   <input
