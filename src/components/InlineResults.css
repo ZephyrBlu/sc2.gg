@@ -15,7 +15,7 @@
 
 .InlineResults__modifiers {
   display: flex;
-  column-gap: 10px;
+  column-gap: 5px;
 }
 
 .InlineResults__modifier {

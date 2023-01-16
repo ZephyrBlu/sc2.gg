@@ -6,7 +6,7 @@ import { compare } from './utils';
 import { InlineResults, SelectedResult } from './InlineResults';
 import { BlockResults } from './BlockResults';
 
-type SelectionCategories = 'players' | 'maps' | 'events';
+type SelectionCategories = 'players' | 'maps' | 'events' | 'matchup';
 
 type SelectedResults = {
   [key in SelectionCategories]: SelectedResult | null;
@@ -34,6 +34,7 @@ const buildInitialResultSelection = () => {
     players: null,
     maps: null,
     events: null,
+    matchup: null,
   };
 
   if (typeof window === 'undefined') {
@@ -52,6 +53,18 @@ const buildInitialResultSelection = () => {
 
   if (params.get('event')) {
     initialSelection.events = {value: params.get('event')!, index: null};
+  }
+
+  const races = [
+    'protoss',
+    'terran',
+    'zerg',
+  ];
+  if (
+    params.get('matchup') &&
+    races.some(race => params.get('matchup')!.includes(race))
+  ) {
+    initialSelection.matchup = {value: params.get('matchup')!, index: null};
   }
 
   return initialSelection;
@@ -110,7 +123,8 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const anyResultsSelected = (
     selectedResults.players ||
     selectedResults.maps ||
-    selectedResults.events
+    selectedResults.events ||
+    selectedResults.matchup
   );
 
   useEffect(() => {
@@ -130,6 +144,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           player: selectedResults.players?.value,
           map: selectedResults.maps?.value,
           event: selectedResults.events?.value,
+          matchup: selectedResults.matchup?.value,
         };
         const results = await searchGames(searchInput.trim(), searchOptions);
         resolve(results);
@@ -263,6 +278,12 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           url.searchParams.delete('event');
         }
 
+        if (selectedResults.matchup) {
+          url.searchParams.set('matchup', selectedResults.matchup.value);
+        } else {
+          url.searchParams.delete('matchup');
+        }
+
         window.history.pushState({}, '', url);
       }
 
@@ -313,6 +334,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
 
   const buildModifiers = (excludeCategory: string = '') => (
     Object.entries(selectedResults)
+      .filter(([category, _]) => category !== 'matchup')
       .filter(([category, _]) => !compare(category, excludeCategory))
         .map(([_, selected]) => selected)
       .filter((selected): selected is SelectedResult => !!selected)
@@ -494,6 +516,11 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           results={searchResults.results.replays.value}
           modifiers={buildModifiers('replays')}
           state={searchResults.results.replays.state}
+          selectedMatchup={selectedResults.matchup?.value || null}
+          setSelectedMatchup={(matchup: string) => setSelectedResults(prevState => ({
+            ...prevState,
+            matchup: {value: matchup, index: null},
+          }))}
         />
       </div>
     </div>

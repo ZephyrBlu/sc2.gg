@@ -1,0 +1,22 @@
+.BlockResults__matchup-selector {
+  display: flex;
+  font-size: 12px;
+}
+
+.BlockResults__race-selector {
+  display: flex;
+  column-gap: 5px;
+  padding-bottom: 8px;
+  padding-top: 2px;
+}
+
+.InlineResults__result-content--block {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.Search__race-icon--block {
+  width: 20px;
+  height: 20px;
+}

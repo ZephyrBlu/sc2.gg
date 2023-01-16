@@ -14,6 +14,7 @@ export type SearchOptions = {
   player?: string | null;
   map?: string | null;
   event?: string | null;
+  matchup?: string | null;
 }
 
 export function useSearch() {
@@ -97,7 +98,12 @@ export function useSearch() {
       params.set('event_name', opts.event);
       anySpecificOptions = true;
     }
-    
+
+    if (opts.matchup) {
+      params.set('matchup_name', opts.matchup);
+      anySpecificOptions = true;
+    }
+
     // if there are specific search criteria, don't perform fuzzy search
     if (anySpecificOptions) {
       params.delete('q');
