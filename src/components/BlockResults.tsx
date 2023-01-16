@@ -205,7 +205,7 @@ export function BlockResults({
                   }}
                 />
                 <label
-                  className="Search__search-type-label Search__search-type-label--block"
+                  className="Search__search-type-label"
                   for="search-none"
                 >
                   None
@@ -319,7 +319,7 @@ export function BlockResults({
                     }}
                   />
                   <label
-                    className="Search__search-type-label"
+                    className="Search__search-type-label Search__search-type-label--block"
                     for={`search-${race}`}
                   >
                     <img
