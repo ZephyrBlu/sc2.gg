@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {LoadingAnimation} from './LoadingAnimation';
 import './InlineResults.css';
+import type { SearchState } from './hooks';
 
 type InlineResult = {
   element: JSX.Element,
@@ -23,7 +24,7 @@ type Props = {
   input: string;
   description: string;
   modifiers: string[];
-  state: 'success' | 'cancelled' | 'error';
+  state: SearchState;
   results: InlineResult[];
   loading: boolean;
   max?: number;
@@ -97,8 +98,8 @@ export function InlineResults({
             Search failed
           </span>}
       </span>
-      {loading && <LoadingAnimation />}
-      {!loading && results.length > 0 &&
+      {/* {loading && <LoadingAnimation />} */}
+      {results.length > 0 &&
         <div className="InlineResults__results">
           {results.slice(0, max).map(({element, value, count}, index) => (
             <div className="InlineResults__result">

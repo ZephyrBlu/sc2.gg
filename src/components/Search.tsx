@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import { ReplayRecord } from './ReplayRecord';
 import { SearchResult, SearchOptions, useSearch } from './hooks';
 import type { Replay } from "./types";
 import './Search.css';
 import { compare } from './utils';
 import { InlineResults, SelectedResult } from './InlineResults';
+import { BlockResults } from './BlockResults';
 
 type SelectionCategories = 'players' | 'maps' | 'events';
 
@@ -60,7 +60,6 @@ const buildInitialResultSelection = () => {
 export function Search({ initialResults, resultsDescriptions }: Props) {
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
-  const [buildSize, setBuildSize] = useState<number>(10);
   const searchStartedAt = useRef(0);
   const [selectedCategories, setSelectedCategories] = useState<{[key in SelectionCategories]: boolean}>(() => {
     const serializedSearchCategories = localStorage.getItem('searchCategories');
@@ -77,12 +76,10 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [showCategorySelectionDropdown, setShowCategorySelectionDropdown] = useState(false);
   const [searchResults, setSearchResults] = useState<{
     loading: boolean,
-    searching: boolean,
     query: string | null,
     results: Results,
   }>({
     loading: false,
-    searching: false,
     query: null,
     results: initialResults,
   });
@@ -110,13 +107,6 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     return () => window.removeEventListener('popstate', updateSearchInput);
   }, []);
 
-  const noSearchResultsPresent = (
-    searchResults.results.replays.value.length === 0 &&
-    searchResults.results.players.value.length === 0 &&
-    searchResults.results.maps.value.length === 0 &&
-    searchResults.results.events.value.length === 0
-  );
-
   const anyResultsSelected = (
     selectedResults.players ||
     selectedResults.maps ||
@@ -127,8 +117,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     const startSearch = async () => {
       setSearchResults(prevState => ({
         ...prevState,
-        loading: noSearchResultsPresent,
-        searching: true,
+        loading: true,
         query: searchInput,
       }));
 
@@ -239,7 +228,6 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
             ...prevState.results,
             ...results,
           },
-          searching: wasAnyRequestCancelled,
         }));
       }
 
@@ -306,48 +294,16 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         query: '',
         results: initialResults,
         loading: false,
-        searching: false,
       });
     }
   }, [searchInput, selectedResults]);
-
-  const calculateBuildSize = () => {
-    if (window.innerWidth < 340) {
-      setBuildSize(4);
-    } else if (window.innerWidth < 370) {
-      setBuildSize(5);
-    } else if (window.innerWidth < 390) {
-      setBuildSize(6);
-    } else if (window.innerWidth < 430) {
-      setBuildSize(7);
-    } else if (window.innerWidth < 500) {
-      setBuildSize(8);
-    } else if (window.innerWidth < 560) {
-      setBuildSize(10);
-    } else {
-      setBuildSize(10);
-    }
-  };
-
-  useLayoutEffect(() => {
-    window.addEventListener("resize", calculateBuildSize);
-    calculateBuildSize();
-  }, []);
-
-  const mapToReplayComponent = (replay: Replay) => (
-    <ReplayRecord
-      key={`${replay.game_length}-${replay.played_at}-${replay.map}`}
-      replay={replay}
-      buildSize={buildSize}
-    />
-  );
 
   const buildResultsText = () => {
     if (!searchResults.query) {
       return 'Search 9000+ games for any player, map or event';
     }
 
-    return `${searchResults.searching ? 'Loading' : 'Showing'} results for: "${searchResults.query}"`;
+    return `${searchResults.loading ? 'Loading' : 'Showing'} results for: "${searchResults.query}"`;
   };
 
   const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
@@ -360,7 +316,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
       .filter(([category, _]) => !compare(category, excludeCategory))
         .map(([_, selected]) => selected)
       .filter((selected): selected is SelectedResult => !!selected)
-        .map(({value}) => capitalize(value))
+        .map(({value}) => value)
   );
 
   return (
@@ -530,11 +486,15 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
               events: null,
             }))}
           />}
-        {searchResults.results.replays.value.slice(0, 20).map(mapToReplayComponent)}
-        {noSearchResultsPresent && searchInput && !searchResults.loading &&
-          <span className="Search__default">
-            No replays found for: {buildResultsText()?.slice(21)}
-          </span>}
+        <BlockResults
+          title="Replays"
+          input={searchInput}
+          description={resultsDescriptions.replays}
+          loading={searchResults.loading}
+          results={searchResults.results.replays.value}
+          modifiers={buildModifiers('replays')}
+          state={searchResults.results.replays.state}
+        />
       </div>
     </div>
   )

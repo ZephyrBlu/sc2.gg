@@ -1,7 +1,7 @@
 import {useState, useRef} from 'react';
 import type {Replay} from '../types';
 
-type SearchState = 'success' | 'cancelled' | 'error';
+export type SearchState = 'loading' | 'success' | 'cancelled' | 'error';
 
 export type SearchResult<T> = {
   query: string;
