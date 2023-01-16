@@ -83,9 +83,10 @@ export function ReplayRecord({ replay, buildSize }: Props) {
       </div>
       <div className="ReplayRecord__footer">
         <span className="ReplayRecord__tags">
-          <div className="ReplayRecord__tag">
-            {replay.event}
-          </div>
+          {replay.event && 
+            <div className="ReplayRecord__tag">
+              {replay.event}
+            </div>}
         </span>
         <a
           className="ReplayRecord__download"
