@@ -89,8 +89,6 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
-  console.log('rendering selected results', selectedResults);
-
   useLayoutEffect(() => {
     const updateSearchInput = () => {
       if (typeof window === 'undefined') {
@@ -250,29 +248,29 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         const params = new URLSearchParams(window.location.search);
         const url = new URL(window.location.href);
 
-        console.log('searching selected results', selectedResults);
-
         if (
           searchInput.trim().length > 2 &&
           searchInput.trim() !== params.get('q')?.split('+').join(' ')
         ) {
           url.searchParams.set('q', searchInput.trim().toLowerCase());
+        } else {
+          url.searchParams.delete('q');
         }
 
         if (selectedResults.players) {
-          url.searchParams.set('player', selectedResults.players.value.toLowerCase());
+          url.searchParams.set('player', selectedResults.players.value);
         } else {
           url.searchParams.delete('player');
         }
 
         if (selectedResults.maps) {
-          url.searchParams.set('map', selectedResults.maps.value.toLowerCase());
+          url.searchParams.set('map', selectedResults.maps.value);
         } else {
           url.searchParams.delete('map');
         }
 
         if (selectedResults.events) {
-          url.searchParams.set('event', selectedResults.events.value.toLowerCase());
+          url.searchParams.set('event', selectedResults.events.value);
         } else {
           url.searchParams.delete('event');
         }
