@@ -4,6 +4,7 @@ import './Builds.css';
 import { Infobox } from './Infobox';
 
 export function Trees({ trees }) {
+  console.log('trees', trees);
   // const {raceBuildClusters, raceBuildTrees} = useBuilds();
 
   // useEffect(() => {

@@ -21,6 +21,7 @@ jobs:
           node-version: 17.9
 
       - name: Build
+        run: yarn install
         run: yarn build
 
       - name: Publish to Cloudflare Pages
