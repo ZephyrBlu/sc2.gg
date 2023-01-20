@@ -31,4 +31,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: bba9d5d83023488919dc589de82fa009
           projectName: sc2-gg
-          directory: /dist
+          directory: dist
