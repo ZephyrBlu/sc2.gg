@@ -1,10 +1,46 @@
 .Tree {
   overflow-x: auto;
-  margin-bottom: 10px;
+  margin-bottom: 25px;
 }
 
 .Tree__branch, .Tree__prefix, .Tree__branch-parent {
   display: flex;
+}
+
+.Tree__prefix {
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: max-content;
+  background-color: var(--secondary-dark-4);
+}
+
+.Tree__modifiers {
+  margin-bottom: 10px;
+  display: flex;
+  column-gap: 10px;
+}
+
+.Tree__modifier {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: var(--primary-light-1);
+  border: 1px solid var(--primary-blue);
+  font-size: 14px;
+}
+
+.Tree__modifiers--secondary {
+  /* margin-bottom: 5px; */
+}
+
+.Tree__modifier--secondary {
+  background-color: var(--secondary-dark-4);
+  border: 1px solid var(--primary-light-3);
+  padding: 4px 8px;
+  font-weight: 400;
+}
+
+.Tree__show {
+  margin-bottom: 5px;
 }
 
 .Tree__branch-parent {

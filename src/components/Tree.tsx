@@ -139,14 +139,27 @@ export function Tree({ race, opponentRace, tree }) {
   const top = queues.slice(0, 10);
 
   let coverage = 0;
+  top.forEach(node => coverage += node.probability);
+
   const nested = top.map(rootNode => {
     const prefix = rootNode.prefix ? rootNode.prefix.slice(1).split(',') : [];
     prefix.push(...rootNode.node.label.split(','));
 
-    coverage += rootNode.probability;
-
     return (
       <div className="Tree">
+        <div className="Tree__header">
+          <div className="Tree__modifiers Tree__modifiers--secondary">
+            <div className="Tree__modifier Tree__modifier--secondary">
+              {Math.round((rootNode.node.total.wins / rootNode.node.total.total) * 1000) / 10}% winrate
+            </div>
+            <div className="Tree__modifier Tree__modifier--secondary">
+              Played in {Math.round((rootNode.node.total.total / tree.root.total.total) * 1000) / 10}% of games
+            </div>
+            <div className="Tree__modifier Tree__modifier--secondary">
+              {rootNode.node.total.total} games
+            </div>
+          </div>
+        </div>
         <div className="Tree__prefix">
           {prefix.map((building, index) => (
             <div className="Tree__building">
@@ -169,7 +182,6 @@ export function Tree({ race, opponentRace, tree }) {
                 </svg>}
             </div>
           ))}
-          {Math.round(rootNode.probability * 1000) / 10}%, {Math.round((rootNode.node.total.wins / rootNode.node.total.total) * 1000) / 10}%
         </div>
         {/* {renderChildren(rootNode.node, prefix.length)} */}
       </div>
@@ -207,6 +219,8 @@ export function Tree({ race, opponentRace, tree }) {
 
   const rendered = renderType === 'flat' ? expanded : nested;
 
+  console.log('tree', tree);
+
   return (
     <div className="Builds__opponent-race-builds">
       <div className="Builds__race-header">
@@ -222,9 +236,20 @@ export function Tree({ race, opponentRace, tree }) {
           alt={opponentRace}
         />
       </div>
+      <div className="Tree__modifiers">
+        <span className="Tree__modifier">
+          {Math.round((tree.root.total.wins / tree.root.total.total) * 1000) / 10}% matchup winrate
+        </span>
+        <span className="Tree__modifier">
+          Top 10 openings cover {Math.ceil(coverage * 100)}% of games
+        </span>
+        <span className="Tree__modifier">
+          {tree.root.total.total} games
+        </span>
+      </div>
       <details>
-        <summary>
-          Show build tree
+        <summary className="Tree__show">
+          Show openings
         </summary>
         {rendered}
       </details>

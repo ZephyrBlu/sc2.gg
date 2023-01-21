@@ -37,5 +37,5 @@ const mappedTrees = matchupTrees.reduce((allTrees, currentTree) => ({
 }), {});
 ---
 <AppLayout>
-  <Trees trees={mappedTrees} />
+  <Trees trees={mappedTrees} client:only="preact" />
 </AppLayout>
