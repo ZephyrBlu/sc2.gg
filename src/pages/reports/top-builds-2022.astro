@@ -37,5 +37,5 @@ const mappedTrees = matchupTrees.reduce((allTrees, currentTree) => ({
 }), {});
 ---
 <ReportLayout>
-  <Trees trees={mappedTrees} />
+  <Trees trees={mappedTrees} client:load />
 </ReportLayout>

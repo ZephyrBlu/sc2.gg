@@ -1,13 +1,27 @@
+import {useState} from 'react';
 import './Tree.css';
 
+type SortBy = 'playrate' | 'winrate';
+const sortTypes: SortBy[] = ['playrate', 'winrate'];
+
+const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
+
 export function Tree({ race, opponentRace, tree }) {
+  const [sortBy, setSortBy] = useState<SortBy>('playrate');
+  const [showSorting, setShowSorting] = useState<boolean>(false);
+
   let queues: any[] = [];
   const renderedBfs: any[] = [];
 
   const MAX_BRANCHES = 15;
   const MIN_TOTAL = 10;
   const renderNodesBfs = (rootNode, mode = 'tree') => {
-    let queue = [{node: rootNode, prefix: '', probability: rootNode.total.total / tree.root.total.total}];
+    let queue = [{
+      node: rootNode,
+      prefix: '',
+      probability: rootNode.total.total / tree.root.total.total,
+      winrate: rootNode.total.wins / rootNode.total.total,
+    }];
     let branches = 0;
     while (queue.length > 0 && branches <= MAX_BRANCHES) {
       const {node, prefix} = queue[0];
@@ -17,6 +31,7 @@ export function Tree({ race, opponentRace, tree }) {
           node,
           prefix,
           probability: node.total.total / tree.root.total.total,
+          winrate: node.total.wins / node.total.total,
         });
         branches += 1;
       }
@@ -27,6 +42,7 @@ export function Tree({ race, opponentRace, tree }) {
             node: child,
             prefix: `${prefix},${node.label}`,
             probability: child.total.total / tree.root.total.total,
+            winrate: child.total.wins / child.total.total,
           });
           branches += 1;
         }
@@ -43,12 +59,14 @@ export function Tree({ race, opponentRace, tree }) {
       const node_buildings = node.label.split(',');
       stack.push(...node_buildings);
       const probability = node.total.total / tree.root.total.total;
+      const winrate = node.total.wins / node.total.total;
 
       if (mode === 'tree') {
         renderedBfs[renderedBfs.length - 1].push({
           offset: prefix.split(',').length + offset,
           build: node_buildings,
           probability,
+          winrate,
         });
       }
 
@@ -57,6 +75,7 @@ export function Tree({ race, opponentRace, tree }) {
           offset: prefix.split(',').length + 1,
           build: stack.slice(1),
           probability,
+          winrate,
         });
         return;
       }
@@ -84,12 +103,12 @@ export function Tree({ race, opponentRace, tree }) {
     }
 
     queues = [...queues, ...queue];
-    queue.forEach(({node, prefix, probability}) => {
+    queue.forEach(({node, prefix, probability, winrate}) => {
       const build = prefix.slice(1).split(',');
       if (mode === 'flat') {
         build.push(...node.label.split(','));
       }
-      renderedBfs.push([{offset: 0, build, probability}]);
+      renderedBfs.push([{offset: 0, build, probability, winrate}]);
       dfs(node, prefix.slice(1), [], 0, mode);
     });
   };
@@ -135,7 +154,12 @@ export function Tree({ race, opponentRace, tree }) {
   const renderType = 'tree';
   tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
-  queues.sort((a, b) => b.probability - a.probability);
+  queues = queues.filter(queue => queue.probability >= 0.02);
+  if (sortBy === 'playrate') {
+    queues.sort((a, b) => b.probability - a.probability);
+  } else {
+    queues.sort((a, b) => b.winrate - a.winrate);
+  }
   const top = queues.slice(0, 10);
 
   let coverage = 0;
@@ -219,8 +243,6 @@ export function Tree({ race, opponentRace, tree }) {
 
   const rendered = renderType === 'flat' ? expanded : nested;
 
-  console.log('tree', tree);
-
   return (
     <div className="Builds__opponent-race-builds">
       <div className="Builds__race-header">
@@ -251,6 +273,37 @@ export function Tree({ race, opponentRace, tree }) {
         <summary className="Tree__show">
           Show top 10 openings
         </summary>
+        <details open={showSorting}>
+          <summary
+            className="Tree__sorting Search__selected-search-type"
+            onClick={() => setShowSorting(prevState => !prevState)}
+          >
+            Sorting by {capitalize(sortBy)}
+          </summary>
+          <div className="Search__search-type-selection-dropdown Search__search-type-selection-dropdown--tree">
+            {sortTypes.map(sortType => (
+              <span className="Search__search-type-option">
+                <input
+                  type="radio"
+                  id={`tree-${race}-${sortType}`}
+                  className="Search__search-type-checkbox"
+                  name="tree-sorting"
+                  checked={sortBy === sortType}
+                  onClick={() => {
+                    setSortBy(sortType);
+                    setShowSorting(false);
+                  }}
+                />
+                <label
+                  className="Search__search-type-label"
+                  for={`tree-${race}-${sortType}`}
+                >
+                  {capitalize(sortType)}
+                </label>
+              </span>
+            ))}
+          </div>
+        </details>
         {rendered}
       </details>
     </div>
