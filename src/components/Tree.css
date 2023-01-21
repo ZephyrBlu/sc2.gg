@@ -8,7 +8,7 @@
 }
 
 .Tree__prefix {
-  padding: 8px 12px;
+  padding: 6px;
   border-radius: 8px;
   width: max-content;
   background-color: var(--secondary-dark-4);
@@ -83,12 +83,16 @@
 }
 
 @media(max-width: 575px) {
+  .Tree__show {
+    font-size: 14px;
+  }
+
   .Tree__modifiers {
     column-gap: 5px;
   }
 
   .Tree__modifier {
-    font-size: 11px;
+    font-size: 12px;
     padding: 4px 6px;
   }
 }

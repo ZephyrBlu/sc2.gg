@@ -1,0 +1,59 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
+import '../components/index.css';
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sc2.gg - Top SC2 Builds of 2022</title>
+    <meta name="description" content="Most played and highest winrate StarCraft 2 builds of 2022 for all matchups (PvZ, TvP, ZvT, PvP, TvT, ZvZ)" />
+    <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
+  </head>
+  <style>
+    .ReportLayout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      align-content: center;
+      width: 60%;
+      max-width: 800px;
+      min-width: 620px;
+    }
+
+    @media(max-width: 1300px) {
+      .ReportLayout {
+        width: 80%;
+      }
+    }
+
+    @media(max-width: 650px) {
+      .ReportLayout {
+        width: 90%;
+        min-width: 0;
+      }
+    }
+
+    .ReportLayout__header {
+      margin: 15px 0;
+      font-weight: 700;
+      font-size: 24px;
+    }
+  </style>
+  <body>
+    <div class="ReportLayout">
+      <header class="ReportLayout__header">
+        <h1 class="ReportLayout__title">
+          Top SC2 Builds of 2022
+        </h1>
+      </header>
+      <div class="ReportLayout__container">
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>
