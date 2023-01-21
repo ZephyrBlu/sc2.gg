@@ -1,0 +1,41 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import {Trees} from '../../components/Trees';
+import trees from './2022_build_trees.json' assert {type: "json"};
+import type {Race} from '../../components/BlockResults';
+
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function findOpponentRace(identifier: string, race: string) {
+  const opponentRace = identifier
+    .split('__')[0]
+    .split('-')[1]
+    .split(',')
+    .find(identifierRace => identifierRace !== capitalize(race));
+  return opponentRace || capitalize(race);
+}
+
+const RACES = ['Protoss', 'Terran', 'Zerg'];
+const generateRaceTree = (race: string) => {
+  let raceTrees: {[key in Race]: any} = {};
+  Object.entries(trees).forEach(([identifier, tree]) => {
+    if (capitalize(race) === identifier.split('-')[0]) {
+      const opponentRace = findOpponentRace(identifier, race) as Race;
+      raceTrees[opponentRace!] = tree;
+    }
+  });
+
+  return {[race]: raceTrees};
+}
+
+const matchupTrees = RACES.map(race => generateRaceTree(race));
+const mappedTrees = matchupTrees.reduce((allTrees, currentTree) => ({
+  ...allTrees,
+  ...currentTree,
+}), {});
+---
+<AppLayout>
+  <Trees trees={mappedTrees} />
+</AppLayout>

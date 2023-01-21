@@ -5,7 +5,7 @@ import type {Replay} from './types';
 import type { SearchState } from './hooks';
 import './BlockResults.css';
 
-type Race = 'Protoss' | 'Terran' | 'Zerg';
+export type Race = 'Protoss' | 'Terran' | 'Zerg';
 
 type BlockResult = {
   element: JSX.Element,

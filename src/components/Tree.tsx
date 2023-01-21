@@ -1,47 +1,10 @@
-import {useEffect, useState, useRef} from 'react';
 import './Tree.css';
 
-export function Tree({ race, oppRace, tree }) {
-  const [rendered, setRendered] = useState<JSX.Element[] | null>(null);
-  const queues = useRef([]);
-  console.log('race/tree', race, oppRace, tree);
-
-  // const renderedDfs = [];
-  // const renderNodesDfs = (
-  //   node,
-  //   stack = [],
-  //   offset = 0,
-  // ) => {
-  //   if (node.label === '') {
-  //     return;
-  //   }
-
-  //   const node_buildings = node.label.split(',');
-  //   stack.push(...node_buildings);
-  //   const probability = node.total.total / tree.root.total.total;
-
-  //   if (node.children.length === 0) {
-  //     if (stack.length + offset >= 5) {
-  //       renderedDfs.push({
-  //         offset,
-  //         build: stack,
-  //         probability,
-  //       });
-  //     }
-  //     return;
-  //   }
-
-  //   // node.children.forEach(child => {
-  //   //   renderNodes(child, [], stack.length + offset, prefix);
-  //   // });
-
-  //   // renderNodes(node.children[0], [...stack], offset, prefix);
-  //   node.children.slice(0).forEach(child => renderNodesDfs(child, [...stack], offset));
-  // };
-
+export function Tree({ race, opponentRace, tree }) {
+  let queues: any[] = [];
   const renderedBfs: any[] = [];
 
-  const MAX_BRANCHES = 10;
+  const MAX_BRANCHES = 15;
   const MIN_TOTAL = 10;
   const renderNodesBfs = (rootNode, mode = 'tree') => {
     let queue = [{node: rootNode, prefix: '', probability: rootNode.total.total / tree.root.total.total}];
@@ -49,7 +12,7 @@ export function Tree({ race, oppRace, tree }) {
     while (queue.length > 0 && branches <= MAX_BRANCHES) {
       const {node, prefix} = queue[0];
 
-      if (node.children.length === 0) { //  && node.total.total > MIN_TOTAL) {
+      if (node.children.length === 0) {
         queue.push({
           node,
           prefix,
@@ -120,7 +83,7 @@ export function Tree({ race, oppRace, tree }) {
       return [];
     }
 
-    queues.current = [...queues.current, ...queue];
+    queues = [...queues, ...queue];
     queue.forEach(({node, prefix, probability}) => {
       const build = prefix.slice(1).split(',');
       if (mode === 'flat') {
@@ -130,10 +93,6 @@ export function Tree({ race, oppRace, tree }) {
       dfs(node, prefix.slice(1), [], 0, mode);
     });
   };
-
-  // tree.root.children.forEach(child => renderNodesDfs(child));
-  // const renderType = 'tree';
-  // tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
   const renderChildren = (node, offset = 0) => {
     return (
@@ -161,7 +120,7 @@ export function Tree({ race, oppRace, tree }) {
                   </svg>}
               </div>
             ))}
-            {Math.ceil((child.total.total / node.total.total) * 100)}%, {child.total.total}
+            {Math.round((child.total.total / node.total.total) * 1000) / 10}%, {child.total.total}
           </div>
           {child.children.length > 0 &&
             <details className="Tree__branch-children">
@@ -174,66 +133,30 @@ export function Tree({ race, oppRace, tree }) {
   };
 
   const renderType = 'tree';
-  useEffect(() => {
-    tree.root.children.forEach(child => renderNodesBfs(child, renderType));
-  }, []);
+  tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
-  useEffect(() => {
-    queues.current.sort((a, b) => b.probability - a.probability);
-    const top = queues.current.slice(0, 10);
+  queues.sort((a, b) => b.probability - a.probability);
+  const top = queues.slice(0, 10);
 
-    let coverage = 0;
-    const nested = top.map(rootNode => {
-      const prefix = rootNode.prefix ? rootNode.prefix.slice(1).split(',') : [];
-      prefix.push(...rootNode.node.label.split(','));
+  let coverage = 0;
+  const nested = top.map(rootNode => {
+    const prefix = rootNode.prefix ? rootNode.prefix.slice(1).split(',') : [];
+    prefix.push(...rootNode.node.label.split(','));
 
-      coverage += rootNode.probability;
+    coverage += rootNode.probability;
 
-      return (
-        <div className="Tree">
-          <div className="Tree__prefix">
-            {prefix.map((building, index) => (
-              <div className="Tree__building">
-                <img
-                  alt={building}
-                  title={building}
-                  className="Tree__building-icon"
-                  src={`/images/buildings/${race}/${building}.png`}
-                />
-                {prefix.length - 1 !== index &&
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="Tree__arrow"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>}
-              </div>
-            ))}
-            {Math.ceil(rootNode.probability * 100)}%, {Math.ceil((rootNode.node.total.wins / rootNode.node.total.total) * 100)}%
-          </div>
-          {/* {renderChildren(rootNode.node, prefix.length)} */}
-        </div>
-      );
-    });
-
-    console.log('total coverage', race, oppRace, coverage);
-
-    const expanded = renderedBfs.map((tree) => (
+    return (
       <div className="Tree">
-        {tree.map(({ offset, build }) => (
-          <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
-            {build.map((building) => (
-              <div className="Tree__building">
-                <img
-                  alt={building}
-                  title={building}
-                  className="Tree__building-icon"
-                  src={`/images/buildings/${race}/${building}.png`}
-                />
+        <div className="Tree__prefix">
+          {prefix.map((building, index) => (
+            <div className="Tree__building">
+              <img
+                alt={building}
+                title={building}
+                className="Tree__building-icon"
+                src={`/images/buildings/${race}/${building}.png`}
+              />
+              {prefix.length - 1 !== index &&
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -243,16 +166,68 @@ export function Tree({ race, oppRace, tree }) {
                   className="Tree__arrow"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </div>
-            ))}
-          </div>
-        ))}
+                </svg>}
+            </div>
+          ))}
+          {Math.round(rootNode.probability * 1000) / 10}%, {Math.round((rootNode.node.total.wins / rootNode.node.total.total) * 1000) / 10}%
+        </div>
+        {/* {renderChildren(rootNode.node, prefix.length)} */}
       </div>
-    ));
+    );
+  });
 
-    setRendered(renderType === 'flat' ? expanded : nested);
-  }, [queues.current]);
+  const expanded = renderedBfs.map((tree) => (
+    <div className="Tree">
+      {tree.map(({ offset, build }) => (
+        <div className="Tree__branch" style={{marginLeft: 50 * offset}}>
+          {build.map((building) => (
+            <div className="Tree__building">
+              <img
+                alt={building}
+                title={building}
+                className="Tree__building-icon"
+                src={`/images/buildings/${race}/${building}.png`}
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="Tree__arrow"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  ));
 
-  return rendered;
+  const rendered = renderType === 'flat' ? expanded : nested;
+
+  return (
+    <div className="Builds__opponent-race-builds">
+      <div className="Builds__race-header">
+        <h2 className="Builds__race">
+          vs {opponentRace}
+        </h2>
+        <img
+          src={`/icons/${opponentRace.toLowerCase()}-logo.svg`}
+          className={`
+            Builds__race-icon-opponent
+            ${opponentRace.toLowerCase() === 'protoss' ? 'Builds__race-icon-opponent--protoss' : ''}
+          `}
+          alt={opponentRace}
+        />
+      </div>
+      <details>
+        <summary>
+          Show build tree
+        </summary>
+        {rendered}
+      </details>
+    </div>
+  );
 }
