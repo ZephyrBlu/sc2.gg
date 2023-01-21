@@ -12,6 +12,7 @@
   border-radius: 8px;
   width: max-content;
   background-color: var(--secondary-dark-4);
+  overflow-x: auto;
 }
 
 .Tree__modifiers {

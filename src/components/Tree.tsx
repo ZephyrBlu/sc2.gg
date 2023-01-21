@@ -154,7 +154,23 @@ export function Tree({ race, opponentRace, tree }) {
   const renderType = 'tree';
   tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
-  queues = queues.filter(queue => queue.probability >= 0.02);
+  if (queues.length > 10) {
+    let passed = 0;
+    queues.sort((a, b) => b.probability - a.probability);
+    queues = queues.filter(queue => {
+      const pass = queue.probability >= 0.02;
+      if (pass) {
+        passed += 1;
+        return pass;
+      }
+
+      if (passed < 10) {
+        passed += 1;
+        return true;
+      }
+  });
+  }
+
   if (sortBy === 'playrate') {
     queues.sort((a, b) => b.probability - a.probability);
   } else {
