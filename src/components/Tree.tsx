@@ -13,9 +13,13 @@ export function Tree({ race, opponentRace, tree }) {
   let queues: any[] = [];
   const renderedBfs: any[] = [];
 
-  const MAX_BRANCHES = 15;
+  let MAX_BRANCHES = race === 'Zerg' ? 10 : 15;
   const MIN_TOTAL = 10;
   const renderNodesBfs = (rootNode, mode = 'tree') => {
+    if (rootNode.label === 'SpawningPool') {
+      MAX_BRANCHES = 5;
+    }
+
     let queue = [{
       node: rootNode,
       prefix: '',
@@ -26,7 +30,10 @@ export function Tree({ race, opponentRace, tree }) {
     while (queue.length > 0 && branches <= MAX_BRANCHES) {
       const {node, prefix} = queue[0];
 
-      if (node.children.length === 0) {
+      if (
+        node.children.length === 0 ||
+        node.children.every(child => child.total.total < MIN_TOTAL)
+      ) {
         queue.push({
           node,
           prefix,
