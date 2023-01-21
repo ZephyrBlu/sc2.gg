@@ -153,7 +153,7 @@ export function Tree({ race, opponentRace, tree }) {
               {Math.round((rootNode.node.total.wins / rootNode.node.total.total) * 1000) / 10}% winrate
             </div>
             <div className="Tree__modifier Tree__modifier--secondary">
-              Played in {Math.round((rootNode.node.total.total / tree.root.total.total) * 1000) / 10}% of games
+              {Math.round((rootNode.node.total.total / tree.root.total.total) * 1000) / 10}% playrate
             </div>
             <div className="Tree__modifier Tree__modifier--secondary">
               {rootNode.node.total.total} games
@@ -238,10 +238,10 @@ export function Tree({ race, opponentRace, tree }) {
       </div>
       <div className="Tree__modifiers">
         <span className="Tree__modifier">
-          {Math.round((tree.root.total.wins / tree.root.total.total) * 1000) / 10}% matchup winrate
+          {Math.round((tree.root.total.wins / tree.root.total.total) * 1000) / 10}% winrate
         </span>
         <span className="Tree__modifier">
-          Top 10 openings cover {Math.ceil(coverage * 100)}% of games
+          {Math.ceil(coverage * 100)}% game coverage
         </span>
         <span className="Tree__modifier">
           {tree.root.total.total} games
