@@ -71,6 +71,39 @@ const buildInitialResultSelection = () => {
   return initialSelection;
 };
 
+const buildInitialBuildSelection = () => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  let initialBuild: string[] = [];
+  if (params.get('build')) {
+    initialBuild = params.get('build')!.split(',');
+  }
+
+  return initialBuild;
+};
+
+const buildInitialBuildRaceSelection = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  let initialBuild = null;
+  if (
+    params.get('build_race') &&
+    RACES.some(race => race.toLowerCase() === params.get('build_race')!.toLowerCase())
+  ) {
+    initialBuild = params.get('build_race')! as Race;
+  }
+
+  return initialBuild;
+};
+
 export function Search({ initialResults, resultsDescriptions }: Props) {
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchInput, setSearchInput] = useState<string>(searchRef.current?.value || '');
@@ -98,37 +131,8 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     results: initialResults,
   });
   const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
-  const [selectedBuild, setSelectedBuild] = useState<string[]>(() => {
-    if (typeof window === 'undefined') {
-      return [];
-    }
-
-    const params = new URLSearchParams(window.location.search);
-
-    let initialBuild: string[] = [];
-    if (params.get('build')) {
-      initialBuild = params.get('build')!.split(',');
-    }
-
-    return initialBuild;
-  });
-  const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(() => {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-
-    const params = new URLSearchParams(window.location.search);
-
-    let initialBuild = null;
-    if (
-      params.get('build_race') &&
-      RACES.some(race => race.toLowerCase() === params.get('build_race')!.toLowerCase())
-    ) {
-      initialBuild = params.get('build_race')! as Race;
-    }
-
-    return initialBuild;
-  });
+  const [selectedBuild, setSelectedBuild] = useState<string[]>(buildInitialBuildSelection);
+  const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(buildInitialBuildRaceSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useLayoutEffect(() => {
@@ -144,6 +148,12 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
 
       const initialSelection = buildInitialResultSelection();
       setSelectedResults(initialSelection);
+
+      const initialBuildSelection = buildInitialBuildSelection();
+      setSelectedBuild(initialBuildSelection)
+
+      const initialBuildRaceSelection = buildInitialBuildRaceSelection();
+      setSelectedBuildRace(initialBuildRaceSelection);
     };
 
     updateSearchInput();
