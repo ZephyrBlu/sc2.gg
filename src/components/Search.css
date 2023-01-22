@@ -101,7 +101,6 @@
 
 .Search__search-options-toggle {
   font-size: 12px;
-  margin-bottom: 10px;
 }
 
 .Search__new {
@@ -114,12 +113,17 @@
 }
 
 .Search__build-search {
-  margin-top: 5px;
+  margin-top: 10px;
 }
 
 .Search__building-options {
   display: flex;
   justify-content: space-between;
+}
+
+.Search__building-options--race {
+  column-gap: 20px;
+  justify-content: flex-start;
 }
 
 .Search__selected-buildings {
@@ -131,6 +135,14 @@
 .Search__building-icon {
   width: 30px;
   height: 30px;
+}
+
+.Search__race-icon {
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+  background-color: var(--primary-light-1);
+  border-radius: 8px;
 }
 
 .Search__building-icon--add {

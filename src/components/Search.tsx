@@ -29,6 +29,12 @@ type Props = {
   };
 }
 
+const RACES = [
+  'Protoss',
+  'Terran',
+  'Zerg',
+];
+
 const buildInitialResultSelection = () => {
   let initialSelection: SelectedResults = {
     players: null,
@@ -55,14 +61,9 @@ const buildInitialResultSelection = () => {
     initialSelection.events = {value: params.get('event')!, index: null};
   }
 
-  const races = [
-    'protoss',
-    'terran',
-    'zerg',
-  ];
   if (
     params.get('matchup') &&
-    races.some(race => params.get('matchup')!.toLowerCase().includes(race))
+    RACES.some(race => params.get('matchup')!.toLowerCase().includes(race.toLowerCase()))
   ) {
     initialSelection.matchup = {value: params.get('matchup')!, index: null};
   }
@@ -107,6 +108,23 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     let initialBuild: string[] = [];
     if (params.get('build')) {
       initialBuild = params.get('build')!.split(',');
+    }
+
+    return initialBuild;
+  });
+  const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(() => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+
+    let initialBuild = null;
+    if (
+      params.get('build_race') &&
+      RACES.some(race => race.toLowerCase() === params.get('build_race')!.toLowerCase())
+    ) {
+      initialBuild = params.get('build_race')! as Race;
     }
 
     return initialBuild;
@@ -304,6 +322,12 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           url.searchParams.delete('build');
         }
 
+        if (selectedBuildRace) {
+          url.searchParams.set('build_race', selectedBuildRace);
+        } else {
+          url.searchParams.delete('build_race');
+        }
+
         window.history.pushState({}, '', url);
       }
 
@@ -337,7 +361,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         loading: false,
       });
     }
-  }, [searchInput, selectedResults, selectedBuild]);
+  }, [searchInput, selectedResults, selectedBuildRace, selectedBuild]);
 
   const buildResultsText = () => {
     if (!searchResults.query) {
@@ -383,7 +407,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
       'Factory',
       'Starport',
       'EngineeringBay',
-      'Armoury',
+      'Armory',
       'FusionCore',
       'GhostAcademy',
     ],
@@ -496,14 +520,30 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           </summary>
           <div className="Search__build-search">
             <div className="Search__selected-buildings">
+              {selectedBuild.length === 0 &&
+                <>
+                  <div className="Search__building-icon Search__building-icon--selected" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="Search__arrow-right">
+                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  </svg>
+                </>}
               {selectedBuild.map(building => (
                 <>
                   <img
                     alt={building}
                     title={building}
                     className="Search__building-icon Search__building-icon--selected"
-                    src={`/images/buildings/Protoss/${building}.png`}
-                    onClick={() => setSelectedBuild(prevState => prevState.slice(0, -1))}
+                    src={`/images/buildings/${selectedBuildRace}/${building}.png`}
+                    onClick={() => {
+                      if (selectedBuild.length === 1) {
+                        setSelectedBuildRace(null);
+                      }
+                      setSelectedBuild(prevState => prevState.slice(0, -1));
+                    }}
                   />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -515,13 +555,23 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
                 </>
               ))}
             </div>
-            <div className="Search__building-options">
-              {selectableBuildings.Protoss.slice(0, 8).map(building => (
+            <div className={`Search__building-options ${selectedBuildRace ? '' : 'Search__building-options--race'}`}>
+              {!selectedBuildRace &&
+                Object.keys(selectableBuildings).map(race => (
+                  <img
+                    alt={race}
+                    title={race}
+                    className="Search__race-icon"
+                    src={`/icons/${race}-logo.svg`}
+                    onClick={() => setSelectedBuildRace(race as Race)}
+                  />  
+                ))}
+              {selectedBuildRace && selectableBuildings[selectedBuildRace].slice(0, 8).map(building => (
                 <img
                   alt={building}
                   title={building}
                   className="Search__building-icon Search__building-icon--add"
-                  src={`/images/buildings/Protoss/${building}.png`}
+                  src={`/images/buildings/${selectedBuildRace}/${building}.png`}
                   onClick={() => setSelectedBuild((prevState) => {
                     const newState = [...prevState];
                     newState.push(building);
