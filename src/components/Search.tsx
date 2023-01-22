@@ -562,7 +562,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
                     alt={race}
                     title={race}
                     className="Search__race-icon Search__race-icon--add"
-                    src={`/icons/${race.toLowerCase}-logo.svg`}
+                    src={`/icons/${race.toLowerCase()}-logo.svg`}
                     onClick={() => setSelectedBuildRace(race as Race)}
                   />  
                 ))}
