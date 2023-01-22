@@ -15,6 +15,7 @@ export type SearchOptions = {
   map?: string | null;
   event?: string | null;
   matchup?: string | null;
+  build?: string | null;
 }
 
 export function useSearch() {
@@ -101,6 +102,11 @@ export function useSearch() {
 
     if (opts.matchup) {
       params.set('matchup_name', opts.matchup);
+      anySpecificOptions = true;
+    }
+
+    if (opts.build) {
+      params.set('build', opts.build);
       anySpecificOptions = true;
     }
 

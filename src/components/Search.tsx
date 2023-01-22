@@ -97,6 +97,20 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     results: initialResults,
   });
   const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
+  const [selectedBuild, setSelectedBuild] = useState<string>(() => {
+    if (typeof window === 'undefined') {
+      return '';
+    }
+
+    const params = new URLSearchParams(window.location.search);
+
+    let initialBuild = '';
+    if (params.get('build')) {
+      initialBuild = params.get('build')!;
+    }
+
+    return initialBuild;
+  });
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useLayoutEffect(() => {
@@ -145,6 +159,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           map: selectedResults.maps?.value,
           event: selectedResults.events?.value,
           matchup: selectedResults.matchup?.value,
+          build: selectedBuild,
         };
         const results = await searchGames(searchInput.trim(), searchOptions);
         resolve(results);
@@ -282,6 +297,12 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           url.searchParams.delete('matchup');
         }
 
+        if (selectedBuild) {
+          url.searchParams.set('build', selectedBuild);
+        } else {
+          url.searchParams.delete('build');
+        }
+
         window.history.pushState({}, '', url);
       }
 
@@ -315,7 +336,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         loading: false,
       });
     }
-  }, [searchInput, selectedResults]);
+  }, [searchInput, selectedResults, selectedBuild]);
 
   const buildResultsText = () => {
     if (!searchResults.query) {

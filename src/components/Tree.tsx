@@ -13,9 +13,13 @@ export function Tree({ race, opponentRace, tree }) {
   let queues: any[] = [];
   const renderedBfs: any[] = [];
 
+  // Zerg has less branching in their builds than other races
+  // higher max branches makes openings too granular
   let MAX_BRANCHES = race === 'Zerg' ? 10 : 15;
   const MIN_TOTAL = 10;
   const renderNodesBfs = (rootNode, mode = 'tree') => {
+    // tree has much less branching for pool-first builds
+    // lower max branches captures the openings much better
     if (rootNode.label === 'SpawningPool') {
       MAX_BRANCHES = 5;
     }
@@ -192,6 +196,9 @@ export function Tree({ race, opponentRace, tree }) {
     const prefix = rootNode.prefix ? rootNode.prefix.slice(1).split(',') : [];
     prefix.push(...rootNode.node.label.split(','));
 
+    const matchup = [race, opponentRace];
+    matchup.sort();
+
     return (
       <div className="Tree">
         <div className="Tree__header">
@@ -231,6 +238,9 @@ export function Tree({ race, opponentRace, tree }) {
           ))}
         </div>
         {/* {renderChildren(rootNode.node, prefix.length)} */}
+        <a className="Tree__search-opening" href={`/?matchup=${matchup.join('')}&build=${prefix.join(',')}`}>
+          See {race.slice(0, 1)}v{opponentRace.slice(0, 1)} games with this opening
+        </a>
       </div>
     );
   });
