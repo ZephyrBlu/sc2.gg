@@ -498,7 +498,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
                   <img
                     alt={building}
                     title={building}
-                    className="Search__building-icon"
+                    className="Search__building-icon Search__building-icon--selected"
                     src={`/images/buildings/Protoss/${building}.png`}
                     onClick={() => setSelectedBuild(prevState => prevState.slice(0, -1))}
                   />
@@ -517,7 +517,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
                 <img
                   alt={building}
                   title={building}
-                  className="Search__building-icon"
+                  className="Search__building-icon Search__building-icon--add"
                   src={`/images/buildings/Protoss/${building}.png`}
                   onClick={() => setSelectedBuild((prevState) => {
                     const newState = [...prevState];

@@ -123,6 +123,21 @@
   height: 30px;
 }
 
+.Search__building-icon--add {
+  padding: 4px;
+  background-color: var(--primary-light-1);
+  border-radius: 8px;
+}
+
+.Search__building-icon--selected {
+  width: 30px;
+  height: 30px;
+  border-radius: 18px;
+  background-color: var(--secondary-dark-4);
+  padding: 3px;
+  box-shadow: 0 0 0 1px var(--primary-light-3);
+}
+
 .Search__building-icon:hover {
   cursor: pointer;
 }
@@ -130,7 +145,7 @@
 .Search__arrow-right {
   width: 20px;
   height: 20px;
-  margin: 0 -5px;
+  margin: 0 -2px;
 }
 
 .Search__category-results {
