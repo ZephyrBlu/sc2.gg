@@ -518,7 +518,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
                   alt={building}
                   title={building}
                   className="Search__building-icon"
-                  src={`/images/buildings/protoss/${building}.png`}
+                  src={`/images/buildings/Protoss/${building}.png`}
                   onClick={() => setSelectedBuild((prevState) => {
                     const newState = [...prevState];
                     newState.push(building);
