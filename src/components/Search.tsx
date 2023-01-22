@@ -489,7 +489,10 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         </div>
         <details className="Search__search-options">
           <summary className="Search__search-options-toggle">
-            Advanced search options
+            Search by build
+            <span className="Search__new">
+              NEW
+            </span>
           </summary>
           <div className="Search__build-search">
             <div className="Search__selected-buildings">
