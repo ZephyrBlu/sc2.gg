@@ -139,7 +139,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     selectedResults.maps ||
     selectedResults.events ||
     selectedResults.matchup ||
-    selectedBuild
+    selectedBuild.length > 0
   );
 
   useEffect(() => {
