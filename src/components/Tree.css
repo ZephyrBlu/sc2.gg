@@ -1,6 +1,4 @@
 .Tree {
-  overflow-x: auto;
-  margin-bottom: 25px;
 }
 
 .Tree__branch, .Tree__prefix, .Tree__branch-parent {
@@ -13,6 +11,7 @@
   width: max-content;
   background-color: var(--secondary-dark-4);
   overflow-x: auto;
+  margin-bottom: 10px;
 }
 
 .Tree__modifiers {
@@ -86,6 +85,23 @@
 .Tree__sorting {
   margin-bottom: 10px;
   width: max-content;
+}
+
+.Tree__search-opening {
+  font-size: 12px;
+  padding: 4px 8px;
+  background-color: var(--primary-light-1);
+  border-radius: 8px;
+  margin-top: 5px;
+  font-weight: 400;
+}
+
+.Tree__search-opening:hover {
+  cursor: pointer;
+}
+
+details .Builds__cluster-divider--tree {
+  margin: 20px 0;
 }
 
 .Search__selected-search-type {
