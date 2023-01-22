@@ -29,7 +29,7 @@ type Props = {
   };
 }
 
-const RACES = [
+const RACES: Race[] = [
   'Protoss',
   'Terran',
   'Zerg',
@@ -557,12 +557,12 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
             </div>
             <div className={`Search__building-options ${selectedBuildRace ? '' : 'Search__building-options--race'}`}>
               {!selectedBuildRace &&
-                Object.keys(selectableBuildings).map(race => (
+                RACES.map(race => (
                   <img
                     alt={race}
                     title={race}
-                    className="Search__race-icon"
-                    src={`/icons/${race}-logo.svg`}
+                    className="Search__race-icon Search__race-icon--add"
+                    src={`/icons/${race.toLowerCase}-logo.svg`}
                     onClick={() => setSelectedBuildRace(race as Race)}
                   />  
                 ))}
