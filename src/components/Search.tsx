@@ -4,7 +4,7 @@ import type { Replay } from "./types";
 import './Search.css';
 import { compare } from './utils';
 import { InlineResults, SelectedResult } from './InlineResults';
-import { BlockResults } from './BlockResults';
+import { BlockResults, Race } from './BlockResults';
 
 type SelectionCategories = 'players' | 'maps' | 'events' | 'matchup';
 
@@ -97,16 +97,16 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     results: initialResults,
   });
   const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
-  const [selectedBuild, setSelectedBuild] = useState<string>(() => {
+  const [selectedBuild, setSelectedBuild] = useState<string[]>(() => {
     if (typeof window === 'undefined') {
-      return '';
+      return [];
     }
 
     const params = new URLSearchParams(window.location.search);
 
-    let initialBuild = '';
+    let initialBuild: string[] = [];
     if (params.get('build')) {
-      initialBuild = params.get('build')!;
+      initialBuild = params.get('build')!.split(',');
     }
 
     return initialBuild;
@@ -138,7 +138,8 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     selectedResults.players ||
     selectedResults.maps ||
     selectedResults.events ||
-    selectedResults.matchup
+    selectedResults.matchup ||
+    selectedBuild
   );
 
   useEffect(() => {
@@ -159,7 +160,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           map: selectedResults.maps?.value,
           event: selectedResults.events?.value,
           matchup: selectedResults.matchup?.value,
-          build: selectedBuild,
+          build: selectedBuild.join(','),
         };
         const results = await searchGames(searchInput.trim(), searchOptions);
         resolve(results);
@@ -297,8 +298,8 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           url.searchParams.delete('matchup');
         }
 
-        if (selectedBuild) {
-          url.searchParams.set('build', selectedBuild);
+        if (selectedBuild.length > 0) {
+          url.searchParams.set('build', selectedBuild.join(','));
         } else {
           url.searchParams.delete('build');
         }
@@ -359,6 +360,50 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
       .filter((selected): selected is SelectedResult => !!selected)
         .map(({value}) => value)
   );
+
+  const selectableBuildings: {[key in Race]: string[]} = {
+    Protoss: [
+      'Gateway',
+      'CyberneticsCore',
+      'Nexus',
+      'TwilightCouncil',
+      'RoboticsFacility',
+      'Stargate',
+      'Forge',
+      'PhotonCannon',
+      'TemplarArchives',
+      'DarkShrine',
+      'FleetBeacon',
+      'ShieldBattery',
+    ],
+    Terran: [
+      'CommandCenter',
+      'OrbitalCommand',
+      'Barracks',
+      'Factory',
+      'Starport',
+      'EngineeringBay',
+      'Armoury',
+      'FusionCore',
+      'GhostAcademy',
+    ],
+    Zerg: [
+      'Hatchery',
+      'SpawningPool',
+      'BanelingNest',
+      'RoachWarren',
+      'EvolutionChamber',
+      'Lair',
+      'NydusNetwork',
+      'HydraliskDen',
+      'InfestationPit',
+      'LurkerDenMP',
+      'Hive',
+      'Spire',
+      'GreaterSpire',
+      'UltraliskCavern',
+    ],
+  }
 
   return (
     <div
@@ -442,6 +487,48 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
             {buildResultsText()}
           </span>
         </div>
+        <details className="Search__search-options">
+          <summary className="Search__search-options-toggle">
+            Advanced search options
+          </summary>
+          <div className="Search__build-search">
+            <div className="Search__selected-buildings">
+              {selectedBuild.map(building => (
+                <>
+                  <img
+                    alt={building}
+                    title={building}
+                    className="Search__building-icon"
+                    src={`/images/buildings/protoss/${building}.png`}
+                    onClick={() => setSelectedBuild(prevState => prevState.slice(0, -1))}
+                  />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="Search__arrow-right">
+                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  </svg>
+                </>
+              ))}
+            </div>
+            <div className="Search__building-options">
+              {selectableBuildings.Protoss.slice(0, 8).map(building => (
+                <img
+                  alt={building}
+                  title={building}
+                  className="Search__building-icon"
+                  src={`/images/buildings/protoss/${building}.png`}
+                  onClick={() => setSelectedBuild((prevState) => {
+                    const newState = [...prevState];
+                    newState.push(building);
+                    return newState;
+                  })}
+                />
+              ))}
+            </div>
+          </div>
+        </details>
       </div>
       <div className="Search__category-results">
         {selectedCategories.players &&

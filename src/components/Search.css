@@ -95,6 +95,44 @@
   justify-content: space-between;
 }
 
+.Search__search-options {
+  margin-top: 10px;
+}
+
+.Search__search-options-toggle {
+  font-size: 12px;
+}
+
+.Search__build-search {
+  margin-top: 5px;
+}
+
+.Search__building-options {
+  display: flex;
+  justify-content: space-between;
+}
+
+.Search__selected-buildings {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.Search__building-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.Search__building-icon:hover {
+  cursor: pointer;
+}
+
+.Search__arrow-right {
+  width: 20px;
+  height: 20px;
+  margin: 0 -5px;
+}
+
 .Search__category-results {
   display: flex;
   flex-direction: column;
