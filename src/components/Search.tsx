@@ -380,7 +380,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
 
   const buildResultsText = () => {
     if (!searchResults.query) {
-      return 'Search 9000+ games for any player, map or event';
+      return 'Search 25,000+ pro games for any player, map or event';
     }
 
     return `${searchResults.loading ? 'Loading' : 'Showing'} results for: "${searchResults.query}"`;
