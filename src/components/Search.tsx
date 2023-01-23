@@ -130,14 +130,9 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     query: null,
     results: initialResults,
   });
-  const [selectedResults, setSelectedResults] = useState<SelectedResults>({
-    players: null,
-    maps: null,
-    events: null,
-    matchup: null,
-  });
-  const [selectedBuild, setSelectedBuild] = useState<string[]>([]);
-  const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(null);
+  const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
+  const [selectedBuild, setSelectedBuild] = useState<string[]>(buildInitialBuildSelection);
+  const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(buildInitialBuildRaceSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useLayoutEffect(() => {
