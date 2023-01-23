@@ -95,6 +95,81 @@
   justify-content: space-between;
 }
 
+.Search__search-options {
+  margin-top: 10px;
+}
+
+.Search__search-options-toggle {
+  font-size: 12px;
+}
+
+.Search__new {
+  padding: 2px 6px;
+  background-color: var(--primary-light-3);
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 5px;
+}
+
+.Search__build-search {
+  margin-top: 10px;
+}
+
+.Search__building-options {
+  display: flex;
+  justify-content: space-between;
+}
+
+.Search__building-options--race {
+  column-gap: 20px;
+  justify-content: flex-start;
+}
+
+.Search__selected-buildings {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.Search__building-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.Search__race-icon--add {
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+  background-color: var(--primary-light-1);
+  border-radius: 8px;
+}
+
+.Search__building-icon--add {
+  padding: 4px;
+  background-color: var(--primary-light-1);
+  border-radius: 8px;
+}
+
+.Search__building-icon--selected {
+  width: 30px;
+  height: 30px;
+  border-radius: 18px;
+  background-color: var(--secondary-dark-4);
+  padding: 3px;
+  box-shadow: 0 0 0 1px var(--primary-light-3);
+}
+
+.Search__building-icon:hover {
+  cursor: pointer;
+}
+
+.Search__arrow-right {
+  width: 20px;
+  height: 20px;
+  margin: 0 -2px;
+}
+
 .Search__category-results {
   display: flex;
   flex-direction: column;

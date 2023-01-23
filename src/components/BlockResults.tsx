@@ -53,6 +53,25 @@ export function BlockResults({
       return initialSelection;
     }
 
+    const mirrors: [string, Race][] = [
+      ['protossprotoss', 'Protoss'],
+      ['terranterran', 'Terran'],
+      ['zergzerg', 'Zerg'],
+    ];
+
+    let isMirror = false;
+    mirrors.forEach(([matchup, race]) => {
+      if (selectedMatchup.toLowerCase() === matchup) {
+        isMirror = true;
+        initialSelection.player = race;
+        initialSelection.opponent = race;
+      }
+    });
+
+    if (isMirror) {
+      return initialSelection;
+    }
+
     if (selectedMatchup.toLowerCase().includes('protoss')) {
       initialSelection.player = 'Protoss';
     }

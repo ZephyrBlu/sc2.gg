@@ -1,6 +1,4 @@
 .Tree {
-  overflow-x: auto;
-  margin-bottom: 25px;
 }
 
 .Tree__branch, .Tree__prefix, .Tree__branch-parent {
@@ -86,6 +84,19 @@
 .Tree__sorting {
   margin-bottom: 10px;
   width: max-content;
+}
+
+.Tree__search-opening {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.Tree__search-opening:hover {
+  cursor: pointer;
+}
+
+details .Builds__cluster-divider--tree {
+  margin: 20px 0;
 }
 
 .Search__selected-search-type {

@@ -11,7 +11,6 @@ import '../components/index.css';
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="canonical" href="https://sc2.gg/search/" />
     <title>sc2.gg - StarCraft 2 Search Engine</title>
     <meta name="description" content="Search 9000+ StarCraft 2 (SC2) games for replays, players, maps and events" />
     <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
@@ -49,14 +48,34 @@ import '../components/index.css';
 
     .AppLayout__container {
       width: 100%;
+      margin-top: 20px;
+    }
+
+    .AppLayout__nav {
+      display: flex;
+      flex-direction: column;
+      row-gap: 20px;
+    }
+
+    .AppLayout__404 {
+      font-size: 14px;
+      margin-bottom: 30px;
+      text-align: center;
     }
   </style>
   <body>
     <div class="AppLayout">
-      <Header title="Search SC2 Games" link="/search" />
+      <Header title="Oops" link="/" />
       <Nav />
       <div class="AppLayout__container">
-        <slot />
+        <h3 class="AppLayout__404">
+          We couldn't find the page you were looking for
+        </h3>
+        <nav class="AppLayout__nav">
+          <!-- <a class="AppLayout__link" href="/">Home</a> -->
+          <a class="AppLayout__link" href="/search/">Search</a>
+          <a class="AppLayout__link" href="/reports/top-openings-2022/">Top Openings of 2022 For All Matchups</a>
+        </nav>
       </div>
     </div>
   </body>

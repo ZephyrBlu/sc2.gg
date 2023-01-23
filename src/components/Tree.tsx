@@ -13,9 +13,13 @@ export function Tree({ race, opponentRace, tree }) {
   let queues: any[] = [];
   const renderedBfs: any[] = [];
 
+  // Zerg has less branching in their builds than other races
+  // higher max branches makes openings too granular
   let MAX_BRANCHES = race === 'Zerg' ? 10 : 15;
   const MIN_TOTAL = 10;
   const renderNodesBfs = (rootNode, mode = 'tree') => {
+    // tree has much less branching for pool-first builds
+    // lower max branches captures the openings much better
     if (rootNode.label === 'SpawningPool') {
       MAX_BRANCHES = 5;
     }
@@ -192,46 +196,55 @@ export function Tree({ race, opponentRace, tree }) {
     const prefix = rootNode.prefix ? rootNode.prefix.slice(1).split(',') : [];
     prefix.push(...rootNode.node.label.split(','));
 
+    const matchup = [race, opponentRace];
+    matchup.sort();
+
     return (
-      <div className="Tree">
-        <div className="Tree__header">
-          <div className="Tree__modifiers Tree__modifiers--secondary">
-            <div className="Tree__modifier Tree__modifier--secondary">
-              {Math.round((rootNode.node.total.wins / rootNode.node.total.total) * 1000) / 10}% winrate
-            </div>
-            <div className="Tree__modifier Tree__modifier--secondary">
-              {Math.round((rootNode.node.total.total / tree.root.total.total) * 1000) / 10}% playrate
-            </div>
-            <div className="Tree__modifier Tree__modifier--secondary">
-              {rootNode.node.total.total} games
+      <>
+        <div className="Tree">
+          <div className="Tree__header">
+            <div className="Tree__modifiers Tree__modifiers--secondary">
+              <div className="Tree__modifier Tree__modifier--secondary">
+                {Math.round((rootNode.node.total.wins / rootNode.node.total.total) * 1000) / 10}% winrate
+              </div>
+              <div className="Tree__modifier Tree__modifier--secondary">
+                {Math.round((rootNode.node.total.total / tree.root.total.total) * 1000) / 10}% playrate
+              </div>
+              <div className="Tree__modifier Tree__modifier--secondary">
+                {rootNode.node.total.total} games
+              </div>
             </div>
           </div>
+          <div className="Tree__prefix">
+            {prefix.map((building, index) => (
+              <div className="Tree__building">
+                <img
+                  alt={building}
+                  title={building}
+                  className="Tree__building-icon"
+                  src={`/images/buildings/${race}/${building}.png`}
+                />
+                {prefix.length - 1 !== index &&
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="Tree__arrow"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>}
+              </div>
+            ))}
+          </div>
+          {/* {renderChildren(rootNode.node, prefix.length)} */}
+          <a className="Tree__search-opening" href={`/search/?matchup=${matchup.join('')}&build=${prefix.join(',')}&build_race=${race}`}>
+            Search for {race.slice(0, 1)}v{opponentRace.slice(0, 1)} games with this opening
+          </a>
         </div>
-        <div className="Tree__prefix">
-          {prefix.map((building, index) => (
-            <div className="Tree__building">
-              <img
-                alt={building}
-                title={building}
-                className="Tree__building-icon"
-                src={`/images/buildings/${race}/${building}.png`}
-              />
-              {prefix.length - 1 !== index &&
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="Tree__arrow"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>}
-            </div>
-          ))}
-        </div>
-        {/* {renderChildren(rootNode.node, prefix.length)} */}
-      </div>
+        <hr className="Builds__cluster-divider Builds__cluster-divider--tree" />
+      </>
     );
   });
 
@@ -294,7 +307,7 @@ export function Tree({ race, opponentRace, tree }) {
       </div>
       <details>
         <summary className="Tree__show">
-          Show top 10 openings
+          Show Top 10 Openings
         </summary>
         <details open={showSorting}>
           <summary
