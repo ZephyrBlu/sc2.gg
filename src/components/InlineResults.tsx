@@ -42,7 +42,7 @@ export function InlineResults({
   state,
   results,
   loading,
-  max = 5,
+  max = 10,
   selected = null,
   onSelection,
   onDeselection,
