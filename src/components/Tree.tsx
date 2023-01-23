@@ -239,7 +239,7 @@ export function Tree({ race, opponentRace, tree }) {
             ))}
           </div>
           {/* {renderChildren(rootNode.node, prefix.length)} */}
-          <a className="Tree__search-opening" href={`/search?matchup=${matchup.join('')}&build=${prefix.join(',')}&build_race=${race}`}>
+          <a className="Tree__search-opening" href={`/search/?matchup=${matchup.join('')}&build=${prefix.join(',')}&build_race=${race}`}>
             Search for {race.slice(0, 1)}v{opponentRace.slice(0, 1)} games with this opening
           </a>
         </div>
