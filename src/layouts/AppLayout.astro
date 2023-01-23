@@ -41,12 +41,12 @@ import '../components/index.css';
     .AppLayout__header {
       width: 100%;
       display: grid;
-      grid-template: 'breadcrumbs home nav-menu' / 1fr 3fr 1fr;
+      grid-template: 'home-page current-page nav-menu' / 1fr 3fr 1fr;
       align-items: center;
       margin: 15px 0;
     }
 
-    .AppLayout__breadcrumbs {
+    /* .AppLayout__breadcrumbs {
       grid-area: breadcrumbs;
       display: flex;
       column-gap: 3px;
@@ -54,16 +54,31 @@ import '../components/index.css';
       font-size: 14px;
       font-weight: 400;
       justify-self: flex-start;
-    }
+    } */
 
     .AppLayout__home {
-      grid-area: home;
+      grid-area: home-page;
+      padding: 6px;
+      background-color: var(--primary-light-1);
+      border-radius: 8px;
+      width: 12px;
+      height: 12px;
+      display: flex;
+    }
+
+    .AppLayout__home-icon {
+      width: 12px;
+      height: 12px;
+    }
+
+    .AppLayout__page {
+      grid-area: current-page;
       text-decoration: none;
       font-weight: 700;
       justify-self: center;
     }
 
-    .AppLayout__home:hover {
+    .AppLayout__page:hover {
       text-decoration: underline;
     }
 
@@ -96,7 +111,7 @@ import '../components/index.css';
         margin-bottom: 10px;
       }
 
-      .AppLayout__home h1 {
+      .AppLayout__page h1 {
         font-size: 16px;
       }
 
@@ -113,12 +128,17 @@ import '../components/index.css';
   <body>
     <div class="AppLayout">
       <header class="AppLayout__header">
-        <span class="AppLayout__breadcrumbs">
+        <!-- <span class="AppLayout__breadcrumbs">
           <a class="AppLayout__link" href="/">sc2.gg</a> /
           <a class="AppLayout__link" href="/search">search</a>
-        </span>
-        <a class="AppLayout__home" href="/search">
-          <h1>StarCraft 2 Games</h1>
+        </span> -->
+        <a class="AppLayout__home" href="/">
+          <svg class="AppLayout__home-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>          
+        </a>
+        <a class="AppLayout__page" href="/search">
+          <h1>Search SC2 Games</h1>
         </a>
         <div class="AppLayout__nav-container">
           <svg class="AppLayout__nav-menu" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
