@@ -307,7 +307,7 @@ export function Tree({ race, opponentRace, tree }) {
       </div>
       <details>
         <summary className="Tree__show">
-          Show top 10 openings
+          Show Top 10 Openings
         </summary>
         <details open={showSorting}>
           <summary
