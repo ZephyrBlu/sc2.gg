@@ -29,6 +29,7 @@
 }
 
 .Search__search-type {
+  position: relative;
 }
 
 .Search__selected-search-type {
