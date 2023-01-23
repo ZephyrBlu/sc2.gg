@@ -51,13 +51,13 @@ export function InlineResults({
   const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(selected);
 
   useEffect(() => {
-    if (!selected) {
+    if (selected === null) {
       setSelectedResultIndex(null);
     }
   }, [selected]);
 
   useEffect(() => {
-    if (input && !selected && onDeselection) {
+    if (input && onDeselection) {
       const index = selectedResultIndex;
       const value = index ? results[selectedResultIndex]?.value : null;
 
