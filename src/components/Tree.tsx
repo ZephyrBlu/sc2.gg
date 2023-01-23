@@ -341,7 +341,7 @@ export function Tree({ race, opponentRace, tree }) {
               <span className="Search__search-type-option">
                 <input
                   type="radio"
-                  id={`tree-${race}-${sortType}`}
+                  id={`tree-${race.toLowerCase()}-${opponentRace.toLowerCase()}-${sortType}`}
                   className="Search__search-type-checkbox"
                   name="tree-sorting"
                   checked={sortBy === sortType}
