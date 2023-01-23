@@ -1,0 +1,93 @@
+---
+const {title} = Astro.props;
+---
+
+<header class="AppLayout__header">
+  <!-- <span class="AppLayout__breadcrumbs">
+    <a class="AppLayout__link" href="/">sc2.gg</a> /
+    <a class="AppLayout__link" href="/search">search</a>
+  </span> -->
+  <a class="AppLayout__home" href="/">
+    <svg class="AppLayout__home-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+    </svg>          
+  </a>
+  <a class="AppLayout__page" href="/search">
+    <h1>{title}</h1>
+  </a>
+  <svg
+    onclick="openNav()"
+    class="AppLayout__nav-icon AppLayout__nav-open"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+  </svg>
+</header>
+
+<style>
+  .AppLayout__header {
+    width: 100%;
+    display: grid;
+    grid-template: 'home-page current-page nav-open' / 1fr 3fr 1fr;
+    align-items: center;
+    margin: 15px 0;
+  }
+
+  .AppLayout__home {
+    grid-area: home-page;
+    padding: 6px;
+    background-color: var(--primary-light-1);
+    border-radius: 8px;
+    width: 12px;
+    height: 12px;
+    display: flex;
+  }
+
+  .AppLayout__home-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .AppLayout__page {
+    grid-area: current-page;
+    text-decoration: none;
+    font-weight: 700;
+    justify-self: center;
+  }
+
+  .AppLayout__page:hover {
+    text-decoration: underline;
+  }
+
+  .AppLayout__link {
+    text-decoration: underline;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .AppLayout__nav-open {
+    grid-area: nav-open;
+    justify-self: flex-end;
+  }
+
+  .AppLayout__nav-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .AppLayout__nav-icon:hover {
+    cursor: pointer;
+  }
+
+  @media(max-width: 575px) {
+    .AppLayout__header {
+      margin-bottom: 10px;
+    }
+
+    .AppLayout__page h1 {
+      font-size: 16px;
+    }
+  }
+</style>

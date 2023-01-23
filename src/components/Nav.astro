@@ -1,0 +1,80 @@
+<div class="AppLayout__nav-menu-container">
+  <div class="AppLayout__nav-menu">
+    <nav class="AppLayout__nav">
+      <!-- <a class="AppLayout__link" href="/">Home</a> -->
+      <a class="AppLayout__link" href="/search">Search</a>
+      <a class="AppLayout__link" href="/reports/top-builds-2022">Top Builds of 2022</a>
+    </nav>
+    <svg
+      class="AppLayout__nav-icon AppLayout__nav-close"
+      onclick="closeNav()"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>            
+  </div>
+</div>
+
+<script is:inline>
+  function openNav() {
+    const nav = document.getElementsByClassName('AppLayout__nav-menu-container')[0];
+    nav.style.width = "100%";
+  }
+
+  function closeNav() {
+    const nav = document.getElementsByClassName('AppLayout__nav-menu-container')[0];
+    nav.style.width = "0";
+  }
+</script>
+
+<style>
+    .AppLayout__nav-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .AppLayout__nav-icon:hover {
+      cursor: pointer;
+    }
+
+    .AppLayout__nav-menu-container {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: var(--secondary-dark-4);
+      overflow-x: hidden;
+      transition: 0.2s;
+      display: flex;
+      justify-content: center;
+    }
+
+    .AppLayout__nav-menu {
+      width: 90%;
+      display: flex;
+      justify-content: space-between;
+      padding-top: 20px;
+    }
+
+    .AppLayout__link {
+      text-decoration: underline;
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .AppLayout__nav {
+      display: flex;
+      flex-direction: column;
+      row-gap: 20px;
+    }
+
+    .AppLayout__nav .AppLayout__link {
+      font-size: 16px;
+    }
+</style>
