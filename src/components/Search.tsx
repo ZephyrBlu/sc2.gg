@@ -343,8 +343,6 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           url.searchParams.delete('build_race');
         }
 
-        console.log('pushing url state', url.toString(), window.location.toString());
-
         if (url.toString() !== window.location.toString()) {
           window.history.pushState({}, '', url);
         }

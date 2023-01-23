@@ -64,8 +64,10 @@ export function InlineResults({
       }
     }
 
-    setSelectedResultIndex(null);
-  }, [input]);
+    if (!selected) {
+      setSelectedResultIndex(null);
+    }
+  }, [input, selected]);
 
   return (
     <div className="InlineResults">
