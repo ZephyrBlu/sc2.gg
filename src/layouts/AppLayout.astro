@@ -41,7 +41,7 @@ import '../components/index.css';
     .AppLayout__header {
       width: 100%;
       display: grid;
-      grid-template: 'home-page current-page nav-menu' / 1fr 3fr 1fr;
+      grid-template: 'home-page current-page nav-open' / 1fr 3fr 1fr;
       align-items: center;
       margin: 15px 0;
     }
@@ -82,18 +82,49 @@ import '../components/index.css';
       text-decoration: underline;
     }
 
-    .AppLayout__nav-container {
-      grid-area: nav-menu;
+    .AppLayout__nav-open {
+      grid-area: nav-open;
       justify-self: flex-end;
-      height: 24px;
     }
 
-    .AppLayout__nav-menu {
+    .AppLayout__nav-icon {
       width: 24px;
       height: 24px;
     }
 
+    .AppLayout__nav-menu {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: var(--secondary-dark-4);
+      overflow-x: hidden;
+      transition: 0.2s;
+      display: flex;
+      justify-content: space-between;
+    }
+
     .AppLayout__nav {
+      display: flex;
+      flex-direction: column;
+      row-gap: 20px;
+      padding-top: 20px;
+      padding-left: 20px;
+    }
+
+    .AppLayout__nav .AppLayout__link {
+      font-size: 16px;
+    }
+
+    .AppLayout__nav-close {
+      padding-top: 20px;
+      padding-right: 20px;
+    }
+
+    .AppLayout__nav-icon:hover {
+      cursor: pointer;
     }
 
     .AppLayout__link {
@@ -140,19 +171,49 @@ import '../components/index.css';
         <a class="AppLayout__page" href="/search">
           <h1>Search SC2 Games</h1>
         </a>
-        <div class="AppLayout__nav-container">
-          <svg class="AppLayout__nav-menu" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-            <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-          </svg>          
-          <!-- <nav class="AppLayout__nav">
-            <a class="AppLayout__link" href="/">sc2.gg</a> /
-            <a class="AppLayout__link" href="/search">Search</a>
-          </nav> -->
-        </div>
+        <svg
+          onclick="openNav()"
+          class="AppLayout__nav-icon AppLayout__nav-open"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+        </svg>
       </header>
+      <div class="AppLayout__nav-menu">
+        <nav class="AppLayout__nav">
+          <a class="AppLayout__link" href="/">Home</a>
+          <a class="AppLayout__link" href="/search">Search</a>
+          <a class="AppLayout__link" href="/reports/top-builds-2022">Top Builds of 2022</a>
+        </nav>
+        <svg
+          class="AppLayout__nav-icon AppLayout__nav-close"
+          onclick="closeNav()"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>            
+      </div>
       <div class="AppLayout__container">
         <slot />
       </div>
     </div>
   </body>
 </html>
+
+<script is:inline>
+  function openNav() {
+    const nav = document.getElementsByClassName('AppLayout__nav-menu')[0];
+    nav.style.width = "100%";
+  }
+
+  function closeNav() {
+    const nav = document.getElementsByClassName('AppLayout__nav-menu')[0];
+    nav.style.width = "0";
+  }
+</script>
