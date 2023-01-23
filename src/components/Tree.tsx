@@ -239,7 +239,27 @@ export function Tree({ race, opponentRace, tree }) {
             ))}
           </div>
           {/* {renderChildren(rootNode.node, prefix.length)} */}
-          <a className="Tree__search-opening" href={`/search/?matchup=${matchup.join('')}&build=${prefix.join(',')}&build_race=${race}`}>
+          <a
+            className="Tree__search-opening"
+            href={`/search/?matchup=${matchup.join('')}&build=${prefix.join(',')}&build_race=${race}`}
+            onClick={(event) => {
+              event.preventDefault();
+
+              const redirectToBuildSearch = () => {
+                window.location.href = (event.target as HTMLAnchorElement).href;
+              };
+
+              // @ts-ignore
+              plausible('Report Build Search', {
+                props: {
+                  race,
+                  matchup: matchup.join(''),
+                  build: prefix.join(','),
+                },
+                callback: redirectToBuildSearch,
+              });
+            }}
+          >
             Search for {race.slice(0, 1)}v{opponentRace.slice(0, 1)} games with this opening
           </a>
         </div>
