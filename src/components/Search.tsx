@@ -5,6 +5,18 @@ import './Search.css';
 import { compare } from './utils';
 import { InlineResults, SelectedResult } from './InlineResults';
 import { BlockResults, Race } from './BlockResults';
+import * as Sentry from "@sentry/browser";
+import { BrowserTracing } from "@sentry/tracing";
+
+Sentry.init({
+  dsn: "https://897e41e5e6f24829b75be219387dff94@o299086.ingest.sentry.io/4504037385240576",
+  integrations: [new BrowserTracing()],
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
 
 type SelectionCategories = 'players' | 'maps' | 'events' | 'matchup';
 
