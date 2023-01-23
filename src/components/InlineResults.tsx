@@ -51,7 +51,13 @@ export function InlineResults({
   const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(selected);
 
   useEffect(() => {
-    if (input && onDeselection) {
+    if (!selected) {
+      setSelectedResultIndex(null);
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    if (input && !selected && onDeselection) {
       const index = selectedResultIndex;
       const value = index ? results[selectedResultIndex]?.value : null;
 
@@ -63,11 +69,7 @@ export function InlineResults({
         onDeselection({value, index});
       }
     }
-
-    if (!selected) {
-      setSelectedResultIndex(null);
-    }
-  }, [input, selected]);
+  }, [input]);
 
   return (
     <div className="InlineResults">

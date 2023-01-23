@@ -295,13 +295,9 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
 
       const wasAnyRequestSuccessful = [replays, players, maps, events].some(result => result.state === 'success');
       if (wasAnyRequestSuccessful) {
-        const params = new URLSearchParams(window.location.search);
         const url = new URL(window.location.href);
 
-        if (
-          searchInput.trim().length > 2 &&
-          searchInput.trim() !== params.get('q')?.split('+').join(' ')
-        ) {
+        if (searchInput.trim().length > 2) {
           url.searchParams.set('q', searchInput.trim().toLowerCase());
         } else {
           url.searchParams.delete('q');
