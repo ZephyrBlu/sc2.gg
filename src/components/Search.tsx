@@ -130,9 +130,14 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
     query: null,
     results: initialResults,
   });
-  const [selectedResults, setSelectedResults] = useState<SelectedResults>(buildInitialResultSelection);
-  const [selectedBuild, setSelectedBuild] = useState<string[]>(buildInitialBuildSelection);
-  const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(buildInitialBuildRaceSelection);
+  const [selectedResults, setSelectedResults] = useState<SelectedResults>({
+    players: null,
+    maps: null,
+    events: null,
+    matchup: null,
+  });
+  const [selectedBuild, setSelectedBuild] = useState<string[]>([]);
+  const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(null);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
   useLayoutEffect(() => {
@@ -338,7 +343,11 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           url.searchParams.delete('build_race');
         }
 
-        window.history.pushState({}, '', url);
+        console.log('pushing url state', url.toString(), window.location.toString());
+
+        if (url.toString() !== window.location.toString()) {
+          window.history.pushState({}, '', url);
+        }
       }
 
       // if search results are fresher than existing results, update them
