@@ -280,29 +280,31 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
       if (maps.state !== 'success') {
         results.maps.query = searchResults.results.maps.query;
         results.maps.value = searchResults.results.maps.value;
-      } else {
-        const exactMatches: Replay[] = [];
-        const otherMatches: Replay[] = [];
-        const terms = searchInput.trim().split(' ');
-        results.maps.value.forEach((map) => {
-          if (searchInput.trim().toLowerCase() === map.map.toLowerCase()) {
-            exactMatches.push(map);
-            return;
-          }
-
-          // any exact name match should rank replay higher
-          const exactMatch = terms.some((term: string) => map.map.toLowerCase().includes(term.toLowerCase()));
-          if (exactMatch) {
-            exactMatches.push(map);
-            return;
-          }
-
-          otherMatches.push(map);
-        });
-
-        const orderedResults = [...exactMatches, ...otherMatches];
-        results.maps.value = orderedResults;
       }
+      
+      // else {
+      //   const exactMatches: Replay[] = [];
+      //   const otherMatches: Replay[] = [];
+      //   const terms = searchInput.trim().split(' ');
+      //   results.maps.value.forEach((map) => {
+      //     if (searchInput.trim().toLowerCase() === map.map.toLowerCase()) {
+      //       exactMatches.push(map);
+      //       return;
+      //     }
+
+      //     // any exact name match should rank replay higher
+      //     const exactMatch = terms.some((term: string) => map.map.toLowerCase().includes(term.toLowerCase()));
+      //     if (exactMatch) {
+      //       exactMatches.push(map);
+      //       return;
+      //     }
+
+      //     otherMatches.push(map);
+      //   });
+
+      //   const orderedResults = [...exactMatches, ...otherMatches];
+      //   results.maps.value = orderedResults;
+      // }
 
       if (events.state !== 'success') {
         results.events.query = searchResults.results.events.query;
