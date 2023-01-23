@@ -70,9 +70,9 @@ export function InlineResults({
   return (
     <div className="InlineResults">
       <span className="InlineResults__header">
-        <h3 className="InlineResults__title">
+        <h2 className="InlineResults__title">
           {title}
-        </h3>
+        </h2>
         <span className="InlineResults__modifiers">
           {!input && selectedResultIndex === null && modifiers.length === 0 && description &&
             <span className="InlineResults__modifier InlineResults__modifier--description">

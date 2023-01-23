@@ -155,9 +155,9 @@ export function BlockResults({
   return (
     <div className="BlockResults">
       <span className="InlineResults__header">
-        <h3 className="InlineResults__title">
+        <h2 className="InlineResults__title">
           {title}
-        </h3>
+        </h2>
         <span className="InlineResults__modifiers">
           {!input && modifiers.length === 0 && description &&
             <span className="InlineResults__modifier InlineResults__modifier--description">
