@@ -32,7 +32,6 @@ export function Trees({ trees }) {
               </>
             ))}
           </div>
-          <hr className="Builds__race-divider" />
         </>
       ))}
     </div>
