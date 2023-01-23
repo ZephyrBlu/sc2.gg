@@ -1,0 +1,80 @@
+---
+import Header from '../components/Header.astro';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
+import '../components/index.css';
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sc2.gg - Search for StarCraft 2</title>
+    <meta name="description" content="Search 9000+ StarCraft 2 (SC2) games for replays, players, maps and events" />
+    <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
+  </head>
+  <style>
+    .AppLayout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      align-content: center;
+      width: 60%;
+      max-width: 800px;
+      min-width: 620px;
+    }
+
+    @media(max-width: 1300px) {
+      .AppLayout {
+        width: 80%;
+      }
+    }
+
+    @media(max-width: 650px) {
+      .AppLayout {
+        width: 90%;
+        min-width: 0;
+      }
+    }
+
+    @media(max-width: 575px) {
+      .AppLayout__link {
+        font-size: 12px;
+      }
+    }
+
+    .AppLayout__container {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .AppLayout__nav {
+      display: flex;
+      flex-direction: column;
+      row-gap: 20px;
+    }
+
+    .AppLayout__404 {
+      font-size: 14px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+  </style>
+  <body>
+    <div class="AppLayout">
+      <Header title="Oops" link="/" />
+      <div class="AppLayout__container">
+        <h3 class="AppLayout__404">
+          We couldn't find the page you were looking for
+        </h3>
+        <nav class="AppLayout__nav">
+          <!-- <a class="AppLayout__link" href="/">Home</a> -->
+          <a class="AppLayout__link" href="/search">Search</a>
+          <a class="AppLayout__link" href="/reports/top-sc2-openings-2022">Top SC2 Openings of 2022</a>
+        </nav>
+      </div>
+    </div>
+  </body>
+</html>
