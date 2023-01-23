@@ -39,39 +39,52 @@ import '../components/index.css';
     }
 
     .AppLayout__header {
+      width: 100%;
+      display: grid;
+      grid-template: 'breadcrumbs home nav-menu' / 1fr 3fr 1fr;
+      align-items: center;
       margin: 15px 0;
-      font-weight: 700;
-      font-size: 24px;
     }
 
-    .AppLayout__header:hover {
-      text-decoration: underline;
+    .AppLayout__breadcrumbs {
+      grid-area: breadcrumbs;
+      display: flex;
+      column-gap: 3px;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 400;
+      justify-self: flex-start;
     }
 
     .AppLayout__home {
+      grid-area: home;
       text-decoration: none;
+      font-weight: 700;
+      justify-self: center;
+    }
+
+    .AppLayout__home:hover {
+      text-decoration: underline;
+    }
+
+    .AppLayout__nav-container {
+      grid-area: nav-menu;
+      justify-self: flex-end;
+      height: 24px;
+    }
+
+    .AppLayout__nav-menu {
+      width: 24px;
+      height: 24px;
     }
 
     .AppLayout__nav {
-      display: flex;
-      justify-content: space-around;
-      width: max-content;
-      margin-bottom: 15px;
     }
 
     .AppLayout__link {
-      border: 2px solid var(--primary-blue);
-      background-color: var(--secondary-dark-2);
-      border-radius: 8px;
-      padding: 8px 16px;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: 500;
-      margin-right: 20px;
-    }
-    
-    .AppLayout__link:last-child {
-      margin: 0;
+      text-decoration: underline;
+      font-size: 14px;
+      font-weight: 400;
     }
 
     .AppLayout__container {
@@ -83,24 +96,40 @@ import '../components/index.css';
         margin-bottom: 10px;
       }
 
+      .AppLayout__home h1 {
+        font-size: 16px;
+      }
+
       .AppLayout__link {
-        font-size: 14px;
-        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .AppLayout__breadcrumbs,
+      .AppLayout__breadcrumbs .AppLayout__link {
+        font-size: 10px;
       }
     }
   </style>
   <body>
     <div class="AppLayout">
       <header class="AppLayout__header">
+        <span class="AppLayout__breadcrumbs">
+          <a class="AppLayout__link" href="/">sc2.gg</a> /
+          <a class="AppLayout__link" href="/search">search</a>
+        </span>
         <a class="AppLayout__home" href="/search">
-          StarCraft 2 Games
+          <h1>StarCraft 2 Games</h1>
         </a>
+        <div class="AppLayout__nav-container">
+          <svg class="AppLayout__nav-menu" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+            <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+          </svg>          
+          <!-- <nav class="AppLayout__nav">
+            <a class="AppLayout__link" href="/">sc2.gg</a> /
+            <a class="AppLayout__link" href="/search">Search</a>
+          </nav> -->
+        </div>
       </header>
-      <!-- <nav class="AppLayout__nav">
-        <a class="AppLayout__link" href="/">Search</a>
-        <a class="AppLayout__link" href="/builds">Builds</a>
-        <a class="AppLayout__link" href="/trees">Trees</a>
-      </nav> -->
       <div class="AppLayout__container">
         <slot />
       </div>
