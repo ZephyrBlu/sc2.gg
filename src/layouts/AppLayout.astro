@@ -92,7 +92,7 @@ import '../components/index.css';
       height: 24px;
     }
 
-    .AppLayout__nav-menu {
+    .AppLayout__nav-menu-container {
       height: 100%;
       width: 0;
       position: fixed;
@@ -103,15 +103,20 @@ import '../components/index.css';
       overflow-x: hidden;
       transition: 0.2s;
       display: flex;
+      justify-content: center;
+    }
+
+    .AppLayout__nav-menu {
+      width: 90%;
+      display: flex;
       justify-content: space-between;
+      padding-top: 20px;
     }
 
     .AppLayout__nav {
       display: flex;
       flex-direction: column;
       row-gap: 20px;
-      padding-top: 20px;
-      padding-left: 20px;
     }
 
     .AppLayout__nav .AppLayout__link {
@@ -119,8 +124,6 @@ import '../components/index.css';
     }
 
     .AppLayout__nav-close {
-      padding-top: 20px;
-      padding-right: 20px;
     }
 
     .AppLayout__nav-icon:hover {
@@ -181,23 +184,25 @@ import '../components/index.css';
           <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
         </svg>
       </header>
-      <div class="AppLayout__nav-menu">
-        <nav class="AppLayout__nav">
-          <a class="AppLayout__link" href="/">Home</a>
-          <a class="AppLayout__link" href="/search">Search</a>
-          <a class="AppLayout__link" href="/reports/top-builds-2022">Top Builds of 2022</a>
-        </nav>
-        <svg
-          class="AppLayout__nav-icon AppLayout__nav-close"
-          onclick="closeNav()"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>            
+      <div class="AppLayout__nav-menu-container">
+        <div class="AppLayout__nav-menu">
+          <nav class="AppLayout__nav">
+            <!-- <a class="AppLayout__link" href="/">Home</a> -->
+            <a class="AppLayout__link" href="/search">Search</a>
+            <a class="AppLayout__link" href="/reports/top-builds-2022">Top Builds of 2022</a>
+          </nav>
+          <svg
+            class="AppLayout__nav-icon AppLayout__nav-close"
+            onclick="closeNav()"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>            
+        </div>
       </div>
       <div class="AppLayout__container">
         <slot />
@@ -208,12 +213,12 @@ import '../components/index.css';
 
 <script is:inline>
   function openNav() {
-    const nav = document.getElementsByClassName('AppLayout__nav-menu')[0];
+    const nav = document.getElementsByClassName('AppLayout__nav-menu-container')[0];
     nav.style.width = "100%";
   }
 
   function closeNav() {
-    const nav = document.getElementsByClassName('AppLayout__nav-menu')[0];
+    const nav = document.getElementsByClassName('AppLayout__nav-menu-container')[0];
     nav.style.width = "0";
   }
 </script>
