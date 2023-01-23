@@ -258,6 +258,8 @@ export function Tree({ race, opponentRace, tree }) {
                 },
                 callback: redirectToBuildSearch,
               });
+
+              setTimeout(redirectToBuildSearch, 1000);
             }}
           >
             Search for {race.slice(0, 1)}v{opponentRace.slice(0, 1)} games with this opening
