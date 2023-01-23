@@ -345,6 +345,13 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
 
         if (url.toString() !== window.location.toString()) {
           window.history.pushState({}, '', url);
+
+          const searchOptions: any = {};
+          for (const [key, value] of url.searchParams.entries()) {
+            searchOptions[key] = value;
+          }
+          // @ts-ignore
+          plausible('Search', {props: searchOptions});
         }
       }
 
