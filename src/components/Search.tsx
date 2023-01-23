@@ -251,17 +251,14 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         const otherMatches: Replay[] = [];
         const terms = searchInput.split(' ');
         results.players.value.forEach((player) => {
-          let exact = false;
           // any exact name match should rank replay higher
           const exactMatch = terms.some((term: string) => compare(player.player, term));
-          if (!exact && exactMatch) {
+          if (exactMatch) {
             exactMatches.push(player);
-            exact = true;
+            return;
           }
 
-          if (!exact) {
-            otherMatches.push(player);
-          }
+          otherMatches.push(player);
         });
 
         const orderedResults = [...exactMatches, ...otherMatches];
@@ -271,6 +268,28 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
       if (maps.state !== 'success') {
         results.maps.query = searchResults.results.maps.query;
         results.maps.value = searchResults.results.maps.value;
+      } else {
+        const exactMatches: Replay[] = [];
+        const otherMatches: Replay[] = [];
+        const terms = searchInput.trim().split(' ');
+        results.maps.value.forEach((map) => {
+          if (searchInput.trim().toLowerCase() === map.map.toLowerCase()) {
+            exactMatches.push(map);
+            return;
+          }
+
+          // any exact name match should rank replay higher
+          const exactMatch = terms.some((term: string) => map.map.toLowerCase().includes(term.toLowerCase()));
+          if (exactMatch) {
+            exactMatches.push(map);
+            return;
+          }
+
+          otherMatches.push(map);
+        });
+
+        const orderedResults = [...exactMatches, ...otherMatches];
+        results.maps.value = orderedResults;
       }
 
       if (events.state !== 'success') {

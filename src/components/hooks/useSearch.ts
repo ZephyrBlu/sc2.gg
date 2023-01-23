@@ -23,8 +23,6 @@ export function useSearch() {
   const requests = useRef<{[key: string]: AbortController}>({});
   const API_URL = 'https://search.sc2.gg';
 
-  const quoted = (string: string) => `"${string.split('+').join(' ')}"`;
-
   const search = async (query: string, url: string, endpoint: string): Promise<SearchResult<any>> => {
     if (queryCache[url]) {
       return queryCache[url];
@@ -42,7 +40,7 @@ export function useSearch() {
     const results = await fetch(url, {signal}).then(async (res) => {
       const value = await res.json();
       const state = 'success';
-      const results: SearchResult<any> = {query: quoted(query), value, state};
+      const results: SearchResult<any> = {query, value, state};
       return results;
     }).catch((e) => {
       let state: SearchState = 'error';
@@ -50,7 +48,7 @@ export function useSearch() {
         state = 'cancelled';
       }
 
-      const results: SearchResult<any> = {query: quoted(query), value: [], state};
+      const results: SearchResult<any> = {query, value: [], state};
       return results;
     });
 
