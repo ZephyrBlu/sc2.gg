@@ -44,6 +44,9 @@
 
 .Tree__branch-parent {
   height: max-content;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
 }
 
 .Tree__branch-summary::marker {

@@ -150,7 +150,7 @@ export function Tree({ race, opponentRace, tree }) {
                   </svg>}
               </div>
             ))}
-            {Math.round((child.total.total / node.total.total) * 1000) / 10}%, {child.total.total}
+            {Math.round((child.total.total / node.total.total) * 1000) / 10}% playrate<br />({child.total.total} games)
           </div>
           {child.children.length > 0 &&
             <details className="Tree__branch-children">
@@ -238,7 +238,7 @@ export function Tree({ race, opponentRace, tree }) {
               </div>
             ))}
           </div>
-          {/* {renderChildren(rootNode.node, prefix.length)} */}
+          {renderChildren(rootNode.node, prefix.length)}
           <a
             className="Tree__search-opening"
             href={`/search/?matchup=${matchup.join('')}&build=${prefix.join(',')}&build_race=${race}`}
