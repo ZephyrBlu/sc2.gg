@@ -127,37 +127,41 @@ export function Tree({ race, opponentRace, tree }) {
   const renderChildren = (node, offset = 0) => {
     return (
       node.children.map((child) => (
-        <div className="Tree__branch" style={{marginLeft: 50 * (offset + 0.5)}}>
-          <div className="Tree__branch-parent">
-            {child.label.split(',').map((building, index) => (
-              <div className="Tree__building">
-                <img
-                  alt={building}
-                  title={building}
-                  className="Tree__building-icon"
-                  src={`/images/buildings/${race}/${building}.png`}
-                />
-                {child.label.split(',').length - 1 !== index &&
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="Tree__arrow"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>}
-              </div>
-            ))}
-            {Math.round((child.total.total / node.total.total) * 1000) / 10}% playrate<br />({child.total.total} games)
+        <>
+          <div className="Tree__branch" style={{marginLeft: 50 * (offset + 0.5)}}>
+            <div className="Tree__branch-parent">
+              {child.label.split(',').map((building, index) => (
+                <div className="Tree__building">
+                  <img
+                    alt={building}
+                    title={building}
+                    className="Tree__building-icon"
+                    src={`/images/buildings/${race}/${building}.png`}
+                  />
+                  {child.label.split(',').length - 1 !== index &&
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="Tree__arrow"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>}
+                </div>
+              ))}
+              {Math.round((child.total.total / node.total.total) * 1000) / 10}% playrate<br />({child.total.total} games)
+            </div>
+            {child.children.length > 0 &&
+              <details className="Tree__branch-children">
+                <summary className="Tree__branch-summary" />
+                {renderChildren(child)}
+              </details>}
           </div>
-          {child.children.length > 0 &&
-            <details className="Tree__branch-children">
-              <summary className="Tree__branch-summary" />
-              {renderChildren(child)}
-            </details>}
-        </div>
+          {child.children.length === 3 &&
+            <hr className="Builds__cluster-divider" />}
+        </>
       ))
     );
   };

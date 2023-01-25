@@ -28,7 +28,7 @@ export function Trees({ trees }) {
                   opponentRace={opponentRace}
                   tree={trees[race][opponentRace]}
                 />
-                <hr className="Builds__cluster-divider" />                  
+                <hr className="Builds__cluster-divider" />
               </>
             ))}
           </div>
