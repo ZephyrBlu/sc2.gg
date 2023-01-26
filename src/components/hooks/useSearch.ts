@@ -28,6 +28,8 @@ export function useSearch() {
       return queryCache[url];
     }
 
+    url += '&refresh';
+
     const controller = new AbortController();
     const signal = controller.signal;
 
