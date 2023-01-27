@@ -1,0 +1,244 @@
+---
+export enum Status {
+  WorkInProgress = 'Work In Progress',
+  Released = 'Released',
+  Finalized = 'Finalized',
+}
+
+export type DetailsItem = {
+  title: string,
+  description: string,
+};
+
+const Descriptions: {[key in Status]: string} = {
+  [Status.WorkInProgress]: 'Under construction. Data may be unreliable and is subject to change.',
+  [Status.Released]: 'Officially released. May be futher tweaked or improved. There may be bugs or data issues. You should not rely on exact numbers, but may rely on numbers directionally.',
+  [Status.Finalized]: 'Unlikely to change any further. You can rely on exact numbers.',
+};
+
+interface Props {
+  publishedAt: string;
+  updatedAt?: string;
+  status: Status;
+  updates?: string[];
+  definitions?: DetailsItem[];
+  issues?: DetailsItem[];
+}
+
+const {publishedAt, updatedAt, status, updates, definitions, issues} = Astro.props;
+
+const definitionsPresent = definitions && definitions.length > 0;
+const updatesPresent = updates && updates.length > 0;
+const issuesPresent = issues && issues.length > 0;
+
+const selectGridLayout = () => {
+  if (updatesPresent && issuesPresent) {
+    return 'ReportDetails__content--grid ReportDetails__content--updates-and-issues';
+  }
+
+  if (updatesPresent) {
+    return 'ReportDetails__content--grid ReportDetails__content--updates';
+  }
+
+  if (issuesPresent) {
+    return 'ReportDetails__content--grid ReportDetails__content--issues';
+  }
+
+  return '';
+};
+
+---
+<div class="ReportDetails">
+  <div class="ReportDetails__header">
+    <span>
+      Published: <time datetime={publishedAt}>{publishedAt}</time>
+    </span>
+    {updatedAt &&
+      <span>
+        Last updated: <time datetime={updatedAt}>{updatedAt}</time>
+      </span>}
+  </div>
+  <details class="ReportDetails__details">
+    <summary class="ReportDetails__toggle">
+      Show details
+    </summary>
+    <div class={`ReportDetails__content ${selectGridLayout()}`}>
+      <div class="ReportDetails__status ReportDetails__section">
+        <h3 class="ReportDetails__title">
+          Status: {status}
+        </h3>
+        {Descriptions[status]}
+      </div>
+      {updatesPresent &&
+        <div class="ReportDetails__updates ReportDetails__section">
+          <h3 class="ReportDetails__title">
+            Updates
+          </h3>
+          <ul class="ReportDetails__update-list">
+            {updates.map(update => (
+              <li class="ReportDetails__update-item">
+                {update}
+              </li>
+            ))}
+          </ul>
+        </div>}
+      {definitionsPresent &&
+        <div class="ReportDetails__definitions ReportDetails__section">
+          <h3 class="ReportDetails__title">
+            Definitions
+          </h3>
+          {definitions.map(({title, description}) => (
+            <div class="ReportDetails__details-item">
+              <h4 class="ReportDetails__details-item-title">
+                {title}
+              </h4>
+              {description}
+            </div>
+          ))}
+        </div>}
+      {issuesPresent &&
+        <div class="ReportDetails__known-issues ReportDetails__section">
+          <h3 class="ReportDetails__title">
+            Known Issues
+          </h3>
+          {issues.map(({title, description}) => (
+            <div class="ReportDetails__details-item">
+              <h4 class="ReportDetails__details-item-title">
+                {title}
+              </h4>
+              {description}
+            </div>
+          ))} 
+        </div>}
+    </div>
+  </details>
+</div>
+
+<script is:inline>
+  const reportDetailsToggle = document.querySelectorAll('.ReportDetails__details')[0];
+  let hasBeenToggled = false;
+
+  if (reportDetailsToggle) {
+    reportDetailsToggle.addEventListener('toggle', () => {
+      if (reportDetailsToggle.open && !hasBeenToggled) {
+        plausible('Report Details Opened');
+        hasBeenToggled = true;
+      }
+    })
+  }
+</script>
+
+<style>
+  .ReportDetails {
+    padding: 15px;
+    background-color: var(--secondary-dark-4);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .ReportDetails__header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .ReportDetails__content {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 20px;
+  }
+
+  .ReportDetails__content--grid {
+    display: grid;
+    grid-row-gap: 25px;
+  }
+
+  .ReportDetails__content--updates {
+    grid-template-areas:
+      'report-status report-updates'
+      'report-definitions report-updates';
+  }
+
+  .ReportDetails__content--issues {
+    grid-template-areas:
+      'report-status report-issues'
+      'report-definitions report-issues';
+  }
+
+  .ReportDetails__content--updates-and-issues {
+    grid-template-areas:
+      'report-status report-updates'
+      'report-definitions report-updates'
+      'report-definitions report-issues';
+  }
+
+  .ReportDetails__title {
+    font-weight: 500;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+
+  .ReportDetails__section {
+    flex-basis: 50%;
+  }
+  
+  .ReportDetails__toggle {
+    font-weight: 500;
+  }
+  
+  .ReportDetails__toggle:hover {
+    cursor: pointer;
+  }
+  
+  .ReportDetails__details[open] .ReportDetails__toggle {
+    margin-bottom: 10px;
+  }
+
+  .ReportDetails__status {
+    grid-area: report-status;
+  }
+
+  .ReportDetails__updates {
+    grid-area: report-updates;
+  }
+
+  .ReportDetails__update-list {
+    margin: 0;
+    /* webkit is different for some reason */
+    padding-inline-start: 10px;
+    -webkit-padding-start: 15px;
+  }
+
+  .ReportDetails__update-item {
+    margin-bottom: 10px;
+  }
+
+  .ReportDetails__update-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .ReportDetails__definitions {
+    grid-area: report-definitions;
+  }
+
+  .ReportDetails__known-issues {
+    grid-area: report-issues;
+  }
+
+  .ReportDetails__details-item {
+    margin-bottom: 15px;
+  }
+
+  .ReportDetails__details-item:last-child {
+    margin: 0;
+  }
+
+  .ReportDetails__details-item-title {
+    font-size: 12px;
+    font-weight: 400;
+    text-decoration: underline;
+    margin-bottom: 5px;
+  }
+</style>
