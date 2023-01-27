@@ -42,14 +42,14 @@ const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
       Show details
     </summary>
     <div class={`ReportDetails__content ${updates && updates.length > 0 ? 'ReportDetails__content--updates' : ''}`}>
-      <div class="ReportDetails__status">
+      <div class="ReportDetails__status ReportDetails__section">
         <h3 class="ReportDetails__title">
           Status: {status}
         </h3>
         {Descriptions[status]}
       </div>
       {updates && updates.length > 0 &&
-        <div class="ReportDetails__updates">
+        <div class="ReportDetails__updates ReportDetails__section">
           <h3 class="ReportDetails__title">
             Updates
           </h3>
@@ -62,7 +62,7 @@ const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
           </ul>
         </div>}
       {definitions && definitions.length > 0 &&
-        <div class="ReportDetails__definitions">
+        <div class="ReportDetails__definitions ReportDetails__section">
           <h3 class="ReportDetails__title">
             Definitions
           </h3>
@@ -127,6 +127,10 @@ const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
     font-weight: 500;
     margin-bottom: 5px;
     font-size: 14px;
+  }
+
+  .ReportDetails__section {
+    flex-basis: 50%;
   }
   
   .ReportDetails__toggle {

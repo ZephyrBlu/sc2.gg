@@ -33,6 +33,10 @@ export function Tree({ race, opponentRace, tree }) {
   if (race === 'Terran') {
     MAX_BRANCHES = 30;
     MIN_TOTAL = 25;
+
+    if (opponentRace === 'Terran') {
+      MAX_BRANCHES = 50;
+    }
   }
 
   const renderNodesBfs = (rootNode, mode = 'tree') => {
