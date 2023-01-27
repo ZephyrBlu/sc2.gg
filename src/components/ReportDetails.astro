@@ -1,14 +1,5 @@
 ---
-export enum Status {
-  WorkInProgress = 'Work In Progress',
-  Released = 'Released',
-  Finalized = 'Finalized',
-}
-
-export type DetailsItem = {
-  title: string,
-  description: string,
-};
+import {ReportDetailsProps, Status} from '../pages/reports/_types';
 
 const Descriptions: {[key in Status]: string} = {
   [Status.WorkInProgress]: 'Under construction. Data may be unreliable and is subject to change.',
@@ -16,15 +7,7 @@ const Descriptions: {[key in Status]: string} = {
   [Status.Finalized]: 'Unlikely to change any further. You can rely on exact numbers.',
 };
 
-interface Props {
-  publishedAt: string;
-  updatedAt?: string;
-  status: Status;
-  updates?: string[];
-  definitions?: DetailsItem[];
-  issues?: DetailsItem[];
-}
-
+interface Props extends ReportDetailsProps {};
 const {publishedAt, updatedAt, status, updates, definitions, issues} = Astro.props;
 
 const definitionsPresent = definitions && definitions.length > 0;

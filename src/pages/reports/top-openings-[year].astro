@@ -1,0 +1,35 @@
+---
+import ReportLayout from '../../layouts/ReportLayout.astro';
+import {Trees} from '../../components/Trees';
+import ReportDetails from '../../components/ReportDetails.astro';
+import {report2022} from './_years/report2022';
+import {report2021} from './_years/report2021';
+import {report2020} from './_years/report2020';
+import {report2019} from './_years/report2019';
+import {report2018} from './_years/report2018';
+import type {ReportParams} from './_types';
+
+export function getStaticPaths() {
+  return [
+    {params: {year: report2022.year}, props: report2022},
+    {params: {year: report2021.year}, props: report2021},
+    {params: {year: report2020.year}, props: report2020},
+    {params: {year: report2019.year}, props: report2019},
+    {params: {year: report2018.year}, props: report2018},
+  ];
+}
+
+interface Props extends ReportParams {};
+const {year, publishedAt, updatedAt, status, definitions, updates, issues, trees} = Astro.props;
+---
+<ReportLayout year={year}>
+  <ReportDetails
+    publishedAt={publishedAt}
+    updatedAt={updatedAt}
+    status={status}
+    definitions={definitions}
+    updates={updates}
+    issues={issues}
+  />
+  <Trees trees={trees} client:load />
+</ReportLayout>
