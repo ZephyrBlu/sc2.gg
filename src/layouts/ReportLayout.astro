@@ -5,15 +5,21 @@ import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/700.css';
 import '../components/index.css';
+
+interface Props {
+  year: string;
+}
+
+const {year} = Astro.props;
 ---
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="canonical" href="https://sc2.gg/reports/top-openings-2022/" />
-    <title>sc2.gg - Top SC2 Pro Openings of 2022 For All Matchups</title>
-    <meta name="description" content="Most played and highest winrate pro StarCraft 2 openings of 2022 for all matchups (PvZ, TvP, ZvT, PvP, TvT, ZvZ)" />
+    <link rel="canonical" href={`https://sc2.gg/reports/top-openings-${year}/`} />
+    <title>sc2.gg - Top SC2 Pro Openings of {year} For All Matchups</title>
+    <meta name="description" content={`Most played and highest winrate pro StarCraft 2 openings of ${year} for all matchups (PvZ, TvP, ZvT, PvP, TvT, ZvZ)`} />
     <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
     <script>
       // @ts-ignore
@@ -57,7 +63,7 @@ import '../components/index.css';
   </style>
   <body>
     <div class="ReportLayout">
-      <Header title="Top Pro Openings of 2022" link="/reports/top-openings-2022/" />
+      <Header title={`Top Pro Openings of ${year}`} link={`/reports/top-openings-${year}/`} />
       <Nav />
       <div class="ReportLayout__container">
         <slot />
