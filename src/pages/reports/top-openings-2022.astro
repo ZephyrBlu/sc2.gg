@@ -3,6 +3,7 @@ import ReportLayout from '../../layouts/ReportLayout.astro';
 import {Trees} from '../../components/Trees';
 import trees from './2022_build_trees.json' assert {type: "json"};
 import type {Race} from '../../components/BlockResults';
+import ReportDetails, {Status} from '../../components/ReportDetails.astro';
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -37,5 +38,6 @@ const mappedTrees = matchupTrees.reduce((allTrees, currentTree) => ({
 }), {});
 ---
 <ReportLayout>
+  <ReportDetails publishedAt="2022-01-23" updatedAt="2022-01-26" status={Status.Released} />
   <Trees trees={mappedTrees} client:load />
 </ReportLayout>

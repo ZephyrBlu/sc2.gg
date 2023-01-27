@@ -1,0 +1,80 @@
+---
+export enum Status {
+  WorkInProgress = 'Work In Progress',
+  Released = 'Released',
+  Finalized = 'Finalized',
+}
+
+const Descriptions: {[key in Status]: string} = {
+  [Status.WorkInProgress]: 'Under construction. Data may be unreliable and is subject to change.',
+  [Status.Released]: 'Officially released. May be futher tweaked or improved. There may be bugs or data issues. You should not rely on exact numbers, but may rely on numbers directionally.',
+  [Status.Finalized]: 'Unlikely to change any further. You can rely on exact numbers.',
+};
+
+interface Props {
+  publishedAt: string;
+  updatedAt?: string;
+  status: Status;
+  updates?: string[];
+}
+
+const {publishedAt, updatedAt, status, updates} = Astro.props;
+
+---
+<div class="ReportDetails">
+  <div class="ReportDetails__content">
+    <div class="ReportDetails__header">
+      <span>
+        Published: <time datetime={publishedAt}>{publishedAt}</time>
+      </span>
+      {updatedAt &&
+        <span>
+          Last updated: <time datetime={updatedAt}>{updatedAt}</time>
+        </span>}
+    </div>
+    <div class="ReportDetails__status">
+      <h3 class="ReportDetails__title">
+        {status}
+      </h3>
+      {Descriptions[status]}
+    </div>
+  </div>
+  {updates && updates.length > 0 &&
+    <div class="ReportDetails__updates">
+      <h3 class="ReportDetails__title">
+        Updates  
+      </h3>
+      <ul class="ReportDetails__update-list">
+        {updates.map(update => (
+          <li class="ReportDetails__update-item">
+            {update}  
+          </li>
+        ))}
+      </ul>
+    </div>}
+</div>
+
+<style>
+  .ReportDetails {
+    padding: 15px;
+    background-color: var(--secondary-dark-4);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .ReportDetails__header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .ReportDetails__title {
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+
+  .ReportDetails__toggle {
+  }
+</style>

@@ -15,8 +15,26 @@ export function Tree({ race, opponentRace, tree }) {
 
   // Zerg has less branching in their builds than other races
   // higher max branches makes openings too granular
-  let MAX_BRANCHES = race === 'Zerg' ? 10 : 15;
-  const MIN_TOTAL = 10;
+  let MAX_BRANCHES = 15;
+  let MIN_TOTAL = 10;
+
+  if (race === 'Protoss') {
+    MIN_TOTAL = 25;
+
+    if (opponentRace !== 'Protoss') {
+      MAX_BRANCHES = 25;
+    }
+  }
+
+  if (race === 'Zerg') {
+    MAX_BRANCHES = 10;
+  }
+
+  if (race === 'Terran') {
+    MAX_BRANCHES = 30;
+    MIN_TOTAL = 25;
+  }
+
   const renderNodesBfs = (rootNode, mode = 'tree') => {
     // tree has much less branching for pool-first builds
     // lower max branches captures the openings much better
