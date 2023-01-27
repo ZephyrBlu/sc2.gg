@@ -5,7 +5,7 @@ export enum Status {
   Finalized = 'Finalized',
 }
 
-export type Definition = {
+export type DetailsItem = {
   title: string,
   description: string,
 };
@@ -21,10 +21,31 @@ interface Props {
   updatedAt?: string;
   status: Status;
   updates?: string[];
-  definitions?: Definition[];
+  definitions?: DetailsItem[];
+  issues?: DetailsItem[];
 }
 
-const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
+const {publishedAt, updatedAt, status, updates, definitions, issues} = Astro.props;
+
+const definitionsPresent = definitions && definitions.length > 0;
+const updatesPresent = updates && updates.length > 0;
+const issuesPresent = issues && issues.length > 0;
+
+const selectGridLayout = () => {
+  if (updatesPresent && issuesPresent) {
+    return 'ReportDetails__content--grid ReportDetails__content--updates-and-issues';
+  }
+
+  if (updatesPresent) {
+    return 'ReportDetails__content--grid ReportDetails__content--updates';
+  }
+
+  if (issuesPresent) {
+    return 'ReportDetails__content--grid ReportDetails__content--issues';
+  }
+
+  return '';
+};
 
 ---
 <div class="ReportDetails">
@@ -41,14 +62,14 @@ const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
     <summary class="ReportDetails__toggle">
       Show details
     </summary>
-    <div class={`ReportDetails__content ${updates && updates.length > 0 ? 'ReportDetails__content--updates' : ''}`}>
+    <div class={`ReportDetails__content ${selectGridLayout()}`}>
       <div class="ReportDetails__status ReportDetails__section">
         <h3 class="ReportDetails__title">
           Status: {status}
         </h3>
         {Descriptions[status]}
       </div>
-      {updates && updates.length > 0 &&
+      {updatesPresent &&
         <div class="ReportDetails__updates ReportDetails__section">
           <h3 class="ReportDetails__title">
             Updates
@@ -61,19 +82,33 @@ const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
             ))}
           </ul>
         </div>}
-      {definitions && definitions.length > 0 &&
+      {definitionsPresent &&
         <div class="ReportDetails__definitions ReportDetails__section">
           <h3 class="ReportDetails__title">
             Definitions
           </h3>
           {definitions.map(({title, description}) => (
-            <div class="ReportDetails__definition">
-              <h4 class="ReportDetails__definition-title">
+            <div class="ReportDetails__details-item">
+              <h4 class="ReportDetails__details-item-title">
                 {title}
               </h4>
               {description}
             </div>
           ))}
+        </div>}
+      {issuesPresent &&
+        <div class="ReportDetails__known-issues ReportDetails__section">
+          <h3 class="ReportDetails__title">
+            Known Issues
+          </h3>
+          {issues.map(({title, description}) => (
+            <div class="ReportDetails__details-item">
+              <h4 class="ReportDetails__details-item-title">
+                {title}
+              </h4>
+              {description}
+            </div>
+          ))} 
         </div>}
     </div>
   </details>
@@ -115,12 +150,28 @@ const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
     column-gap: 20px;
   }
 
-  .ReportDetails__content--updates {
+  .ReportDetails__content--grid {
     display: grid;
-    grid-template-areas:
-    'report-status report-updates'
-    'report-definitions report-updates';
     grid-row-gap: 25px;
+  }
+
+  .ReportDetails__content--updates {
+    grid-template-areas:
+      'report-status report-updates'
+      'report-definitions report-updates';
+  }
+
+  .ReportDetails__content--issues {
+    grid-template-areas:
+      'report-status report-issues'
+      'report-definitions report-issues';
+  }
+
+  .ReportDetails__content--updates-and-issues {
+    grid-template-areas:
+      'report-status report-updates'
+      'report-definitions report-updates'
+      'report-definitions report-issues';
   }
 
   .ReportDetails__title {
@@ -170,15 +221,19 @@ const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
     grid-area: report-definitions;
   }
 
-  .ReportDetails__definition {
+  .ReportDetails__known-issues {
+    grid-area: report-issues;
+  }
+
+  .ReportDetails__details-item {
     margin-bottom: 15px;
   }
 
-  .ReportDetails__definition:last-child {
+  .ReportDetails__details-item:last-child {
     margin: 0;
   }
 
-  .ReportDetails__definition-title {
+  .ReportDetails__details-item-title {
     font-size: 12px;
     font-weight: 400;
     text-decoration: underline;

@@ -57,6 +57,10 @@ const mappedTrees = matchupTrees.reduce((allTrees, currentTree) => ({
       'Fixed a data issue with Terran builds where flying buildings that landed would be recorded in the build',
       'Tweaked build selection algorithm on a per-race and per-matchup basis to extend build length and granularity while preserving coverage',
     ]}
+    issues={[{
+      title: 'Incorrect Values',
+      description: 'Some values are slightly incorrect (E.g. ZvZ winrate is not 50%, matchup totals are off-by-one on different sides). Values are directionally correct and the this is unlikely to significantly affect results. Working on a fix for this issue.',
+    }]}
   />
   <Trees trees={mappedTrees} client:load />
 </ReportLayout>
