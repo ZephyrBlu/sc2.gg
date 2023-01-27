@@ -31,27 +31,32 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
         Last updated: <time datetime={updatedAt}>{updatedAt}</time>
       </span>}
   </div>
-  <div class="ReportDetails__content">
-    <div class="ReportDetails__status">
-      <h3 class="ReportDetails__title">
-        {status}
-      </h3>
-      {Descriptions[status]}
-    </div>
-    {updates && updates.length > 0 &&
-      <div class="ReportDetails__updates">
+  <details class="ReportDetails__details">
+    <summary class="ReportDetails__toggle">
+      Show details
+    </summary>
+    <div class="ReportDetails__content">
+      <div class="ReportDetails__status">
         <h3 class="ReportDetails__title">
-          Updates
+          {status}
         </h3>
-        <ul class="ReportDetails__update-list">
-          {updates.map(update => (
-            <li class="ReportDetails__update-item">
-              {update}
-            </li>
-          ))}
-        </ul>
-      </div>}
-  </div>
+        {Descriptions[status]}
+      </div>
+      {updates && updates.length > 0 &&
+        <div class="ReportDetails__updates">
+          <h3 class="ReportDetails__title">
+            Updates
+          </h3>
+          <ul class="ReportDetails__update-list">
+            {updates.map(update => (
+              <li class="ReportDetails__update-item">
+                {update}
+              </li>
+            ))}
+          </ul>
+        </div>}
+    </div>
+  </details>
 </div>
 
 <style>
@@ -79,6 +84,19 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
   .ReportDetails__title {
     font-weight: 500;
     margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+  .ReportDetails__toggle {
+    font-weight: 500;
+  }
+  
+  .ReportDetails__toggle:hover {
+    cursor: pointer;
+  }
+  
+  .ReportDetails__details[open] .ReportDetails__toggle {
+    margin-bottom: 10px;
   }
 
   .ReportDetails__update-list {
