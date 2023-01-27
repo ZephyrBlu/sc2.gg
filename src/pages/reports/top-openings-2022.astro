@@ -38,6 +38,15 @@ const mappedTrees = matchupTrees.reduce((allTrees, currentTree) => ({
 }), {});
 ---
 <ReportLayout>
-  <ReportDetails publishedAt="2022-01-23" updatedAt="2022-01-26" status={Status.Released} />
+  <ReportDetails
+    publishedAt="2022-01-23"
+    updatedAt="2022-01-26"
+    status={Status.Released}
+    updates={[
+      'Fixed a data issue with builds where morphed buildings (E.g. Orbital, Lair) were recorded based on their completion time instead of start time',
+      'Fixed a data issue with Terran builds where flying buildings that landed would be recorded in the build',
+      'Tweaked build rendering algorithm on a per-race and per-matchup basis to extend build length and granularity while preserving coverage',
+    ]}
+  />
   <Trees trees={mappedTrees} client:load />
 </ReportLayout>

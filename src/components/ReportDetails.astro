@@ -22,36 +22,36 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
 
 ---
 <div class="ReportDetails">
-  <div class="ReportDetails__content">
-    <div class="ReportDetails__header">
+  <div class="ReportDetails__header">
+    <span>
+      Published: <time datetime={publishedAt}>{publishedAt}</time>
+    </span>
+    {updatedAt &&
       <span>
-        Published: <time datetime={publishedAt}>{publishedAt}</time>
-      </span>
-      {updatedAt &&
-        <span>
-          Last updated: <time datetime={updatedAt}>{updatedAt}</time>
-        </span>}
-    </div>
+        Last updated: <time datetime={updatedAt}>{updatedAt}</time>
+      </span>}
+  </div>
+  <div class="ReportDetails__content">
     <div class="ReportDetails__status">
       <h3 class="ReportDetails__title">
         {status}
       </h3>
       {Descriptions[status]}
     </div>
+    {updates && updates.length > 0 &&
+      <div class="ReportDetails__updates">
+        <h3 class="ReportDetails__title">
+          Updates
+        </h3>
+        <ul class="ReportDetails__update-list">
+          {updates.map(update => (
+            <li class="ReportDetails__update-item">
+              {update}
+            </li>
+          ))}
+        </ul>
+      </div>}
   </div>
-  {updates && updates.length > 0 &&
-    <div class="ReportDetails__updates">
-      <h3 class="ReportDetails__title">
-        Updates  
-      </h3>
-      <ul class="ReportDetails__update-list">
-        {updates.map(update => (
-          <li class="ReportDetails__update-item">
-            {update}  
-          </li>
-        ))}
-      </ul>
-    </div>}
 </div>
 
 <style>
@@ -67,7 +67,13 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
   .ReportDetails__header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+  }
+
+  .ReportDetails__content {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 20px;
   }
 
   .ReportDetails__title {
@@ -75,6 +81,16 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
     margin-bottom: 5px;
   }
 
-  .ReportDetails__toggle {
+  .ReportDetails__update-list {
+    margin: 0;
+    padding-inline-start: 15px;
+  }
+
+  .ReportDetails__update-item {
+    margin-bottom: 10px;
+  }
+
+  .ReportDetails__update-item:last-child {
+    margin-bottom: 0;
   }
 </style>
