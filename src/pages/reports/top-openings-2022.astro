@@ -42,10 +42,20 @@ const mappedTrees = matchupTrees.reduce((allTrees, currentTree) => ({
     publishedAt="2022-01-23"
     updatedAt="2022-01-26"
     status={Status.Released}
+    definitions={[
+      {
+        title: 'Playrate',
+        description: 'The percentage of games that include the full opening in the build.',
+      },
+      {
+        title: 'Game Coverage',
+        description: 'The percentage of games that use an opening from the top 10 openings.',
+      }
+    ]}
     updates={[
       'Fixed a data issue with builds where morphed buildings (E.g. Orbital, Lair) were recorded based on their completion time instead of start time',
       'Fixed a data issue with Terran builds where flying buildings that landed would be recorded in the build',
-      'Tweaked build rendering algorithm on a per-race and per-matchup basis to extend build length and granularity while preserving coverage',
+      'Tweaked build selection algorithm on a per-race and per-matchup basis to extend build length and granularity while preserving coverage',
     ]}
   />
   <Trees trees={mappedTrees} client:load />

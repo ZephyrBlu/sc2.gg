@@ -5,6 +5,11 @@ export enum Status {
   Finalized = 'Finalized',
 }
 
+export type Definition = {
+  title: string,
+  description: string,
+};
+
 const Descriptions: {[key in Status]: string} = {
   [Status.WorkInProgress]: 'Under construction. Data may be unreliable and is subject to change.',
   [Status.Released]: 'Officially released. May be futher tweaked or improved. There may be bugs or data issues. You should not rely on exact numbers, but may rely on numbers directionally.',
@@ -16,9 +21,10 @@ interface Props {
   updatedAt?: string;
   status: Status;
   updates?: string[];
+  definitions?: Definition[];
 }
 
-const {publishedAt, updatedAt, status, updates} = Astro.props;
+const {publishedAt, updatedAt, status, updates, definitions} = Astro.props;
 
 ---
 <div class="ReportDetails">
@@ -35,10 +41,10 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
     <summary class="ReportDetails__toggle">
       Show details
     </summary>
-    <div class="ReportDetails__content">
+    <div class={`ReportDetails__content ${updates && updates.length > 0 ? 'ReportDetails__content--updates' : ''}`}>
       <div class="ReportDetails__status">
         <h3 class="ReportDetails__title">
-          {status}
+          Status: {status}
         </h3>
         {Descriptions[status]}
       </div>
@@ -55,9 +61,37 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
             ))}
           </ul>
         </div>}
+      {definitions && definitions.length > 0 &&
+        <div class="ReportDetails__definitions">
+          <h3 class="ReportDetails__title">
+            Definitions
+          </h3>
+          {definitions.map(({title, description}) => (
+            <div class="ReportDetails__definition">
+              <h4 class="ReportDetails__definition-title">
+                {title}
+              </h4>
+              {description}
+            </div>
+          ))}
+        </div>}
     </div>
   </details>
 </div>
+
+<script is:inline>
+  const reportDetailsToggle = document.querySelectorAll('.ReportDetails__details')[0];
+  let hasBeenToggled = false;
+
+  if (reportDetailsToggle) {
+    reportDetailsToggle.addEventListener('toggle', () => {
+      if (reportDetailsToggle.open && !hasBeenToggled) {
+        plausible('Report Details Opened');
+        hasBeenToggled = true;
+      }
+    })
+  }
+</script>
 
 <style>
   .ReportDetails {
@@ -81,6 +115,14 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
     column-gap: 20px;
   }
 
+  .ReportDetails__content--updates {
+    display: grid;
+    grid-template-areas:
+    'report-status report-updates'
+    'report-definitions report-updates';
+    grid-row-gap: 25px;
+  }
+
   .ReportDetails__title {
     font-weight: 500;
     margin-bottom: 5px;
@@ -99,6 +141,14 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
     margin-bottom: 10px;
   }
 
+  .ReportDetails__status {
+    grid-area: report-status;
+  }
+
+  .ReportDetails__updates {
+    grid-area: report-updates;
+  }
+
   .ReportDetails__update-list {
     margin: 0;
     padding-inline-start: 15px;
@@ -110,5 +160,24 @@ const {publishedAt, updatedAt, status, updates} = Astro.props;
 
   .ReportDetails__update-item:last-child {
     margin-bottom: 0;
+  }
+
+  .ReportDetails__definitions {
+    grid-area: report-definitions;
+  }
+
+  .ReportDetails__definition {
+    margin-bottom: 15px;
+  }
+
+  .ReportDetails__definition:last-child {
+    margin: 0;
+  }
+
+  .ReportDetails__definition-title {
+    font-size: 12px;
+    font-weight: 400;
+    text-decoration: underline;
+    margin-bottom: 5px;
   }
 </style>
