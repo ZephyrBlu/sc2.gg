@@ -7,6 +7,7 @@
     "wasm": "wasm-pack build ./build-trees --target web",
     "dev": "yarn wasm && astro dev",
     "start": "astro dev",
+    "install": "./install_wasm_pack.sh",
     "build": "yarn wasm && astro build",
     "preview": "astro preview"
   },
