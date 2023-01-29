@@ -7,7 +7,7 @@
     "wasm": "wasm-pack build ./build-trees --target web",
     "dev": "yarn wasm && astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "yarn wasm && astro build",
     "preview": "astro preview"
   },
   "dependencies": {
