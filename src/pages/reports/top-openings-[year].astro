@@ -2,11 +2,11 @@
 import ReportLayout from '../../layouts/ReportLayout.astro';
 import {Trees} from '../../components/Trees';
 import ReportDetails from '../../components/ReportDetails.astro';
-import {report2022} from './_years/report2022';
-import {report2021} from './_years/report2021';
-import {report2020} from './_years/report2020';
-import {report2019} from './_years/report2019';
-import {report2018} from './_years/report2018';
+import {report2022} from './_builds/report2022';
+import {report2021} from './_builds/report2021';
+import {report2020} from './_builds/report2020';
+import {report2019} from './_builds/report2019';
+import {report2018} from './_builds/report2018';
 import type {ReportParams} from './_types';
 
 export function getStaticPaths() {
@@ -31,5 +31,5 @@ const {year, publishedAt, updatedAt, status, definitions, updates, issues, trees
     updates={updates}
     issues={issues}
   />
-  <Trees trees={trees} client:load />
+  <Trees trees={trees} objectType="buildings" client:load />
 </ReportLayout>

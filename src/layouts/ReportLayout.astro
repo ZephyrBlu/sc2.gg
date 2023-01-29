@@ -63,7 +63,7 @@ const {year} = Astro.props;
   </style>
   <body>
     <div class="ReportLayout">
-      <Header title={`Top Pro Openings of ${year}`} link={`/reports/top-openings-${year}/`} />
+      <Header title={`Top Pro Openings of ${year}`} link={`/reports/top-openings-${year.toLowerCase().split(' ').join('-')}/`} />
       <Nav />
       <div class="ReportLayout__container">
         <slot />

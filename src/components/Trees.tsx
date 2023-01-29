@@ -1,7 +1,7 @@
 import {Tree} from './Tree';
 import './Builds.css';
 
-export function Trees({ trees }) {
+export function Trees({ trees, objectType }) {
   const RACES = ['Protoss', 'Terran', 'Zerg'];
   return (
     <div className="Builds">
@@ -27,6 +27,7 @@ export function Trees({ trees }) {
                   race={race}
                   opponentRace={opponentRace}
                   tree={trees[race][opponentRace]}
+                  objectType={objectType}
                 />
                 <hr className="Builds__cluster-divider" />                  
               </>

@@ -1,0 +1,26 @@
+---
+import ReportLayout from '../../layouts/ReportLayout.astro';
+import {Trees} from '../../components/Trees';
+import ReportDetails from '../../components/ReportDetails.astro';
+import treesAllTime from './_data/all_time_build_trees.json' assert {type: "json"};
+import { yearReportDefinitions } from './_definitions';
+import {ReportDetailsProps, Status} from './_types';
+import { generateMatchupTrees } from './_utils';
+
+const props: ReportDetailsProps = {
+  publishedAt: '2023-01-27',
+  status: Status.WorkInProgress,
+  definitions: yearReportDefinitions,
+};
+
+const {publishedAt, status, definitions} = props;
+const trees = generateMatchupTrees(treesAllTime);
+---
+<ReportLayout year="All Time">
+  <ReportDetails
+    publishedAt={publishedAt}
+    status={status}
+    definitions={definitions}
+  />
+  <Trees trees={trees} objectType="buildings" client:load />
+</ReportLayout>

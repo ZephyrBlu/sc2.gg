@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "wasm": "wasm-pack build ./build-trees --target web",
+    "dev": "yarn wasm && astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview"
@@ -26,7 +27,9 @@
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "autoprefixer": "^10.4.8",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "vite": "^4.0.4",
+    "vite-plugin-wasm-pack": "^0.1.12"
   },
   "resolutions": {
     "react": "npm:@preact/compat@latest",

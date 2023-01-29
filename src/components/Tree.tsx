@@ -1,4 +1,5 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import init, {greet} from '../../build-trees/pkg/build_trees.js';
 import './Tree.css';
 
 type SortBy = 'playrate' | 'winrate';
@@ -6,12 +7,23 @@ const sortTypes: SortBy[] = ['playrate', 'winrate'];
 
 const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
 
-export function Tree({ race, opponentRace, tree }) {
+export function Tree({ race, opponentRace, tree, objectType }) {
+  console.log('tree', race, opponentRace, tree, objectType);
   const [sortBy, setSortBy] = useState<SortBy>('playrate');
   const [showSorting, setShowSorting] = useState<boolean>(false);
 
   let queues: any[] = [];
   const renderedBfs: any[] = [];
+
+  useEffect(() => {
+    const run = async () => {
+      await init().then(() => {
+        console.log('wasm greet', greet());
+      });
+    };
+
+    run();
+  }, []);
 
   // Zerg has less branching in their builds than other races
   // higher max branches makes openings too granular
@@ -37,6 +49,11 @@ export function Tree({ race, opponentRace, tree }) {
     if (opponentRace === 'Terran') {
       MAX_BRANCHES = 50;
     }
+  }
+
+  if (objectType === 'units') {
+    MAX_BRANCHES = 15;
+    MIN_TOTAL = 10;
   }
 
   const renderNodesBfs = (rootNode, mode = 'tree') => {
@@ -157,7 +174,7 @@ export function Tree({ race, opponentRace, tree }) {
                   alt={building}
                   title={building}
                   className="Tree__building-icon"
-                  src={`/images/buildings/${race}/${building}.png`}
+                  src={`/images/${objectType}/${race}/${building}.png`}
                 />
                 {child.label.split(',').length - 1 !== index &&
                   <svg
@@ -184,7 +201,7 @@ export function Tree({ race, opponentRace, tree }) {
     );
   };
 
-  const renderType = 'tree';
+  const renderType = 'flat';
   tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
   if (queues.length > 10) {
@@ -244,7 +261,7 @@ export function Tree({ race, opponentRace, tree }) {
                   alt={building}
                   title={building}
                   className="Tree__building-icon"
-                  src={`/images/buildings/${race}/${building}.png`}
+                  src={`/images/${objectType}/${race}/${building}.png`}
                 />
                 {prefix.length - 1 !== index &&
                   <svg
@@ -302,7 +319,7 @@ export function Tree({ race, opponentRace, tree }) {
                 alt={building}
                 title={building}
                 className="Tree__building-icon"
-                src={`/images/buildings/${race}/${building}.png`}
+                src={`/images/${objectType}/${race}/${building}.png`}
               />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
