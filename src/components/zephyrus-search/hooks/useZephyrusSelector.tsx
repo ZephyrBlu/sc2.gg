@@ -1,38 +1,15 @@
 import {useEffect, useState} from 'react';
 import {ZephyruSelector} from '../components/ZephyrusSelector';
-import { SelectorType } from '../types';
+import {
+  SelectorType,
+  SelectorItem,
+  SearchableItem,
+  TextWithIconItem,
+  SelectorHookProps,
+  SEARCHABLE_TYPES,
+} from '../types';
 
-interface TextItem {
-  name: string;
-}
-
-interface TextWithIconItem {
-  name: string;
-  iconPath: string;
-}
-
-interface DateItem {
-  date: string;
-}
-
-interface NumberItem {
-  value: number;
-}
-
-type SelectorItem = TextItem | TextWithIconItem | DateItem | NumberItem;
-type SearchableItem = TextItem | TextWithIconItem;
-const SEARCHABLE_TYPES = [
-  SelectorType.Text,
-  SelectorType.TextWithIcon,
-];
-
-interface Props {
-  dataList: SelectorItem[];
-  type: SelectorType;
-  identifier?: string;
-}
-
-export function useZephyrusSelector({dataList, type, identifier}: Props) {
+export function useZephyrusSelector({dataList, type, identifier}: SelectorHookProps) {
   const [searchInput, setSearchInput] = useState<string>('');
   const [searchResults, setSearchResults] = useState<SearchableItem[] | null>(null);
   const [selectedResult, setSelectedResult] = useState<SearchableItem | null>(null);
@@ -76,7 +53,7 @@ export function useZephyrusSelector({dataList, type, identifier}: Props) {
     return null;
   };
 
-  const zephyrusSelectorComponent = () => (
+  const selectorComponent = () => (
     <ZephyruSelector identifier={identifier}>
       <div className="ZephyrusSelector__player">
         {selectedResult
@@ -109,7 +86,7 @@ export function useZephyrusSelector({dataList, type, identifier}: Props) {
 
   return {
     value: selectedResult,
-    SelectorComponent: zephyrusSelectorComponent,
+    SelectorComponent: selectorComponent,
   };
 }
 
