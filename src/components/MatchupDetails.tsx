@@ -8,6 +8,12 @@ interface Props {
 
 export function MatchupDetails({playerList}: Props) {
   const {player, opponent, MultiplePlayerSelector} = useMultiplePlayerSelector({playerList});
+  // useDateSelector();
+  // useGameLengthSelector();
+  // useRaceSelector();
+  // useMatchupSelector();
+  // useGenericSelector(); generic text list for maps, events
+  // super general useZephyrusSelector with type parameter? e.g. SelectorType.Text, SelectorType.TextWithIcon
   const {searchTimelines} = useSearch();
 
   useEffect(() => {

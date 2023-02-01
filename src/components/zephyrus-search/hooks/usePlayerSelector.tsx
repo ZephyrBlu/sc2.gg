@@ -43,6 +43,7 @@ export function usePlayerSelector({playerList, identifier}: SelectorHookProps) {
       </div>
       {!selectedPlayer && searchResults &&
         <div className="PlayerSelector__search-results">
+          {searchResults.length === 0 && 'No results'}
           {searchResults.map(({name, iconPath}) => (
             <span
               role="button"
