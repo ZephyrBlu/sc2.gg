@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {PlayerSelector} from '../components/PlayerSelector';
 import type {SelectorHookProps, Player} from '../types';
 
-export function usePlayerSelector({playerList}: SelectorHookProps) {
+export function usePlayerSelector({playerList, identifier}: SelectorHookProps) {
   const [searchInput, setSearchInput] = useState<string>('');
   const [searchResults, setSearchResults] = useState<Player[] | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
@@ -12,30 +12,43 @@ export function usePlayerSelector({playerList}: SelectorHookProps) {
   );
 
   useEffect(() => {
+    if (!searchInput) {
+      return;
+    }
+
     const results = searchPlayerList(searchInput);
     setSearchResults(results);
   }, [searchInput]);
 
+  const onPlayerSelection = (player: Player) => {
+    setSelectedPlayer(player);
+    setSearchInput('');
+    setSearchResults(null);
+  };
+
   const playerSelectorComponent = () => (
-    <PlayerSelector>
-      <details className="PlayerSelector__dropdown">
-        <summary className="PlayerSelector__toggle">
-          {selectedPlayer
-            ? <Player name={selectedPlayer.name} iconPath={selectedPlayer.iconPath} />
-            : 'Select a player'}
-        </summary>
-      </details>
-      <input
-        type="search"
-        className="PlayerSelector__search-input"
-        aria-label="search"
-        value={searchInput}
-        onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
-      />
-      {searchResults &&
+    <PlayerSelector identifier={identifier}>
+      <div className="PlayerSelector__player">
+        {selectedPlayer
+          ? <Player name={selectedPlayer.name} iconPath={selectedPlayer.iconPath} />
+          : (
+            <input
+              type="search"
+              className="PlayerSelector__search-input"
+              aria-label="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
+            />
+          )}
+      </div>
+      {!selectedPlayer && searchResults &&
         <div className="PlayerSelector__search-results">
           {searchResults.map(({name, iconPath}) => (
-            <span className="PlayerSelector__search-result">
+            <span
+              role="button"
+              className="PlayerSelector__search-result"
+              onClick={() => onPlayerSelection({name, iconPath})}
+            >
               <Player name={name} iconPath={iconPath} />
             </span>
           ))}
@@ -51,7 +64,7 @@ export function usePlayerSelector({playerList}: SelectorHookProps) {
 
 function Player({name, iconPath}: Player) {
   return (
-    <div className="Player">
+    <span className="Player">
       {iconPath &&
         <img
           src={iconPath}
@@ -59,6 +72,6 @@ function Player({name, iconPath}: Player) {
           alt={`icon for ${name}`}
         />}
       {name}
-    </div>
+    </span>
   );
 }

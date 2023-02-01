@@ -1,9 +1,9 @@
 import type {SelectorComponentProps} from '../types';
 import './PlayerSelector.css';
 
-export function PlayerSelector({children}: SelectorComponentProps) {
+export function PlayerSelector({identifier, children}: SelectorComponentProps) {
   return (
-    <div className="PlayerSelector">
+    <div className={`PlayerSelector ${identifier ? `PlayerSelector--${identifier}`: ''}`}>
       {children}
     </div>
   );

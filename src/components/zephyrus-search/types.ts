@@ -5,8 +5,10 @@ export interface Player {
 
 export interface SelectorHookProps {
   playerList: Player[];
+  identifier?: string;
 }
 
 export interface SelectorComponentProps {
-  children: (JSX.Element | null)[];
+  identifier?: string;
+  children: (JSX.Element | boolean | null)[];
 }

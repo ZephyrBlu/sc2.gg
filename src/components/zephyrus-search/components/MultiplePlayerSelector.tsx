@@ -1,9 +1,9 @@
 import type {SelectorComponentProps} from '../types';
 import './MultiplePlayerSelector.css';
 
-export function MultiplePlayerSelector({children}: SelectorComponentProps) {
+export function MultiplePlayerSelector({identifier, children}: SelectorComponentProps) {
   return (
-    <div className="MultiplePlayerSelector">
+    <div className={`MultiplePlayerSelector ${identifier ? `MultiplePlayerSelector--${identifier}` : ''}`}>
       {children}
     </div>
   );
