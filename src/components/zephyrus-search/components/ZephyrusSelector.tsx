@@ -1,5 +1,5 @@
 import type {SelectorComponentProps} from '../types';
-import './ZephyrusSelectorType.css';
+import './ZephyrusSelector.css';
 
 export function ZephyrusSelector({identifier, children}: SelectorComponentProps) {
   return (
