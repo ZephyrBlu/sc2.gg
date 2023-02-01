@@ -1,3 +1,5 @@
+export type Race = 'Protoss' | 'Terran' | 'Zerg';
+
 export type Player = {
   id: number,
   name: string,
