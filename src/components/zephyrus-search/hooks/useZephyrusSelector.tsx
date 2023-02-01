@@ -1,22 +1,22 @@
 import {useEffect, useState} from 'react';
-import {ZephyruSelector} from '../components/ZephyrusSelector';
+import {ZephyrusSelector} from '../components/ZephyrusSelector';
 import {
-  SelectorType,
-  SelectorItem,
+  ZephyrusSelectorType,
+  ZephyrusSelectorItem,
   SearchableItem,
   TextWithIconItem,
   SelectorHookProps,
   SEARCHABLE_TYPES,
 } from '../types';
 
-export function useZephyrusSelector({dataList, type, identifier}: SelectorHookProps) {
+export function useZephyrusSelector<T extends string>({dataList, type, identifier}: SelectorHookProps<T>) {
   const [searchInput, setSearchInput] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<SearchableItem[] | null>(null);
-  const [selectedResult, setSelectedResult] = useState<SearchableItem | null>(null);
+  const [searchResults, setSearchResults] = useState<SearchableItem<T>[] | null>(null);
+  const [selectedResult, setSelectedResult] = useState<SearchableItem<T> | null>(null);
 
   const searchPlayerList = (prefix: string) => (
-    dataList.filter((item): item is SearchableItem => (
-      (item as SearchableItem).name.startsWith(prefix))
+    dataList.filter((item): item is SearchableItem<T> => (
+      (item as SearchableItem<T>).name.startsWith(prefix))
     )
   );
 
@@ -29,23 +29,23 @@ export function useZephyrusSelector({dataList, type, identifier}: SelectorHookPr
     setSearchResults(results);
   }, [searchInput]);
 
-  const onResultSelection = (result: SearchableItem) => {
+  const onResultSelection = (result: SearchableItem<T>) => {
     setSelectedResult(result);
     setSearchInput('');
     setSearchResults(null);
   }; 
 
-  const ZephyrusItem = ({item}: {item: SelectorItem}) => {
+  const ZephyrusItem = ({item}: {item: ZephyrusSelectorItem<T>}) => {
     if (SEARCHABLE_TYPES.includes(type)) {
       return (
         <span className="ZephyrusSelector__item">
-          {type === SelectorType.TextWithIcon &&
+          {type === ZephyrusSelectorType.TextWithIcon &&
             <img
-              src={(item as TextWithIconItem).iconPath}
+              src={(item as TextWithIconItem<T>).iconPath}
               className="ZephyrusSelector__item-icon"
-              alt={`icon for ${(item as TextWithIconItem).name}`}
+              alt={`icon for ${(item as TextWithIconItem<T>).name}`}
             />}
-          {(item as SearchableItem).name}
+          {(item as SearchableItem<T>).name}
         </span>
       );
     }
@@ -54,7 +54,7 @@ export function useZephyrusSelector({dataList, type, identifier}: SelectorHookPr
   };
 
   const selectorComponent = () => (
-    <ZephyruSelector identifier={identifier}>
+    <ZephyrusSelector identifier={identifier}>
       <div className="ZephyrusSelector__player">
         {selectedResult
           ? <ZephyrusItem item={selectedResult} />
@@ -81,7 +81,7 @@ export function useZephyrusSelector({dataList, type, identifier}: SelectorHookPr
             </span>
           ))}
         </div>}
-    </ZephyruSelector>
+    </ZephyrusSelector>
   );
 
   return {

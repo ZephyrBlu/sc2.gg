@@ -1,19 +1,27 @@
-import { useEffect } from "react";
-import {Player, useMultiplePlayerSelector} from "./zephyrus-search";
+import {useEffect} from "react";
+import {ZephyrusSelectorType, useZephyrusSelector, useZephyrusMultipleSelector, ZephyrusSelectorItem} from "./zephyrus-search";
 import {TimelineSearchOptions, useSearch} from "./hooks";
+import type {Race} from "./types";
 
 interface Props {
-  playerList: Player[]
+  playerList: ZephyrusSelectorItem<string>[];
+  raceList: ZephyrusSelectorItem<Race>[]
 }
 
-export function MatchupDetails({playerList}: Props) {
-  const {player, opponent, MultiplePlayerSelector} = useMultiplePlayerSelector({playerList});
-  // useDateSelector();
-  // useGameLengthSelector();
-  // useRaceSelector();
-  // useMatchupSelector();
-  // useGenericSelector(); generic text list for maps, events
-  // super general useZephyrusSelector with type parameter? e.g. SelectorType.Text, SelectorType.TextWithIcon
+export function MatchupDetails({playerList, raceList}: Props) {
+  const {
+    value: player,
+    otherValue: opponent,
+    MultipleSelectorComponent: MultiplePlayerSelector,
+  } = useZephyrusMultipleSelector({
+    dataList: playerList, type: ZephyrusSelectorType.TextWithIcon
+  });
+  const {
+    value: race,
+    SelectorComponent: RaceSelector,
+  } = useZephyrusSelector({
+    dataList: raceList, type: ZephyrusSelectorType.TextWithIcon
+  });
   const {searchTimelines} = useSearch();
 
   useEffect(() => {
@@ -21,6 +29,7 @@ export function MatchupDetails({playerList}: Props) {
       const timelineOptions: TimelineSearchOptions = {
         player: player?.name,
         opponent: opponent?.name,
+        opponentRace: race?.name,
       };
 
       const results = await searchTimelines(timelineOptions);
@@ -34,6 +43,7 @@ export function MatchupDetails({playerList}: Props) {
     <div className="MatchupDetails">
       Matchup page
       <MultiplePlayerSelector />
+      <RaceSelector />
     </div>
   );
 }

@@ -1,11 +1,6 @@
-export interface Player {
-  name: string;
-  iconPath?: string;
-}
-
-export interface SelectorHookProps {
-  dataList: SelectorItem[];
-  type: SelectorType;
+export interface SelectorHookProps<T> {
+  dataList: ZephyrusSelectorItem<T>[];
+  type: ZephyrusSelectorType;
   identifier?: string | null;
   identifiers?: {
     value: string;
@@ -18,19 +13,19 @@ export interface SelectorComponentProps {
   children: (JSX.Element | boolean | null)[];
 }
 
-export enum SelectorType {
+export enum ZephyrusSelectorType {
   Text = 'Text',
   TextWithIcon = 'TextWithIcon',
   Date = 'Date',
   Number = 'Number',
 }
 
-export interface TextItem {
-  name: string;
+export interface TextItem<T> {
+  name: T;
 }
 
-export interface TextWithIconItem {
-  name: string;
+export interface TextWithIconItem<T> {
+  name: T;
   iconPath: string;
 }
 
@@ -42,10 +37,10 @@ export interface NumberItem {
   value: number;
 }
 
-export type SelectorItem = TextItem | TextWithIconItem | DateItem | NumberItem;
-export type SearchableItem = TextItem | TextWithIconItem;
+export type ZephyrusSelectorItem<T> = TextItem<T> | TextWithIconItem<T> | DateItem | NumberItem;
+export type SearchableItem<T> = TextItem<T> | TextWithIconItem<T>;
 
 export const SEARCHABLE_TYPES = [
-  SelectorType.Text,
-  SelectorType.TextWithIcon,
+  ZephyrusSelectorType.Text,
+  ZephyrusSelectorType.TextWithIcon,
 ];

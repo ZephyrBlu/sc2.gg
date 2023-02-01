@@ -1,14 +1,14 @@
 import {ZephyrusMultipleSelector} from '../components';
 import {useZephyrusSelector} from './useZephyrusSelector';
-import {SelectorHookProps, SelectorType} from '../types';
+import {SelectorHookProps, ZephyrusSelectorType} from '../types';
 
-export function useZephyrusMultipleSelector({dataList, identifier, identifiers}: SelectorHookProps) {
+export function useZephyrusMultipleSelector<T extends string>({dataList, identifier, identifiers}: SelectorHookProps<T>) {
   const {
     value,
     SelectorComponent: Selector,
   } = useZephyrusSelector({
     dataList,
-    type: SelectorType.TextWithIcon,
+    type: ZephyrusSelectorType.TextWithIcon,
     identifier: identifiers?.value,
   });
   const {
@@ -16,7 +16,7 @@ export function useZephyrusMultipleSelector({dataList, identifier, identifiers}:
     SelectorComponent: OtherSelector,
   } = useZephyrusSelector({
     dataList,
-    type: SelectorType.TextWithIcon,
+    type: ZephyrusSelectorType.TextWithIcon,
     identifier: identifiers?.value,
   });
 

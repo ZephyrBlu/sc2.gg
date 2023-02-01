@@ -1,7 +1,7 @@
 import type {SelectorComponentProps} from '../types';
-import './ZephyruSelector.css';
+import './ZephyrusSelectorType.css';
 
-export function ZephyruSelector({identifier, children}: SelectorComponentProps) {
+export function ZephyrusSelector({identifier, children}: SelectorComponentProps) {
   return (
     <div className={`ZephyrusSelector ${identifier ? `ZephyrusSelector--${identifier}` : ''}`}>
       {children}

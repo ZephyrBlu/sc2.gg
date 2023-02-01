@@ -24,8 +24,8 @@ export interface SearchOptions extends BaseSearchOptions {
 }
 
 export interface TimelineSearchOptions extends BaseSearchOptions {
-  player_race?: Race;
-  opponent_race?: Race;
+  playerRace?: Race;
+  opponentRace?: Race;
   before?: string | null;
   after?: string | null;
   duration?: number | null;
@@ -151,12 +151,12 @@ export function useSearch() {
       params.set('opponent_name', opts.opponent);
     }
 
-    if (opts.player_race) {
-      params.set('player_race_name', opts.player_race);
+    if (opts.playerRace) {
+      params.set('player_race_name', opts.playerRace);
     }
 
-    if (opts.opponent_race) {
-      params.set('opponent_race_name', opts.opponent_race);
+    if (opts.opponentRace) {
+      params.set('opponent_race_name', opts.opponentRace);
     }
 
     if (opts.matchup) {
