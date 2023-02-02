@@ -1,0 +1,67 @@
+---
+import type {Race} from '../../../components/types';
+import MatchupLayout from "../../../layouts/MatchupLayout.astro";
+import {MatchupDetails} from '../../../components/MatchupDetails';
+
+export function getStaticPaths() {
+  const races: Race[] = ['Protoss', 'Terran', 'Zerg'];
+
+  return races.map(playerRace => (
+    races.map(opponentRace => ({
+      params: {playerRace, opponentRace},
+      props: {playerRace, opponentRace},
+    }))
+  )).flat();
+}
+
+interface Props {
+  playerRace: Race;
+  opponentRace: Race;
+}
+
+const {playerRace, opponentRace} = Astro.props;
+
+const playersEndpoint = 'https://search.sc2.gg/players';
+const [playerRacePlayers, opponentRacePlayers] = await Promise.all([playerRace, opponentRace].map(async (race) => {
+  const raceUrl = new URL(playersEndpoint);
+  raceUrl.searchParams.set('race_name', race);
+  return await fetch(raceUrl).then(res => res.json());
+}));
+
+const timelineEndpoint = 'https://search.sc2.gg/timeline';
+const timelineSearchTypes = [
+  'game-length',
+  'collection-rate',
+  'army-value',
+  'workers-active',
+]
+const [
+  gameLengthSeries,
+  collectionRateSeries,
+  armyValueSeries,
+  workersActiveSeries,
+] = await Promise.all(timelineSearchTypes.map(async (searchType) => {
+  const timelineUrl = new URL(`${timelineEndpoint}/${searchType}`);
+  timelineUrl.searchParams.set('player_race_name', playerRace);
+  timelineUrl.searchParams.set('opponent_race_name', opponentRace);
+  timelineUrl.searchParams.set('after', '2022-01-01');
+  return await fetch(timelineUrl).then(res => res.json());
+}));
+---
+<MatchupLayout race={playerRace} opponentRace={opponentRace}>
+  <MatchupDetails
+    client:only="preact"
+    playerRace={playerRace}
+    opponentRace={opponentRace}
+    matchupData={{
+      gameLength: gameLengthSeries,
+      collectionRate: collectionRateSeries,
+      armyValue: armyValueSeries,
+      workersActive: workersActiveSeries,
+    }}
+    players={{
+      [playerRace]: playerRacePlayers,
+      [opponentRace]: opponentRacePlayers,
+    }}
+  />
+</MatchupLayout>
