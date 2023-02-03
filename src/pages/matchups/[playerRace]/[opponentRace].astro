@@ -34,7 +34,7 @@ const timelineSearchTypes = [
   'collection-rate',
   'army-value',
   'workers-active',
-]
+];
 const [
   gameLengthSeries,
   collectionRateSeries,
@@ -45,6 +45,7 @@ const [
   timelineUrl.searchParams.set('player_race_name', playerRace);
   timelineUrl.searchParams.set('opponent_race_name', opponentRace);
   timelineUrl.searchParams.set('after', '2022-01-01');
+  timelineUrl.searchParams.set('refresh', '');
   return await fetch(timelineUrl).then(res => res.json());
 }));
 ---
