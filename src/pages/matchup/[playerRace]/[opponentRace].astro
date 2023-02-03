@@ -35,6 +35,15 @@ const timelineSearchTypes = [
   'army-value',
   'workers-active',
 ];
+
+const setMatchupUrlParams = (url: URL) => {
+  url.searchParams.set('player_race_name', playerRace);
+  url.searchParams.set('opponent_race_name', opponentRace);
+  url.searchParams.set('after', '2022-01-01');
+  url.searchParams.set('refresh', '');
+  return url;
+}
+
 const [
   gameLengthSeries,
   collectionRateSeries,
@@ -42,10 +51,17 @@ const [
   workersActiveSeries,
 ] = await Promise.all(timelineSearchTypes.map(async (searchType) => {
   const timelineUrl = new URL(`${timelineEndpoint}/${searchType}`);
-  timelineUrl.searchParams.set('player_race_name', playerRace);
-  timelineUrl.searchParams.set('opponent_race_name', opponentRace);
-  timelineUrl.searchParams.set('after', '2022-01-01');
-  timelineUrl.searchParams.set('refresh', '');
+  setMatchupUrlParams(timelineUrl);
+  return await fetch(timelineUrl).then(res => res.json());
+}));
+
+const [
+  collectionRateQuantilesSeries,
+  armyValueQuantilesSeries,
+  workersActiveQuantilesSeries,
+] = await Promise.all(timelineSearchTypes.filter(type => type !== 'game-length').map(async (searchType) => {
+  const timelineUrl = new URL(`${timelineEndpoint}/quantiles/${searchType}`);
+  setMatchupUrlParams(timelineUrl);
   return await fetch(timelineUrl).then(res => res.json());
 }));
 
@@ -53,7 +69,7 @@ const generateSerializedValues = (
   series: any[],
   xAccessor: string,
   yAccessor: string,
-  winrate: boolean = false,
+  dataType?: string,
 ) => {
   let seriesTime = Array.from(new Set(series.map(values => values[xAccessor])));
   seriesTime.sort((a, b) => a - b);
@@ -76,12 +92,22 @@ const generateSerializedValues = (
   winValues = winValues.slice(0, maxLength);
   lossValues = lossValues.slice(0, maxLength);
 
-  let winrateValues = [];
-  if (winrate) {
+  let dataTypeValues: any[] = [];
+  if (dataType === 'winrate') {
     for (let i = 0; i < seriesTime.length; i++) {
       const winrate = winValues[i].count / (winValues[i].count + lossValues[i].count);
-      winrateValues.push(Math.round(winrate * 1000) / 10);
+      dataTypeValues.push(Math.round(winrate * 1000) / 10);
     }
+    return JSON.stringify(dataTypeValues);
+  } else if (dataType === 'quantiles') {
+    const QUANTILES = 5;
+    dataTypeValues = Array(QUANTILES).fill([]);
+    winValues.forEach((values) => {
+      values.value.forEach((quantile: number, index: number) => (
+        dataTypeValues[index].push(Math.round(quantile * 10) / 10)
+      ));
+    });
+    return JSON.stringify(dataTypeValues);
   }
 
   winValues = winValues.map(({value}) => value);
@@ -91,30 +117,71 @@ const generateSerializedValues = (
     JSON.stringify(seriesTime),
     JSON.stringify(winValues),
     JSON.stringify(lossValues),
-    JSON.stringify(winrateValues),
   ];
 };
 
-const [gameLengthTime, gameLengthWin, gameLengthLoss, gameLengthWinrate] = generateSerializedValues(
+const [
+  gameLengthTime,
+  gameLengthWin,
+  gameLengthLoss,
+] = generateSerializedValues(
   gameLengthSeries,
   'game_length_rounded',
   'occurrences',
-  true,
 );
-const [collectionRateTime, collectionRateWin, collectionRateLoss] = generateSerializedValues(
+const gameLengthWinrate = generateSerializedValues(
+  gameLengthSeries,
+  'game_length_rounded',
+  'occurrences',
+  'winrate',
+);
+
+const [
+  collectionRateTime,
+  collectionRateWin,
+  collectionRateLoss,
+] = generateSerializedValues(
   collectionRateSeries,
   'time_in_sec',
   'avg_collection_rate',
 );
-const [workersActiveTime, workersActiveWin, workersActiveLoss] = generateSerializedValues(
+const collectionRateDiffQuantiles = generateSerializedValues(
+  collectionRateQuantilesSeries,
+  'time_in_sec',
+  'avg_collection_rate',
+  'quantiles',
+);
+
+const [
+  workersActiveTime,
+  workersActiveWin,
+  workersActiveLoss,
+] = generateSerializedValues(
   workersActiveSeries,
   'time_in_sec',
   'avg_workers_active',
 );
-const [armyValueTime, armyValueWin, armyValueLoss] = generateSerializedValues(
+const workersActiveDiffQuantiles = generateSerializedValues(
+  workersActiveQuantilesSeries,
+  'time_in_sec',
+  'avg_workers_active',
+  'quantiles',
+);
+
+const [
+  armyValueTime,
+  armyValueWin,
+  armyValueLoss,
+] = generateSerializedValues(
   armyValueSeries,
   'time_in_sec',
   'avg_army_value',
+);
+const armyValueDiffQuantiles = generateSerializedValues(
+  armyValueQuantilesSeries,
+  'time_in_sec',
+  'avg_army_value',
+  'quantiles',
 );
 ---
 <MatchupLayout race={playerRace} opponentRace={opponentRace}>
@@ -140,6 +207,7 @@ const [armyValueTime, armyValueWin, armyValueLoss] = generateSerializedValues(
     data-winrate={gameLengthWinrate}
     data-time={gameLengthTime}
   />
+
   <div
     class="collection-rate matchup-chart"
     data-win={collectionRateWin}
@@ -147,16 +215,30 @@ const [armyValueTime, armyValueWin, armyValueLoss] = generateSerializedValues(
     data-time={collectionRateTime}
   />
   <div
+    class="collection-rate-quantiles matchup-chart"
+    data-quantiles={collectionRateDiffQuantiles}
+  />
+
+  <div
     class="workers-active matchup-chart"
     data-win={workersActiveWin}
     data-loss={workersActiveLoss}
     data-time={workersActiveTime}
   />
   <div
+    class="workers-active-quantiles matchup-chart"
+    data-quantiles={workersActiveDiffQuantiles}
+  />
+
+  <div
     class="army-value matchup-chart"
     data-win={armyValueWin}
     data-loss={armyValueLoss}
     data-time={armyValueTime}
+  />
+  <div
+    class="army-value-quantiles matchup-chart"
+    data-quantiles={armyValueDiffQuantiles}
   />
 </MatchupLayout>
 
@@ -179,7 +261,6 @@ const [armyValueTime, armyValueWin, armyValueLoss] = generateSerializedValues(
       // const winValues = JSON.parse(serializedData.win);
       // const lossValues = JSON.parse(serializedData.loss);
       const winrateValues = JSON.parse(serializedData.winrate);
-      console.log('wrinate', winrateValues);
 
       const data = {
         // A labels array that can contain any sort of values
@@ -195,15 +276,27 @@ const [armyValueTime, armyValueWin, armyValueLoss] = generateSerializedValues(
     } else {
       const winValues = JSON.parse(serializedData.win);
       const lossValues = JSON.parse(serializedData.loss);
-    
+
+      const quantileChartClass = `${chartClass}-quantiles`;
+      const quantileSeries = JSON.parse(document.querySelectorAll(quantileChartClass)[0].dataset.quantiles);
+
       const data = {
-        // A labels array that can contain any sort of values
         labels: timeValues,
-        // Our series array that contains series objects or in this case series data arrays
         series: [winValues, lossValues]
       };
 
+      const quantileData = {
+        labels: timeValues,
+        series: [...quantileSeries],
+      }
+
       new LineChart(chartClass, data, {
+        axisX: {
+          labelInterpolationFnc: (value, index) => (index % 10 === 0 ? value : null)
+        }
+      });
+
+      new LineChart(quantileChartClass, quantileData, {
         axisX: {
           labelInterpolationFnc: (value, index) => (index % 10 === 0 ? value : null)
         }
