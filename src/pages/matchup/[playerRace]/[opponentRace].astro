@@ -101,12 +101,17 @@ const generateSerializedValues = (
     return JSON.stringify(dataTypeValues);
   } else if (dataType === 'quantiles') {
     const QUANTILES = 5;
-    dataTypeValues = Array(QUANTILES).fill([]);
-    winValues.forEach((values) => {
-      values.value.forEach((quantile: number, index: number) => (
-        dataTypeValues[index].push(Math.round(quantile * 10) / 10)
-      ));
+    dataTypeValues = Array(QUANTILES);
+    for (let i = 0; i < QUANTILES; i++) {
+      dataTypeValues[i] = [];
+    }
+
+    winValues.forEach(({value}) => {
+      value.forEach((quantile: number, index: number) => {
+        dataTypeValues[index].push(Math.round(quantile));
+      });
     });
+
     return JSON.stringify(dataTypeValues);
   }
 
@@ -215,7 +220,7 @@ const armyValueDiffQuantiles = generateSerializedValues(
     data-time={collectionRateTime}
   />
   <div
-    class="collection-rate-quantiles matchup-chart"
+    class="collection-rate-quantiles matchup-chart quantiles"
     data-quantiles={collectionRateDiffQuantiles}
   />
 
@@ -226,7 +231,7 @@ const armyValueDiffQuantiles = generateSerializedValues(
     data-time={workersActiveTime}
   />
   <div
-    class="workers-active-quantiles matchup-chart"
+    class="workers-active-quantiles matchup-chart quantiles"
     data-quantiles={workersActiveDiffQuantiles}
   />
 
@@ -237,7 +242,7 @@ const armyValueDiffQuantiles = generateSerializedValues(
     data-time={armyValueTime}
   />
   <div
-    class="army-value-quantiles matchup-chart"
+    class="army-value-quantiles matchup-chart quantiles"
     data-quantiles={armyValueDiffQuantiles}
   />
 </MatchupLayout>
@@ -282,13 +287,15 @@ const armyValueDiffQuantiles = generateSerializedValues(
 
       const data = {
         labels: timeValues,
-        series: [winValues, lossValues]
+        series: [winValues, lossValues],
       };
 
       const quantileData = {
         labels: timeValues,
         series: [...quantileSeries],
       }
+
+      console.log('quantiles', chartClass, quantileData);
 
       new LineChart(chartClass, data, {
         axisX: {
@@ -331,6 +338,15 @@ const armyValueDiffQuantiles = generateSerializedValues(
 
   .ct-series-b .ct-point {
     stroke: var(--red);
+  }
+
+  .quantiles .ct-line {
+    stroke: lightblue;
+    stroke-width: 1px;
+  }
+
+  .quantiles .ct-point {
+    stroke-width: 3px;
   }
 
   .ct-grid {
