@@ -42,7 +42,7 @@ const setMatchupUrlParams = (url: URL) => {
   url.searchParams.set('after', '2022-01-01');
   url.searchParams.set('refresh', '');
   return url;
-}
+};
 
 const [
   gameLengthSeries,
@@ -249,7 +249,7 @@ const armyValueDiffQuantiles = generateSerializedValues(
 
 <script>
   import 'chartist/dist/index.css';
-  import {LineChart, BarChart} from 'chartist';
+  import {LineChart, BarChart, Interpolation} from 'chartist';
 
   const charts = [
     '.game-length',
@@ -290,9 +290,15 @@ const armyValueDiffQuantiles = generateSerializedValues(
         series: [winValues, lossValues],
       };
 
+      const percentiles = [10, 25, 50, 75, 90];
+      const mappedSeries = quantileSeries.map((series, index) => ({
+        name: `percentile${percentiles[index]}`,
+        data: series,
+      }));
+      console.log('mapped quantile', mappedSeries);
       const quantileData = {
         labels: timeValues,
-        series: [...quantileSeries],
+        series: [...mappedSeries],
       }
 
       console.log('quantiles', chartClass, quantileData);
@@ -306,7 +312,26 @@ const armyValueDiffQuantiles = generateSerializedValues(
       new LineChart(quantileChartClass, quantileData, {
         axisX: {
           labelInterpolationFnc: (value, index) => (index % 10 === 0 ? value : null)
-        }
+        },
+        series: {
+        'percentile90': {
+          showArea: true,
+          lineSmooth: Interpolation.simple()
+        },
+        'percentile75': {
+          showArea: true,
+          lineSmooth: Interpolation.simple(),
+        },
+        'percentile50': {},
+        'percentile25': {
+          showArea: true,
+          lineSmooth: Interpolation.simple()
+        },
+        'percentile10': {
+          showArea: true,
+          lineSmooth: Interpolation.simple(),
+        }, 
+      }
       });
     }
   });
@@ -347,6 +372,40 @@ const armyValueDiffQuantiles = generateSerializedValues(
 
   .quantiles .ct-point {
     stroke-width: 3px;
+  }
+
+  .quantiles .ct-series-a .ct-line,
+  .quantiles .ct-series-e .ct-line,
+  .quantiles .ct-series-a .ct-point,
+  .quantiles .ct-series-e .ct-point {
+    stroke: red;
+  }
+
+  .quantiles .ct-series-b .ct-line,
+  .quantiles .ct-series-d .ct-line,
+  .quantiles .ct-series-b .ct-point,
+  .quantiles .ct-series-d .ct-point {
+    stroke: pink;
+  }
+
+  .quantiles .ct-series-c .ct-line,
+  .quantiles .ct-series-c .ct-point {
+    stroke: green;
+  }
+
+  .quantiles .ct-series-a .ct-area,
+  .quantiles .ct-series-e .ct-area {
+    fill: pink;
+    fill-opacity: 0.3;
+  }
+
+  .quantiles .ct-series-b .ct-area,
+  .quantiles .ct-series-d .ct-area {
+    fill: green;
+    fill-opacity: 0.5;
+  }
+
+  .quantiles .ct-series-c .ct-area {
   }
 
   .ct-grid {
