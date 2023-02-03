@@ -1,0 +1,251 @@
+---
+import type {Race} from '../../../components/types';
+import MatchupLayout from "../../../layouts/MatchupLayout.astro";
+import {MatchupDetails} from '../../../components/MatchupDetails';
+
+export function getStaticPaths() {
+  const races: Race[] = ['Protoss', 'Terran', 'Zerg'];
+
+  return races.map(playerRace => (
+    races.map(opponentRace => ({
+      params: {playerRace, opponentRace},
+      props: {playerRace, opponentRace},
+    }))
+  )).flat();
+}
+
+interface Props {
+  playerRace: Race;
+  opponentRace: Race;
+}
+
+const {playerRace, opponentRace} = Astro.props;
+
+const playersEndpoint = 'https://search.sc2.gg/players';
+const [playerRacePlayers, opponentRacePlayers] = await Promise.all([playerRace, opponentRace].map(async (race) => {
+  const raceUrl = new URL(playersEndpoint);
+  raceUrl.searchParams.set('race_name', race);
+  return await fetch(raceUrl).then(res => res.json());
+}));
+
+const timelineEndpoint = 'https://search.sc2.gg/timeline';
+const timelineSearchTypes = [
+  'game-length',
+  'collection-rate',
+  'army-value',
+  'workers-active',
+];
+const [
+  gameLengthSeries,
+  collectionRateSeries,
+  armyValueSeries,
+  workersActiveSeries,
+] = await Promise.all(timelineSearchTypes.map(async (searchType) => {
+  const timelineUrl = new URL(`${timelineEndpoint}/${searchType}`);
+  timelineUrl.searchParams.set('player_race_name', playerRace);
+  timelineUrl.searchParams.set('opponent_race_name', opponentRace);
+  timelineUrl.searchParams.set('after', '2022-01-01');
+  timelineUrl.searchParams.set('refresh', '');
+  return await fetch(timelineUrl).then(res => res.json());
+}));
+
+const generateSerializedValues = (
+  series: any[],
+  xAccessor: string,
+  yAccessor: string,
+  winrate: boolean = false,
+) => {
+  let seriesTime = Array.from(new Set(series.map(values => values[xAccessor])));
+  seriesTime.sort((a, b) => a - b);
+
+  const seriesValues = series.map(values => ({
+    win: values.win,
+    time: values[xAccessor],
+    value: values[yAccessor],
+    count: values.occurrences,
+  })).filter(({count}) => count > 10);
+
+  let winValues = seriesValues.filter(({win}) => win === 1);
+  winValues.sort((a, b) => a.time - b.time);
+
+  let lossValues = seriesValues.filter(({win}) => win === 0);
+  lossValues.sort((a, b) => a.time - b.time);
+
+  const maxLength = Math.min(winValues.length, lossValues.length);
+  seriesTime = seriesTime.slice(0, maxLength);
+  winValues = winValues.slice(0, maxLength);
+  lossValues = lossValues.slice(0, maxLength);
+
+  let winrateValues = [];
+  if (winrate) {
+    for (let i = 0; i < seriesTime.length; i++) {
+      const winrate = winValues[i].count / (winValues[i].count + lossValues[i].count);
+      winrateValues.push(Math.round(winrate * 1000) / 10);
+    }
+  }
+
+  winValues = winValues.map(({value}) => value);
+  lossValues = lossValues.map(({value}) => value);
+
+  return [
+    JSON.stringify(seriesTime),
+    JSON.stringify(winValues),
+    JSON.stringify(lossValues),
+    JSON.stringify(winrateValues),
+  ];
+};
+
+const [gameLengthTime, gameLengthWin, gameLengthLoss, gameLengthWinrate] = generateSerializedValues(
+  gameLengthSeries,
+  'game_length_rounded',
+  'occurrences',
+  true,
+);
+const [collectionRateTime, collectionRateWin, collectionRateLoss] = generateSerializedValues(
+  collectionRateSeries,
+  'time_in_sec',
+  'avg_collection_rate',
+);
+const [workersActiveTime, workersActiveWin, workersActiveLoss] = generateSerializedValues(
+  workersActiveSeries,
+  'time_in_sec',
+  'avg_workers_active',
+);
+const [armyValueTime, armyValueWin, armyValueLoss] = generateSerializedValues(
+  armyValueSeries,
+  'time_in_sec',
+  'avg_army_value',
+);
+---
+<MatchupLayout race={playerRace} opponentRace={opponentRace}>
+  <MatchupDetails
+    client:only="preact"
+    playerRace={playerRace}
+    opponentRace={opponentRace}
+    matchupData={{
+      gameLength: gameLengthSeries,
+      collectionRate: collectionRateSeries,
+      armyValue: armyValueSeries,
+      workersActive: workersActiveSeries,
+    }}
+    players={{
+      [playerRace]: playerRacePlayers,
+      [opponentRace]: opponentRacePlayers,
+    }}
+  />
+  <div
+    class="game-length matchup-chart"
+    data-win={gameLengthWin}
+    data-loss={gameLengthLoss}
+    data-winrate={gameLengthWinrate}
+    data-time={gameLengthTime}
+  />
+  <div
+    class="collection-rate matchup-chart"
+    data-win={collectionRateWin}
+    data-loss={collectionRateLoss}
+    data-time={collectionRateTime}
+  />
+  <div
+    class="workers-active matchup-chart"
+    data-win={workersActiveWin}
+    data-loss={workersActiveLoss}
+    data-time={workersActiveTime}
+  />
+  <div
+    class="army-value matchup-chart"
+    data-win={armyValueWin}
+    data-loss={armyValueLoss}
+    data-time={armyValueTime}
+  />
+</MatchupLayout>
+
+<script>
+  import 'chartist/dist/index.css';
+  import {LineChart, BarChart} from 'chartist';
+
+  const charts = [
+    '.game-length',
+    '.collection-rate',
+    '.army-value',
+    '.workers-active',
+  ];
+
+  charts.forEach((chartClass) => {
+    const serializedData = document.querySelectorAll(chartClass)[0].dataset;
+    const timeValues = JSON.parse(serializedData.time);
+    
+    if (chartClass === '.game-length') {
+      // const winValues = JSON.parse(serializedData.win);
+      // const lossValues = JSON.parse(serializedData.loss);
+      const winrateValues = JSON.parse(serializedData.winrate);
+      console.log('wrinate', winrateValues);
+
+      const data = {
+        // A labels array that can contain any sort of values
+        labels: timeValues,
+        // Our series array that contains series objects or in this case series data arrays
+        series: [winrateValues]
+        // series: [winValues, lossValues]
+      };
+
+      new LineChart(chartClass, data, {
+        // stackBars: true,
+      });
+    } else {
+      const winValues = JSON.parse(serializedData.win);
+      const lossValues = JSON.parse(serializedData.loss);
+    
+      const data = {
+        // A labels array that can contain any sort of values
+        labels: timeValues,
+        // Our series array that contains series objects or in this case series data arrays
+        series: [winValues, lossValues]
+      };
+
+      new LineChart(chartClass, data, {
+        axisX: {
+          labelInterpolationFnc: (value, index) => (index % 10 === 0 ? value : null)
+        }
+      });
+    }
+  });
+
+</script>
+
+<style is:inline>
+  .ct-series-a .ct-line,
+  .ct-series-b .ct-line {
+    stroke-width: 2px;
+  }
+
+  .ct-series-a .ct-point,
+  .ct-series-b .ct-point {
+    stroke-width: 5px;
+  }
+
+  .ct-series-a .ct-line {
+    stroke: var(--green-desat);
+  }
+
+  .ct-series-a .ct-point {
+    stroke: var(--green);
+  }
+
+  .ct-series-b .ct-line {
+    stroke: var(--red-desat);
+  }
+
+  .ct-series-b .ct-point {
+    stroke: var(--red);
+  }
+
+  .ct-grid {
+    stroke: white;
+  }
+
+  .ct-label {
+    color: white;
+    fill: white;
+  }
+</style>
