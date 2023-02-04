@@ -109,6 +109,7 @@ const generateSerializedValues = (
       dataTypeValues[0].push(Math.round(weightedWinrate * 1000) / 10);
       dataTypeValues[1].push(Math.round(weightedLossrate * 1000) / 10);
     }
+
     return [
       JSON.stringify(dataTypeValues[0]),
       JSON.stringify(dataTypeValues[1]),
@@ -294,6 +295,10 @@ const armyValueDiffQuantiles = generateSerializedValues(
         // series: [winValues, lossValues]
       };
 
+      const winrateSum = playerWinrate.reduce((current, total) => total + current, 0);
+      const lossrateSum = opponentWinrate.reduce((current, total) => total + current, 0);
+
+      console.log('winrate/lossrate/sum', winrateSum, lossrateSum, winrateSum + lossrateSum);
       console.log('winrate dta', data);
 
       new LineChart(chartClass, data, {
