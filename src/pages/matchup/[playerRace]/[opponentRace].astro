@@ -79,6 +79,7 @@ const generateSerializedValues = (
     time: values[xAccessor],
     value: values[yAccessor],
     count: values.occurrences,
+    total: values.total,
   })).filter(({count}) => count > 10);
 
   let winValues = seriesValues.filter(({win}) => win === 1);
@@ -94,11 +95,24 @@ const generateSerializedValues = (
 
   let dataTypeValues: any[] = [];
   if (dataType === 'winrate') {
+    dataTypeValues = [[], []];
     for (let i = 0; i < seriesTime.length; i++) {
       const winrate = winValues[i].count / (winValues[i].count + lossValues[i].count);
-      dataTypeValues.push(Math.round(winrate * 1000) / 10);
+      const lossrate = lossValues[i].count / (winValues[i].count + lossValues[i].count);
+
+      const total = winValues[0].total;
+      const timeTotal = winValues[i].count + lossValues[i].count;
+      const weight = timeTotal / total;
+
+      const weightedWinrate = winrate * weight;
+      const weightedLossrate = lossrate * weight;
+      dataTypeValues[0].push(Math.round(weightedWinrate * 1000) / 10);
+      dataTypeValues[1].push(Math.round(weightedLossrate * 1000) / 10);
     }
-    return JSON.stringify(dataTypeValues);
+    return [
+      JSON.stringify(dataTypeValues[0]),
+      JSON.stringify(dataTypeValues[1]),
+    ];
   } else if (dataType === 'quantiles') {
     const QUANTILES = 5;
     dataTypeValues = Array(QUANTILES);
@@ -134,7 +148,10 @@ const [
   'game_length_rounded',
   'occurrences',
 );
-const gameLengthWinrate = generateSerializedValues(
+const [
+  gameLengthPlayerWinrate,
+  gameLengthOpponentWinrate,
+] = generateSerializedValues(
   gameLengthSeries,
   'game_length_rounded',
   'occurrences',
@@ -209,7 +226,8 @@ const armyValueDiffQuantiles = generateSerializedValues(
     class="game-length matchup-chart"
     data-win={gameLengthWin}
     data-loss={gameLengthLoss}
-    data-winrate={gameLengthWinrate}
+    data-winrate-player={gameLengthPlayerWinrate}
+    data-winrate-opponent={gameLengthOpponentWinrate}
     data-time={gameLengthTime}
   />
 
@@ -265,15 +283,18 @@ const armyValueDiffQuantiles = generateSerializedValues(
     if (chartClass === '.game-length') {
       // const winValues = JSON.parse(serializedData.win);
       // const lossValues = JSON.parse(serializedData.loss);
-      const winrateValues = JSON.parse(serializedData.winrate);
+      const playerWinrate = JSON.parse(serializedData.winratePlayer);
+      const opponentWinrate = JSON.parse(serializedData.winrateOpponent);
 
       const data = {
         // A labels array that can contain any sort of values
         labels: timeValues,
         // Our series array that contains series objects or in this case series data arrays
-        series: [winrateValues]
+        series: [playerWinrate, opponentWinrate]
         // series: [winValues, lossValues]
       };
+
+      console.log('winrate dta', data);
 
       new LineChart(chartClass, data, {
         // stackBars: true,
