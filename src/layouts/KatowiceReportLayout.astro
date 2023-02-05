@@ -1,0 +1,72 @@
+---
+import Header from '../components/Header.astro';
+import Nav from '../components/Nav.astro';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
+import '../components/index.css';
+import type {GroupDetails} from '../pages/reports/iem-katowice-2023/_groups';
+
+interface Props extends GroupDetails {};
+
+const {group, players} = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={`https://sc2.gg/reports/iem-katowice-2023/group-${group.toLowerCase()}/`} />
+    <title>sc2.gg - Statistics for IEM Katowice 2023, Group {group}</title>
+    <meta name="description" content={`Statistics for IEM Katowice 2023, Group ${group}. Featuring ${players.slice(0, -1).join(', ')} and ${players.slice(-1)}`} />
+    <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
+    <script>
+      // @ts-ignore
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
+    </script>
+  </head>
+  <style>
+    .ReportLayout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      align-content: center;
+      width: 60%;
+      max-width: 800px;
+      min-width: 620px;
+    }
+
+    .ReportLayout__container {
+      width: 100%;
+    }
+
+    @media(max-width: 1300px) {
+      .ReportLayout {
+        width: 80%;
+      }
+    }
+
+    @media(max-width: 650px) {
+      .ReportLayout {
+        width: 90%;
+        min-width: 0;
+      }
+    }
+
+    .ReportLayout__header {
+      margin: 15px 0;
+      font-weight: 700;
+      font-size: 24px;
+    }
+  </style>
+  <body>
+    <div class="ReportLayout">
+      <Header title={`IEM Katowice Group ${group}`} link={`/reports/iem-katowice-2023/group-${group}/`} />
+      <Nav />
+      <div class="ReportLayout__container">
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>

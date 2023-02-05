@@ -1,0 +1,19 @@
+---
+import ReportLayout from "../../../layouts/KatowiceReportLayout.astro";
+import {Group, GroupDetails, GROUPS} from "./_groups";
+
+export function getStaticPaths() {
+  return GROUPS.map(({group, players}) => (
+    {params: {group: group.toLowerCase()}, props: {group, players}}
+  ));
+}
+
+interface Props extends GroupDetails {};
+
+const {group, players} = Astro.props;
+---
+<ReportLayout group={group} players={players}>
+  <div class="IEMKatowiceGroup">
+
+  </div>
+</ReportLayout>
