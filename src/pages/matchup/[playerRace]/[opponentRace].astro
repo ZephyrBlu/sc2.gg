@@ -321,7 +321,6 @@ const armyValueDiffQuantiles = generateSerializedValues(
         name: `percentile${percentiles[index]}`,
         data: series,
       }));
-      console.log('mapped quantile', mappedSeries);
       const quantileData = {
         labels: timeValues,
         series: [...mappedSeries],
