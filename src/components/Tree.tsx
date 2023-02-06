@@ -314,7 +314,6 @@ export function Tree({ race, opponentRace, tree }) {
       <>
         <div className="Tree__group">
           <div className="Tree__group-header">
-            Opening group for
             <div className="Tree__header">
               <div className="Tree__modifiers Tree__modifiers--secondary">
                 <div className="Tree__modifier Tree__modifier--secondary">
@@ -352,9 +351,13 @@ export function Tree({ race, opponentRace, tree }) {
               ))}
             </div>
           </div>
-          <div className="Tree__openings">
-            {groupOpenings}
-          </div>
+          {groupOpenings.length > 0 &&
+            <details className="Tree__openings">
+              <summary className="Tree__group-toggle">
+                Show {groupOpenings.length} Follow-ups
+              </summary>
+              {groupOpenings}
+            </details>}
         </div>
         <hr className="Builds__cluster-divider Builds__cluster-divider--tree" />
       </>
@@ -522,43 +525,38 @@ export function Tree({ race, opponentRace, tree }) {
           {tree.root.total.total} games
         </span>
       </div>
-      <details>
-        <summary className="Tree__show">
-          Show Top Openings
+      <details open={showSorting}>
+        <summary
+          className="Tree__sorting Search__selected-search-type"
+          onClick={() => setShowSorting(prevState => !prevState)}
+        >
+          Sorting by {capitalize(sortBy)}
         </summary>
-        <details open={showSorting}>
-          <summary
-            className="Tree__sorting Search__selected-search-type"
-            onClick={() => setShowSorting(prevState => !prevState)}
-          >
-            Sorting by {capitalize(sortBy)}
-          </summary>
-          <div className="Search__search-type-selection-dropdown Search__search-type-selection-dropdown--tree">
-            {sortTypes.map(sortType => (
-              <span className="Search__search-type-option">
-                <input
-                  type="radio"
-                  id={`tree-${race.toLowerCase()}-${opponentRace.toLowerCase()}-${sortType}`}
-                  className="Search__search-type-checkbox"
-                  name="tree-sorting"
-                  checked={sortBy === sortType}
-                  onClick={() => {
-                    setSortBy(sortType);
-                    setShowSorting(false);
-                  }}
-                />
-                <label
-                  className="Search__search-type-label"
-                  for={`tree-${race}-${sortType}`}
-                >
-                  {capitalize(sortType)}
-                </label>
-              </span>
-            ))}
-          </div>
-        </details>
-        {rendered}
+        <div className="Search__search-type-selection-dropdown Search__search-type-selection-dropdown--tree">
+          {sortTypes.map(sortType => (
+            <span className="Search__search-type-option">
+              <input
+                type="radio"
+                id={`tree-${race.toLowerCase()}-${opponentRace.toLowerCase()}-${sortType}`}
+                className="Search__search-type-checkbox"
+                name="tree-sorting"
+                checked={sortBy === sortType}
+                onClick={() => {
+                  setSortBy(sortType);
+                  setShowSorting(false);
+                }}
+              />
+              <label
+                className="Search__search-type-label"
+                for={`tree-${race}-${sortType}`}
+              >
+                {capitalize(sortType)}
+              </label>
+            </span>
+          ))}
+        </div>
       </details>
+      {rendered}
     </div>
   );
 }
