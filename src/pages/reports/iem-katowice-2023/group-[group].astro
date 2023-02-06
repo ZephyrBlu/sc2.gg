@@ -1,6 +1,7 @@
 ---
 import ReportLayout from "../../../layouts/KatowiceReportLayout.astro";
-import {Group, GroupDetails, GROUPS} from "./_groups";
+import {IEMKatowiceGroup} from "../../../components/IEMKatowiceGroup";
+import {GroupDetails, GROUPS} from "./_groups";
 
 export function getStaticPaths() {
   return GROUPS.map(({group, players}) => (
@@ -11,9 +12,101 @@ export function getStaticPaths() {
 interface Props extends GroupDetails {};
 
 const {group, players} = Astro.props;
----
-<ReportLayout group={group} players={players}>
-  <div class="IEMKatowiceGroup">
 
-  </div>
+const setMatchupUrlParams = (url: URL, player: string, opponent: string) => {
+  url.searchParams.set('player', 'liquidclem');
+  url.searchParams.set('opponent', 'dark');
+  url.searchParams.set('after', '2021-01-01');
+  url.searchParams.set('refresh', '');
+  return url;
+};
+
+const generateSerializedValues = (
+  series: any[],
+  xAccessor: string,
+  yAccessor: string,
+  dataType?: string,
+) => {
+  let seriesTime = Array.from(new Set(series.map(values => values[xAccessor])));
+  seriesTime.sort((a, b) => a - b);
+
+  const seriesValues = series.map(values => ({
+    win: values.win,
+    time: values[xAccessor],
+    value: values[yAccessor],
+    count: values.occurrences,
+    total: values.total,
+  }));
+
+  let winValues = seriesValues.filter(({win}) => win === 1);
+  winValues.sort((a, b) => a.time - b.time);
+
+  let lossValues = seriesValues.filter(({win}) => win === 0);
+  lossValues.sort((a, b) => a.time - b.time);
+
+  const maxLength = Math.min(winValues.length, lossValues.length);
+  seriesTime = seriesTime.slice(0, maxLength);
+  winValues = winValues.slice(0, maxLength);
+  lossValues = lossValues.slice(0, maxLength);
+
+  let dataTypeValues: any[] = [];
+  if (dataType === 'winrate') {
+    dataTypeValues = [[], []];
+    for (let i = 0; i < seriesTime.length; i++) {
+      const winrate = winValues[i].count / (winValues[i].count + lossValues[i].count);
+      const lossrate = lossValues[i].count / (winValues[i].count + lossValues[i].count);
+      const total = winValues[0].total;
+      const timeTotal = winValues[i].count + lossValues[i].count;
+      const weight = timeTotal / total;
+      const weightedWinrate = winrate * weight;
+      const weightedLossrate = lossrate * weight;
+      dataTypeValues[0].push(Math.round(weightedWinrate * 1000) / 10);
+      dataTypeValues[1].push(Math.round(weightedLossrate * 1000) / 10);
+    }
+    return [
+      JSON.stringify(dataTypeValues[0]),
+      JSON.stringify(dataTypeValues[1]),
+    ];
+  }
+
+  winValues = winValues.map(({value}) => value);
+  lossValues = lossValues.map(({value}) => value);
+
+  return [
+    JSON.stringify(seriesTime),
+    JSON.stringify(winValues),
+    JSON.stringify(lossValues),
+  ];
+};
+
+const timelineUrl = new URL('https://search.sc2.gg/timeline/game-length');
+setMatchupUrlParams(timelineUrl, players.slice(0)[0].name, players.slice(-1)[0].name);
+console.log('timeline url', timelineUrl.toString());
+const gameLengthSeries = await fetch(timelineUrl).then(res => res.json());
+
+const [gameLengthTime] = generateSerializedValues(
+  gameLengthSeries,
+  'game_length_rounded',
+  'occurrences',
+);
+const [
+  gameLengthPlayerWinrate,
+  gameLengthOpponentWinrate,
+] = generateSerializedValues(
+  gameLengthSeries,
+  'game_length_rounded',
+  'occurrences',
+  'winrate',
+);
+---
+<ReportLayout group={group} players={players.map(({name}) => name)}>
+  <IEMKatowiceGroup
+    client:load
+    players={players}
+    weightedWinrate={{
+      time: gameLengthTime,
+      win: gameLengthPlayerWinrate,
+      loss: gameLengthOpponentWinrate,
+    }}
+  />
 </ReportLayout>

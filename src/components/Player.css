@@ -1,0 +1,31 @@
+.Player {
+  display: flex;
+  align-items: center;
+}
+
+.Player--small .Player__name {
+  font-size: 14px;
+}
+
+.Player--small .Player__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.Player--medium .Player__name {
+  font-size: 18px;
+}
+
+.Player--medium .Player__icon {
+  width: 30px;
+  height: 30px;
+}
+
+.Player--large .Player__name {
+  font-size: 24px;
+}
+
+.Player--large .Player__icon {
+  width: 40px;
+  height: 40px;
+}

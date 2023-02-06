@@ -1,39 +1,46 @@
-export const GROUP_A = [
-  'Clem',
-  'Dark',
-  'RagnaroK',
-  'Neeb',
-  'Oliveira',
+import type {Race} from "../../../components/BlockResults";
+
+export interface TournamentPlayer {
+  name: string;
+  race: Race;
+}
+
+export const GROUP_A: TournamentPlayer[] = [
+  {name: 'Clem', race: 'Terran'},
+  {name: 'Dark', race: 'Zerg'},
+  {name: 'RagnaroK', race: 'Zerg'},
+  {name: 'Neeb', race: 'Protoss'},
+  {name: 'Oliveira', race: 'Terran'},
 ];
 
-export const GROUP_B = [
-  'Renyor',
-  'Astrea',
-  'Creator',
-  'ShoWTimE',
-  'GuMiho',
+export const GROUP_B: TournamentPlayer[] = [
+  {name: 'Renyor', race: 'Zerg'},
+  {name: 'Astrea', race: 'Protoss'},
+  {name: 'Creator', race: 'Protoss'},
+  {name: 'ShoWTimE', race: 'Protoss'},
+  {name: 'GuMiho', race: 'Terran'},
 ];
 
-export const GROUP_C = [
-  'herO',
-  'Serral',
-  'Solar',
-  'DRG',
-  'SpeCial',
+export const GROUP_C: TournamentPlayer[] = [
+  {name: 'herO', race: 'Protoss'},
+  {name: 'Serral', race: 'Zerg'},
+  {name: 'Solar', race: 'Zerg'},
+  {name: 'DRG', race: 'Zerg'},
+  {name: 'SpeCial', race: 'Terran'},
 ];
 
-export const GROUP_D = [
-  'Maru',
-  'Bunny',
-  'ByuN',
-  'HeRoMaRiE',
-  'Lambo',
+export const GROUP_D: TournamentPlayer[] = [
+  {name: 'Maru', race: 'Terran'},
+  {name: 'Bunny', race: 'Terran'},
+  {name: 'ByuN', race: 'Terran'},
+  {name: 'HeRoMaRiE', race: 'Terran'},
+  {name: 'Lambo', race: 'Zerg'},
 ];
 
 export type Group = 'A' | 'B' | 'C' | 'D';
 export interface GroupDetails {
   group: Group,
-  players: string[],
+  players: TournamentPlayer[],
 }
 
 export const GROUPS: GroupDetails[] = [
