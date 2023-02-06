@@ -268,10 +268,8 @@ export function Tree({ race, opponentRace, tree }) {
       const nodeBuildings = node.label.split(',');
       const buildings = [...prefixBuildings, ...nodeBuildings];
 
-      console.log('node', node);
-
       return (
-        <div className="Tree">
+        <div className="Tree Tree--grouped">
           <div className="Tree__header">
             <div className="Tree__modifiers Tree__modifiers--secondary">
               <div className="Tree__modifier Tree__modifier--secondary">
@@ -313,10 +311,53 @@ export function Tree({ race, opponentRace, tree }) {
     });
 
     return (
-      <div className="Tree__group">
-        Opening groups for {prefixBuildings}
-        {groupOpenings}
-      </div>
+      <>
+        <div className="Tree__group">
+          <div className="Tree__group-header">
+            Opening group for
+            <div className="Tree__header">
+              <div className="Tree__modifiers Tree__modifiers--secondary">
+                <div className="Tree__modifier Tree__modifier--secondary">
+                  {Math.round((rootNode.wins / rootNode.total) * 1000) / 10}% winrate
+                </div>
+                <div className="Tree__modifier Tree__modifier--secondary">
+                  {Math.round((rootNode.total / tree.root.total.total) * 1000) / 10}% playrate
+                </div>
+                <div className="Tree__modifier Tree__modifier--secondary">
+                  {rootNode.total} games
+                </div>
+              </div>
+            </div>
+            <div className="Tree__prefix">
+              {prefixBuildings.map((building, index) => (
+                <div className="Tree__building">
+                  <img
+                    alt={building}
+                    title={building}
+                    className="Tree__building-icon"
+                    src={`/images/buildings/${race}/${building}.png`}
+                  />
+                  {prefixBuildings.length - 1 !== index &&
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="Tree__arrow"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="Tree__openings">
+            {groupOpenings}
+          </div>
+        </div>
+        <hr className="Builds__cluster-divider Builds__cluster-divider--tree" />
+      </>
     );
   });
 

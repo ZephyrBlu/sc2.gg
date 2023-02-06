@@ -1,8 +1,13 @@
-.Tree {
+.Tree--grouped {
+  margin-bottom: 20px;
 }
 
 .Tree__branch, .Tree__prefix, .Tree__branch-parent {
   display: flex;
+}
+
+.Tree__group-header {
+  margin-bottom: 20px;
 }
 
 .Tree__prefix {
