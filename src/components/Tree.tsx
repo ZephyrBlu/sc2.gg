@@ -240,7 +240,7 @@ export function Tree({ race, opponentRace, tree }) {
   const tryReparentNode = (node: any) => {
     if (node.children.length === 1) {
       const nextNode = node.children[0];
-      node.prefix += `,${nextNode.label}`;
+      node.label += `,${nextNode.label}`;
       console.log('reparented node', node);
       node.children = nextNode.children;
       tryReparentNode(node);
