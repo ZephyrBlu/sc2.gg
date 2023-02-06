@@ -276,7 +276,7 @@ export function Tree({ race, opponentRace, tree }) {
                 {Math.round((node.total.wins / node.total.total) * 1000) / 10}% winrate
               </div>
               <div className="Tree__modifier Tree__modifier--secondary">
-                {Math.round((node.total.total / rootNode.total) * 1000) / 10}% playrate
+                {Math.round((node.total.total / tree.root.total.total) * 1000) / 10}% playrate
               </div>
               <div className="Tree__modifier Tree__modifier--secondary">
                 {node.total.total} games
