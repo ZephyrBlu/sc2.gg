@@ -35,7 +35,7 @@ export function Tree({ race, opponentRace, tree }) {
     MIN_TOTAL = 25;
 
     if (opponentRace === 'Terran') {
-      MAX_BRANCHES = 30;
+      MAX_BRANCHES = 15;
     }
   }
 
@@ -231,7 +231,7 @@ export function Tree({ race, opponentRace, tree }) {
     if (node.nodes.length === 1) {
       const nextNode = node.nodes[0];
       node.prefix += `,${nextNode.label}`;
-      console.log('reparented prefix', node);
+      // console.log('reparented prefix', node);
       node.nodes = nextNode.children;
       tryReparentPrefix(node);
     }
@@ -241,7 +241,7 @@ export function Tree({ race, opponentRace, tree }) {
     if (node.children.length === 1) {
       const nextNode = node.children[0];
       node.label += `,${nextNode.label}`;
-      console.log('reparented node', node);
+      // console.log('reparented node', node);
       node.children = nextNode.children;
       tryReparentNode(node);
     } else {
@@ -256,7 +256,7 @@ export function Tree({ race, opponentRace, tree }) {
     tryReparentPrefix(prefix);
     prefix.nodes.forEach(node => tryReparentNode(node));
   });
-  sortedPrefixes.sort((a, b) => b.winrate - a.winrate);
+  sortedPrefixes.sort((a, b) => b.probability - a.probability);
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
   console.log('prefix coverage', prefixCoverage);
   console.log('matching prefixes', sortedPrefixes);
