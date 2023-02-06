@@ -223,7 +223,7 @@ export function Tree({ race, opponentRace, tree }) {
   })).filter(prefix => prefix.probability >= 0.02);
 
   const prune = (node: any) => {
-    node.children = node.children.filter(child => child.total.total > 25);
+    node.children = node.children.filter(child => child.total.total >= 25);
     node.children.forEach(child => prune(child));
   };
 
@@ -250,7 +250,7 @@ export function Tree({ race, opponentRace, tree }) {
   };
 
   sortedPrefixes.forEach((prefix) => {
-    prefix.nodes = prefix.nodes.filter(node => node.total.total > 25);
+    prefix.nodes = prefix.nodes.filter(node => node.total.total / tree.root.total.total >= 0.02);
     prefix.nodes.forEach(node => prune(node));
 
     tryReparentPrefix(prefix);
@@ -260,6 +260,65 @@ export function Tree({ race, opponentRace, tree }) {
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
   console.log('prefix coverage', prefixCoverage);
   console.log('matching prefixes', sortedPrefixes);
+
+  const grouped = sortedPrefixes.map((rootNode) => {
+    const prefixBuildings = rootNode.prefix.slice(1).split(',');
+
+    const groupOpenings = rootNode.nodes.map((node) => {
+      const nodeBuildings = node.label.split(',');
+      const buildings = [...prefixBuildings, ...nodeBuildings];
+
+      console.log('node', node);
+
+      return (
+        <div className="Tree">
+          <div className="Tree__header">
+            <div className="Tree__modifiers Tree__modifiers--secondary">
+              <div className="Tree__modifier Tree__modifier--secondary">
+                {Math.round((node.total.wins / node.total.total) * 1000) / 10}% winrate
+              </div>
+              <div className="Tree__modifier Tree__modifier--secondary">
+                {Math.round((node.total.total / rootNode.total) * 1000) / 10}% playrate
+              </div>
+              <div className="Tree__modifier Tree__modifier--secondary">
+                {node.total.total} games
+              </div>
+            </div>
+          </div>
+          <div className="Tree__prefix">
+            {buildings.map((building, index) => (
+              <div className="Tree__building">
+                <img
+                  alt={building}
+                  title={building}
+                  className="Tree__building-icon"
+                  src={`/images/buildings/${race}/${building}.png`}
+                />
+                {buildings.length - 1 !== index &&
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="Tree__arrow"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    });
+
+    return (
+      <div className="Tree__group">
+        Opening groups for {prefixBuildings}
+        {groupOpenings}
+      </div>
+    );
+  });
 
   if (queues.length > 10) {
     let passed = 0;
@@ -394,7 +453,7 @@ export function Tree({ race, opponentRace, tree }) {
     </div>
   ));
 
-  const rendered = renderType === 'flat' ? expanded : nested;
+  const rendered = renderType === 'flat' ? expanded : grouped; // nested;
 
   return (
     <div className="Builds__opponent-race-builds">
@@ -424,7 +483,7 @@ export function Tree({ race, opponentRace, tree }) {
       </div>
       <details>
         <summary className="Tree__show">
-          Show Top 10 Openings
+          Show Top Openings
         </summary>
         <details open={showSorting}>
           <summary
