@@ -31,5 +31,5 @@ const {year, publishedAt, updatedAt, status, definitions, updates, issues, trees
     updates={updates}
     issues={issues}
   />
-  <Trees trees={trees} client:load />
+  <Trees trees={trees} client:only="preact" />
 </ReportLayout>

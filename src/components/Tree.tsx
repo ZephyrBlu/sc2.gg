@@ -35,7 +35,7 @@ export function Tree({ race, opponentRace, tree }) {
     MIN_TOTAL = 25;
 
     if (opponentRace === 'Terran') {
-      MAX_BRANCHES = 50;
+      MAX_BRANCHES = 30;
     }
   }
 
@@ -51,6 +51,8 @@ export function Tree({ race, opponentRace, tree }) {
       prefix: '',
       probability: rootNode.total.total / tree.root.total.total,
       winrate: rootNode.total.wins / rootNode.total.total,
+      total: rootNode.total.total,
+      wins: rootNode.total.wins,
     }];
     let branches = 0;
     while (queue.length > 0 && branches <= MAX_BRANCHES) {
@@ -65,6 +67,8 @@ export function Tree({ race, opponentRace, tree }) {
           prefix,
           probability: node.total.total / tree.root.total.total,
           winrate: node.total.wins / node.total.total,
+          total: node.total.total,
+          wins: node.total.wins,
         });
         branches += 1;
       }
@@ -76,6 +80,8 @@ export function Tree({ race, opponentRace, tree }) {
             prefix: `${prefix},${node.label}`,
             probability: child.total.total / tree.root.total.total,
             winrate: child.total.wins / child.total.total,
+            total: child.total.total,
+            wins: child.total.wins,
           });
           branches += 1;
         }
@@ -187,9 +193,76 @@ export function Tree({ race, opponentRace, tree }) {
   const renderType = 'tree';
   tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
+  queues.sort((a, b) => b.probability - a.probability);
+  console.log('queues', race, opponentRace, queues);
+  const queueProbability = queues.reduce((total, current) => total + current.probability, 0);
+  console.log('queue total probability', queueProbability);
+
+  const prefixes: Record<string, any> = {};
+  queues.forEach((queue) => {
+    if (!prefixes[queue.prefix]) {
+      prefixes[queue.prefix] = {
+        nodes: [],
+        winrate: 0,
+        probability: 0,
+        total: 0,
+        wins: 0,
+      };
+    }
+
+    prefixes[queue.prefix].total += queue.total;
+    prefixes[queue.prefix].wins += queue.wins;
+    prefixes[queue.prefix].winrate = prefixes[queue.prefix].wins / prefixes[queue.prefix].total;
+    prefixes[queue.prefix].probability = prefixes[queue.prefix].total / tree.root.total.total;
+    prefixes[queue.prefix].nodes.push(queue.node);
+  });
+
+  const sortedPrefixes = Object.entries(prefixes).map(([prefix, nodes]) => ({
+    prefix,
+    ...nodes,
+  })).filter(prefix => prefix.probability >= 0.02);
+
+  const prune = (node: any) => {
+    node.children = node.children.filter(child => child.total.total > 25);
+    node.children.forEach(child => prune(child));
+  };
+
+  const tryReparentPrefix = (node: any) => {
+    if (node.nodes.length === 1) {
+      const nextNode = node.nodes[0];
+      node.prefix += `,${nextNode.label}`;
+      console.log('reparented prefix', node);
+      node.nodes = nextNode.children;
+      tryReparentPrefix(node);
+    }
+  };
+
+  const tryReparentNode = (node: any) => {
+    if (node.children.length === 1) {
+      const nextNode = node.children[0];
+      node.prefix += `,${nextNode.label}`;
+      console.log('reparented node', node);
+      node.children = nextNode.children;
+      tryReparentNode(node);
+    } else {
+      node.children.forEach(child => tryReparentNode(child));
+    }
+  };
+
+  sortedPrefixes.forEach((prefix) => {
+    prefix.nodes = prefix.nodes.filter(node => node.total.total > 25);
+    prefix.nodes.forEach(node => prune(node));
+
+    tryReparentPrefix(prefix);
+    prefix.nodes.forEach(node => tryReparentNode(node));
+  });
+  sortedPrefixes.sort((a, b) => b.winrate - a.winrate);
+  const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
+  console.log('prefix coverage', prefixCoverage);
+  console.log('matching prefixes', sortedPrefixes);
+
   if (queues.length > 10) {
     let passed = 0;
-    queues.sort((a, b) => b.probability - a.probability);
     queues = queues.filter(queue => {
       const pass = queue.probability >= 0.02;
       if (pass) {
@@ -201,7 +274,7 @@ export function Tree({ race, opponentRace, tree }) {
         passed += 1;
         return true;
       }
-  });
+    });
   }
 
   if (sortBy === 'playrate') {

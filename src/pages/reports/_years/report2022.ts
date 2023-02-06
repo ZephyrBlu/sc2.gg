@@ -1,4 +1,5 @@
-import trees2022 from '../_data/2022_build_trees.json' assert {type: "json"};
+// import trees2022 from '../_data/2022_build_trees.json' assert {type: "json"};
+import trees2022 from '../_data/unpruned_2022_build_trees.json' assert {type: "json"};
 import { yearReportDefinitions } from '../_definitions';
 import {ReportParams, Status} from '../_types';
 import { generateMatchupTrees } from '../_utils';
