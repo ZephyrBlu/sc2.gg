@@ -253,7 +253,12 @@ export function Tree({ race, opponentRace, tree }) {
     tryReparentPrefix(prefix);
     prefix.nodes.forEach(node => tryReparentNode(node));
   });
-  sortedPrefixes.sort((a, b) => b.probability - a.probability);
+
+  if (sortBy === 'playrate') {
+    sortedPrefixes.sort((a, b) => b.probability - a.probability);
+  } else {
+    sortedPrefixes.sort((a, b) => b.winrate - a.winrate);
+  }
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
   // console.log('prefix coverage', prefixCoverage);
   // console.log('matching prefixes', sortedPrefixes);
@@ -263,6 +268,12 @@ export function Tree({ race, opponentRace, tree }) {
     prefixBuildings.push(...node.label.split(','));
     const newRoot = {...rootNode};
     newRoot.prefix = `,${prefixBuildings.join(',')}`;
+
+    if (sortBy === 'playrate') {
+      node.children.sort((a, b) => b.total.total - a.total.total);
+    } else {
+      node.children.sort((a, b) => (b.total.wins / b.total.total) - (a.total.wins / a.total.total));
+    }
 
     const groupOpenings = node.children.map((child) => {
       const nodeBuildings = child.label.split(',');
@@ -325,6 +336,12 @@ export function Tree({ race, opponentRace, tree }) {
 
   const grouped = sortedPrefixes.map((rootNode) => {
     const prefixBuildings = rootNode.prefix.slice(1).split(',');
+
+    if (sortBy === 'playrate') {
+      rootNode.nodes.sort((a, b) => b.total.total - a.total.total);
+    } else {
+      rootNode.nodes.sort((a, b) => (b.total.wins / b.total.total) - (a.total.wins / a.total.total));
+    }
 
     const groupOpenings = rootNode.nodes.map((node) => {
       const nodeBuildings = node.label.split(',');
