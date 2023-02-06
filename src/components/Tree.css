@@ -30,6 +30,10 @@
   cursor: pointer;
 }
 
+.Tree__grouped-children .Builds__cluster-divider--tree {
+  margin-bottom: 0;
+}
+
 .Tree__prefix {
   padding: 6px;
   border-radius: 8px;
@@ -85,11 +89,6 @@
 .Tree__branch-children:hover {
   cursor: pointer;
 }
-
-/* .Tree__branch-children[open] .Tree__branch-summary {
-  display: none;
-} */
-
 
 .Tree__building {
   display: flex;
