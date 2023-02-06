@@ -7,6 +7,7 @@ const sortTypes: SortBy[] = ['playrate', 'winrate'];
 const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
 
 export function Tree({ race, opponentRace, tree }) {
+  // console.log('tree', race, opponentRace, tree);
   const [sortBy, setSortBy] = useState<SortBy>('playrate');
   const [showSorting, setShowSorting] = useState<boolean>(false);
 
@@ -194,9 +195,7 @@ export function Tree({ race, opponentRace, tree }) {
   tree.root.children.forEach(child => renderNodesBfs(child, renderType));
 
   queues.sort((a, b) => b.probability - a.probability);
-  console.log('queues', race, opponentRace, queues);
   const queueProbability = queues.reduce((total, current) => total + current.probability, 0);
-  console.log('queue total probability', queueProbability);
 
   const prefixes: Record<string, any> = {};
   queues.forEach((queue) => {
@@ -231,7 +230,6 @@ export function Tree({ race, opponentRace, tree }) {
     if (node.nodes.length === 1) {
       const nextNode = node.nodes[0];
       node.prefix += `,${nextNode.label}`;
-      // console.log('reparented prefix', node);
       node.nodes = nextNode.children;
       tryReparentPrefix(node);
     }
@@ -241,7 +239,6 @@ export function Tree({ race, opponentRace, tree }) {
     if (node.children.length === 1) {
       const nextNode = node.children[0];
       node.label += `,${nextNode.label}`;
-      // console.log('reparented node', node);
       node.children = nextNode.children;
       tryReparentNode(node);
     } else {
@@ -258,8 +255,73 @@ export function Tree({ race, opponentRace, tree }) {
   });
   sortedPrefixes.sort((a, b) => b.probability - a.probability);
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
-  console.log('prefix coverage', prefixCoverage);
-  console.log('matching prefixes', sortedPrefixes);
+  // console.log('prefix coverage', prefixCoverage);
+  // console.log('matching prefixes', sortedPrefixes);
+
+  const renderGroupedChildren = (rootNode: any, node: any) => {
+    const prefixBuildings = rootNode.prefix.slice(1).split(',');
+    prefixBuildings.push(...node.label.split(','));
+    const newRoot = {...rootNode};
+    newRoot.prefix = `,${prefixBuildings.join(',')}`;
+
+    const groupOpenings = node.children.map((child) => {
+      const nodeBuildings = child.label.split(',');
+      const buildings = [...prefixBuildings, ...nodeBuildings];
+
+      return (
+        <>
+          <div className="Tree Tree--grouped">
+            <div className="Tree__header">
+              <div className="Tree__modifiers Tree__modifiers--secondary">
+                <div className="Tree__modifier Tree__modifier--secondary">
+                  {Math.round((child.total.wins / child.total.total) * 1000) / 10}% winrate
+                </div>
+                <div className="Tree__modifier Tree__modifier--secondary">
+                  {Math.round((child.total.total / tree.root.total.total) * 1000) / 10}% playrate
+                </div>
+                <div className="Tree__modifier Tree__modifier--secondary">
+                  {child.total.total} games
+                </div>
+              </div>
+            </div>
+            <div className="Tree__prefix">
+              {buildings.map((building, index) => (
+                <div className="Tree__building">
+                  <img
+                    alt={building}
+                    title={building}
+                    className="Tree__building-icon"
+                    src={`/images/buildings/${race}/${building}.png`}
+                  />
+                  {buildings.length - 1 !== index &&
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="Tree__arrow"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>}
+                </div>
+              ))}
+            </div>
+            {child.children.length > 0 &&
+              <details className="Tree__grouped-children">
+                <summary className="Tree__group-toggle">
+                  Show {child.children.length} Follow-ups
+                </summary>
+                {renderGroupedChildren(newRoot, child)}
+              </details>}
+          </div>
+          <hr className="Builds__cluster-divider Builds__cluster-divider--tree" />
+        </>
+      );
+    });
+
+    return groupOpenings;
+  };
 
   const grouped = sortedPrefixes.map((rootNode) => {
     const prefixBuildings = rootNode.prefix.slice(1).split(',');
@@ -306,6 +368,13 @@ export function Tree({ race, opponentRace, tree }) {
               </div>
             ))}
           </div>
+          {node.children.length > 0 &&
+            <details className="Tree__grouped-children">
+              <summary className="Tree__group-toggle">
+                Show {node.children.length} Follow-ups
+              </summary>
+              {renderGroupedChildren(rootNode, node)}
+            </details>}
         </div>
       );
     });
@@ -519,7 +588,7 @@ export function Tree({ race, opponentRace, tree }) {
           {Math.round((tree.root.total.wins / tree.root.total.total) * 1000) / 10}% winrate
         </span>
         <span className="Tree__modifier">
-          {Math.ceil(coverage * 100)}% game coverage
+          {Math.ceil(prefixCoverage * 100)}% game coverage
         </span>
         <span className="Tree__modifier">
           {tree.root.total.total} games

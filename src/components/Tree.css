@@ -3,6 +3,14 @@
   margin-left: 20px;
 }
 
+.Tree--grouped .Builds__cluster-divider--tree {
+  display: none;
+}
+
+.Tree--grouped .Builds__cluster-divider--tree:last-child {
+  display: block;
+}
+
 .Tree__branch, .Tree__prefix, .Tree__branch-parent {
   display: flex;
 }
@@ -13,6 +21,7 @@
 
 .Tree__group-toggle {
   font-size: 14px;
+  margin-top: 10px;
 }
 
 .Tree__group-toggle:hover {
