@@ -116,7 +116,7 @@ export const renderPrefixes = (
       if (child.total.total > MIN_TOTAL || child.children.length === 0) {
         queue.push({
           node: child,
-          prefix: `${prefix},${node.label}`,
+          prefix: prefix ? `${prefix},${node.label}` : node.label,
           probability: child.total.total / context.total,
           winrate: child.total.wins / child.total.total,
           total: child.total.total,
@@ -131,3 +131,43 @@ export const renderPrefixes = (
 
   return queue;
 };
+
+const MIN_PROBABILITY = 0.02;
+
+export const groupPrefixes = (prefixes: any[], context: TreeContext) => {
+  const prefixGroups: Record<string, any> = {};
+  prefixes.forEach((node) => {
+    const prefix = node.prefix;
+
+    if (!prefixGroups[prefix]) {
+      prefixGroups[prefix] = {
+        nodes: [],
+        winrate: 0,
+        probability: 0,
+        total: 0,
+        wins: 0,
+      };
+    }
+
+    prefixGroups[prefix].total += node.total;
+    prefixGroups[prefix].wins += node.wins;
+    prefixGroups[prefix].winrate = prefixGroups[prefix].wins / prefixGroups[prefix].total;
+    prefixGroups[prefix].probability = prefixGroups[prefix].total / context.total;
+    prefixGroups[prefix].nodes.push(node.node);
+  });
+
+  const sortedPrefixes = Object.entries(prefixGroups).map(([prefix, nodes]) => ({
+    prefix,
+    ...nodes,
+  })).filter(prefix => prefix.probability >= MIN_PROBABILITY);
+
+  sortedPrefixes.forEach((prefix) => {
+    prefix.nodes = prefix.nodes.filter((node: Node) => node.total.total / context.total >= MIN_PROBABILITY);
+    prefix.nodes.forEach((node: Node) => prune(node));
+
+    mergePrefixNodes(prefix);
+    prefix.nodes.forEach((node: Node) => mergeChildren(node));
+  });
+
+  return sortedPrefixes;
+}

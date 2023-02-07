@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Node, mergePrefixNodes, mergeChildren, prune, dfs, renderPrefixes} from '../tree_utils';
+import {Node, groupPrefixes, dfs, renderPrefixes} from '../tree_utils';
 import './Tree.css';
 
 type SortBy = 'playrate' | 'winrate';
@@ -45,50 +45,15 @@ export function Tree({ race, opponentRace, tree }) {
       {MIN_TOTAL, MAX_BRANCHES},
     )
   )).flat();
-  console.log('queues', queues);
 
   queues.sort((a, b) => b.probability - a.probability);
 
-  const prefixGroups: Record<string, any> = {};
-  queues.forEach((queue) => {
-    const prefix = queue.prefix;
-
-    if (!prefixGroups[prefix]) {
-      prefixGroups[prefix] = {
-        nodes: [],
-        winrate: 0,
-        probability: 0,
-        total: 0,
-        wins: 0,
-      };
-    }
-
-    prefixGroups[prefix].total += queue.total;
-    prefixGroups[prefix].wins += queue.wins;
-    prefixGroups[prefix].winrate = prefixGroups[prefix].wins / prefixGroups[prefix].total;
-    prefixGroups[prefix].probability = prefixGroups[prefix].total / tree.root.total.total;
-    prefixGroups[prefix].nodes.push(queue.node);
-  });
-
-  const MIN_PROBABILITY = 0.02;
-
-  const sortedPrefixes = Object.entries(prefixGroups).map(([prefix, nodes]) => ({
-    prefix,
-    ...nodes,
-  })).filter(prefix => prefix.probability >= MIN_PROBABILITY);
-
-  sortedPrefixes.forEach((prefix) => {
-    prefix.nodes = prefix.nodes.filter((node: Node) => node.total.total / tree.root.total.total >= MIN_PROBABILITY);
-    prefix.nodes.forEach((node: Node) => prune(node));
-
-    mergePrefixNodes(prefix);
-    prefix.nodes.forEach((node: Node) => mergeChildren(node));
-  });
+  const sortedPrefixes = groupPrefixes(queues, {total: tree.root.total.total});
 
   const renderedFragments: any[] = [];
 
   sortedPrefixes.forEach((prefix) => {
-    const prefixBuild = prefix.prefix.slice(1).split(',');
+    const prefixBuild = prefix.prefix.split(',');
     renderedFragments.push({
       build: prefixBuild,
       total: prefix.total,
@@ -105,12 +70,13 @@ export function Tree({ race, opponentRace, tree }) {
   } else {
     sortedPrefixes.sort((a, b) => b.winrate - a.winrate);
   }
+
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
   console.log('prefix coverage', prefixCoverage);
   console.log('matching prefixes', sortedPrefixes);
 
   const renderGroupedChildren = (rootNode: any, node: any) => {
-    const prefixBuildings = rootNode.prefix.slice(1).split(',');
+    const prefixBuildings = rootNode.prefix.split(',');
     prefixBuildings.push(...node.label.split(','));
     const newRoot = {...rootNode};
     newRoot.prefix = `,${prefixBuildings.join(',')}`;
@@ -181,7 +147,7 @@ export function Tree({ race, opponentRace, tree }) {
   };
 
   const grouped = sortedPrefixes.map((rootNode) => {
-    const prefixBuildings = rootNode.prefix.slice(1).split(',');
+    const prefixBuildings = rootNode.prefix.split(',');
 
     if (sortBy === 'playrate') {
       rootNode.nodes.sort((a, b) => b.total.total - a.total.total);
