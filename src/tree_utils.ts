@@ -69,7 +69,6 @@ export interface TreeContext {
 
 export const renderPrefixes = (
   rootNode: Node,
-  mode = 'tree',
   prefixes: any[] = [],
   context: TreeContext,
   opts: InputBfsOptions = {},
@@ -138,41 +137,14 @@ export const renderPrefixes = (
     const probability = node.total.total / context.total;
     const winrate = node.total.wins / node.total.total;
 
-    if (mode === 'tree') {
-      prefixes[prefixes.length - 1].push({
-        offset: prefix.split(',').length + offset,
-        build: node_buildings,
-        probability,
-        winrate,
-      });
-    }
-
-    if (mode === 'flat' && node.children.length === 0) {
-      prefixes[prefixes.length - 1].push({
-        offset: prefix.split(',').length + 1,
-        build: stack.slice(1),
-        probability,
-        winrate,
-      });
-      return;
-    }
-
-    node.children.forEach((child) => {
-      let newStack;
-      let newOffset;
-
-      if (mode === 'tree') {
-        newStack = [];
-        newOffset = stack.length + offset;
-      }
-
-      if (mode === 'flat') {
-        newStack = [...stack];
-        newOffset = 0;
-      }
-
-      prefixDfs(child, prefix, newStack, newOffset, mode);
+    prefixes[prefixes.length - 1].push({
+      offset: prefix.split(',').length + offset,
+      build: node_buildings,
+      probability,
+      winrate,
     });
+
+    node.children.forEach((child) => prefixDfs(child, prefix, [], stack.length + offset, mode));
   };
 
   if (queue.length === 0) {
