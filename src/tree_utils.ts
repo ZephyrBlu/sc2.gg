@@ -191,3 +191,7 @@ export const renderBuilds = (
   });
   return builds;
 };
+
+// type Sortable = ?
+export const winrateSort = (a, b) => b.winrate - a.winrate;
+export const playrateSort = (a, b) => b.probability - a.probability;

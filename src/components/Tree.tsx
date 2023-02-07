@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Node, groupPrefixes, renderPrefixes, renderBuilds} from '../tree_utils';
+import {Node, groupPrefixes, renderPrefixes, renderBuilds, winrateSort, playrateSort} from '../tree_utils';
 import './Tree.css';
 
 type SortBy = 'playrate' | 'winrate';
@@ -45,19 +45,17 @@ export function Tree({ race, opponentRace, tree }) {
       {MIN_TOTAL, MAX_BRANCHES},
     )
   )).flat();
-
-  queues.sort((a, b) => b.probability - a.probability);
+  queues.sort(playrateSort);
 
   const sortedPrefixes = groupPrefixes(queues, {total: tree.root.total.total});
-
   const renderedFragments: any[] = renderBuilds(sortedPrefixes);
-  renderedFragments.sort((a, b) => b.winrate - a.winrate);
+  renderedFragments.sort(winrateSort);
   console.log('top winrate fragments', race, opponentRace, renderedFragments);
 
   if (sortBy === 'playrate') {
-    sortedPrefixes.sort((a, b) => b.probability - a.probability);
+    sortedPrefixes.sort(playrateSort);
   } else {
-    sortedPrefixes.sort((a, b) => b.winrate - a.winrate);
+    sortedPrefixes.sort(winrateSort);
   }
 
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
