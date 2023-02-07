@@ -1,7 +1,7 @@
 import {useState, useLayoutEffect, Dispatch, useEffect} from 'react';
 import {ReplayRecord} from './ReplayRecord';
 import {LoadingAnimation} from './LoadingAnimation';
-import type {Replay} from './types';
+import type {Replay} from '../types';
 import type { SearchState } from './hooks';
 import './BlockResults.css';
 

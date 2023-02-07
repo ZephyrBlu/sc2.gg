@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { SearchResult, SearchOptions, useSearch } from './hooks';
-import type { Replay } from "./types";
+import type { Replay } from "../types";
 import './Search.css';
-import { compare } from './utils';
+import { compare } from '../utils';
 import { InlineResults, SelectedResult } from './InlineResults';
 import { BlockResults, Race } from './BlockResults';
 import * as Sentry from "@sentry/browser";
