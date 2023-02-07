@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Node, RenderedPrefix, tryReparentPrefix, tryReparentNode, prune, dfs, renderPrefixes} from '../tree_utils';
+import {Node, tryReparentPrefix, tryReparentNode, prune, dfs, renderPrefixes} from '../tree_utils';
 import './Tree.css';
 
 type SortBy = 'playrate' | 'winrate';
@@ -37,44 +37,6 @@ export function Tree({ race, opponentRace, tree }) {
       MAX_BRANCHES = 15;
     }
   }
-
-  const renderChildren = (node, offset = 0) => {
-    return (
-      node.children.map((child) => (
-        <div className="Tree__branch" style={{marginLeft: 50 * (offset + 0.5)}}>
-          <div className="Tree__branch-parent">
-            {child.label.split(',').map((building, index) => (
-              <div className="Tree__building">
-                <img
-                  alt={building}
-                  title={building}
-                  className="Tree__building-icon"
-                  src={`/images/buildings/${race}/${building}.png`}
-                />
-                {child.label.split(',').length - 1 !== index &&
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="Tree__arrow"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>}
-              </div>
-            ))}
-            {Math.round((child.total.total / node.total.total) * 1000) / 10}%, {child.total.total}
-          </div>
-          {child.children.length > 0 &&
-            <details className="Tree__branch-children">
-              <summary className="Tree__branch-summary" />
-              {renderChildren(child)}
-            </details>}
-        </div>
-      ))
-    );
-  };
 
   let queues = tree.root.children.map((child: Node) => (
     renderPrefixes(
@@ -335,8 +297,6 @@ export function Tree({ race, opponentRace, tree }) {
     );
   });
 
-  const rendered = grouped;
-
   return (
     <div className="Builds__opponent-race-builds">
       <div className="Builds__race-header">
@@ -394,7 +354,7 @@ export function Tree({ race, opponentRace, tree }) {
           ))}
         </div>
       </details>
-      {rendered}
+      {grouped}
     </div>
   );
 }
