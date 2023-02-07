@@ -2,6 +2,7 @@
 import ReportLayout from '../../layouts/ReportLayout.astro';
 import {Trees} from '../../components/Trees';
 import ReportDetails from '../../components/ReportDetails.astro';
+import {reportAllTime} from './_years/reportAllTime';
 import {report2022} from './_years/report2022';
 import {report2021} from './_years/report2021';
 import {report2020} from './_years/report2020';
@@ -11,6 +12,7 @@ import type {ReportParams} from './_types';
 
 export function getStaticPaths() {
   return [
+    {params: {year: reportAllTime.year}, props: reportAllTime},
     {params: {year: report2022.year}, props: report2022},
     {params: {year: report2021.year}, props: report2021},
     {params: {year: report2020.year}, props: report2020},

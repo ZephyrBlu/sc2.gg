@@ -254,6 +254,32 @@ export function Tree({ race, opponentRace, tree }) {
     prefix.nodes.forEach(node => tryReparentNode(node));
   });
 
+  const renderedFragments: any[] = [];
+  const dfs = (node: any, build: any[]) => {
+    const nodeBuildings = node.label.split(',');
+    const newBuild = [...build, ...nodeBuildings];
+    renderedFragments.push({
+      build: newBuild,
+      total: node.total.total,
+      wins: node.total.wins,
+      winrate: node.total.wins / node.total.total,
+    });
+    node.children.forEach(child => dfs(child, newBuild));
+  };
+
+  sortedPrefixes.forEach((prefix) => {
+    const prefixBuild = prefix.prefix.slice(1).split(',');
+    renderedFragments.push({
+      build: prefixBuild,
+      total: prefix.total,
+      wins: prefix.wins,
+      winrate: prefix.winrate,
+    });
+    prefix.nodes.forEach(node => dfs(node, prefixBuild));
+  });
+  renderedFragments.sort((a, b) => b.winrate - a.winrate);
+  console.log('top winrate fragments', race, opponentRace, renderedFragments);
+
   if (sortBy === 'playrate') {
     sortedPrefixes.sort((a, b) => b.probability - a.probability);
   } else {
