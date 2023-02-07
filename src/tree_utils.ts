@@ -170,4 +170,18 @@ export const groupPrefixes = (prefixes: any[], context: TreeContext) => {
   });
 
   return sortedPrefixes;
-}
+};
+
+export const renderBuilds = (prefixes: any[], builds: any[] = []) => {
+  prefixes.forEach((prefix) => {
+    const prefixBuild = prefix.prefix.split(',');
+    builds.push({
+      build: prefixBuild,
+      total: prefix.total,
+      wins: prefix.wins,
+      winrate: prefix.winrate,
+    });
+    prefix.nodes.forEach((node: Node) => dfs(node, prefixBuild, builds, 'fragment'));
+  });
+  return builds;
+};

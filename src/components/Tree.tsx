@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Node, groupPrefixes, dfs, renderPrefixes} from '../tree_utils';
+import {Node, groupPrefixes, renderPrefixes, renderBuilds} from '../tree_utils';
 import './Tree.css';
 
 type SortBy = 'playrate' | 'winrate';
@@ -50,18 +50,7 @@ export function Tree({ race, opponentRace, tree }) {
 
   const sortedPrefixes = groupPrefixes(queues, {total: tree.root.total.total});
 
-  const renderedFragments: any[] = [];
-
-  sortedPrefixes.forEach((prefix) => {
-    const prefixBuild = prefix.prefix.split(',');
-    renderedFragments.push({
-      build: prefixBuild,
-      total: prefix.total,
-      wins: prefix.wins,
-      winrate: prefix.winrate,
-    });
-    prefix.nodes.forEach((node: Node) => dfs(node, prefixBuild, renderedFragments, 'fragment'));
-  });
+  const renderedFragments: any[] = renderBuilds(sortedPrefixes);
   renderedFragments.sort((a, b) => b.winrate - a.winrate);
   console.log('top winrate fragments', race, opponentRace, renderedFragments);
 
