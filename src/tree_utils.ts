@@ -23,7 +23,9 @@ export const mergeChildren = (node: Node) => {
   }
 };
 
-export const dfs = (node: Node, build: any[], results: any[], capture: 'fragment' | 'full') => {
+type BuildCapture = 'fragment' | 'full';
+
+export const dfs = (node: Node, build: any[], results: any[], captureType: BuildCapture) => {
   const nodeBuildings = node.label.split(',');
   const newBuild = [...build, ...nodeBuildings];
 
@@ -34,7 +36,7 @@ export const dfs = (node: Node, build: any[], results: any[], capture: 'fragment
     winrate: node.total.wins / node.total.total,
   });
 
-  node.children.forEach((child: Node) => dfs(child, newBuild, results, capture));
+  node.children.forEach((child: Node) => dfs(child, newBuild, results, captureType));
   return results;
 };
 
@@ -172,7 +174,11 @@ export const groupPrefixes = (prefixes: any[], context: TreeContext) => {
   return sortedPrefixes;
 };
 
-export const renderBuilds = (prefixes: any[], builds: any[] = []) => {
+export const renderBuilds = (
+  prefixes: any[],
+  builds: any[] = [],
+  captureType: BuildCapture = 'fragment',
+) => {
   prefixes.forEach((prefix) => {
     const prefixBuild = prefix.prefix.split(',');
     builds.push({
@@ -181,7 +187,7 @@ export const renderBuilds = (prefixes: any[], builds: any[] = []) => {
       wins: prefix.wins,
       winrate: prefix.winrate,
     });
-    prefix.nodes.forEach((node: Node) => dfs(node, prefixBuild, builds, 'fragment'));
+    prefix.nodes.forEach((node: Node) => dfs(node, prefixBuild, builds, captureType));
   });
   return builds;
 };
