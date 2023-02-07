@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Node, tryReparentPrefix, tryReparentNode, prune, dfs, renderPrefixes} from '../tree_utils';
+import {Node, mergePrefixNodes, mergeChildren, prune, dfs, renderPrefixes} from '../tree_utils';
 import './Tree.css';
 
 type SortBy = 'playrate' | 'winrate';
@@ -81,8 +81,8 @@ export function Tree({ race, opponentRace, tree }) {
     prefix.nodes = prefix.nodes.filter((node: Node) => node.total.total / tree.root.total.total >= MIN_PROBABILITY);
     prefix.nodes.forEach((node: Node) => prune(node));
 
-    tryReparentPrefix(prefix);
-    prefix.nodes.forEach((node: Node) => tryReparentNode(node));
+    mergePrefixNodes(prefix);
+    prefix.nodes.forEach((node: Node) => mergeChildren(node));
   });
 
   const renderedFragments: any[] = [];

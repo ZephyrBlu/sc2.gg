@@ -1,37 +1,39 @@
-export const prune = (node: any) => {
+export const prune = (node: Node) => {
   node.children = node.children.filter(child => child.total.total >= 25);
   node.children.forEach(child => prune(child));
 };
 
-export const tryReparentPrefix = (node: any) => {
+export const mergePrefixNodes = (node: any) => {
   if (node.nodes.length === 1) {
     const nextNode = node.nodes[0];
     node.prefix += `,${nextNode.label}`;
     node.nodes = nextNode.children;
-    tryReparentPrefix(node);
+    mergePrefixNodes(node);
   }
 };
 
-export const tryReparentNode = (node: any) => {
+export const mergeChildren = (node: Node) => {
   if (node.children.length === 1) {
     const nextNode = node.children[0];
     node.label += `,${nextNode.label}`;
     node.children = nextNode.children;
-    tryReparentNode(node);
+    mergeChildren(node);
   } else {
-    node.children.forEach(child => tryReparentNode(child));
+    node.children.forEach(child => mergeChildren(child));
   }
 };
 
 export const dfs = (node: Node, build: any[], results: any[], capture: 'fragment' | 'full') => {
   const nodeBuildings = node.label.split(',');
   const newBuild = [...build, ...nodeBuildings];
+
   results.push({
     build: newBuild,
     total: node.total.total,
     wins: node.total.wins,
     winrate: node.total.wins / node.total.total,
   });
+
   node.children.forEach((child: Node) => dfs(child, newBuild, results, capture));
   return results;
 };
