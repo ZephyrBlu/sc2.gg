@@ -41,7 +41,6 @@ export function Tree({ race, opponentRace, tree }) {
   let queues = tree.root.children.map((child: Node) => (
     renderPrefixes(
       child,
-      [],
       {total: tree.root.total.total},
       {MIN_TOTAL, MAX_BRANCHES},
     )

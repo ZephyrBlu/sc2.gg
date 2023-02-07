@@ -69,12 +69,12 @@ export interface TreeContext {
 
 export const renderPrefixes = (
   rootNode: Node,
-  prefixes: any[] = [],
   context: TreeContext,
   opts: InputBfsOptions = {},
 ) => {
   const renderOpts: BfsOptions = {...defaultOpts, ...opts};
 
+  // should move this out of function
   // tree has much less branching for pool-first builds
   // lower max branches captures the openings much better
   if (rootNode.label === 'SpawningPool') {
@@ -127,31 +127,5 @@ export const renderPrefixes = (
     queue = queue.slice(1);
   }
 
-  const prefixDfs = (node: Node, prefix: string, stack: string[] = [], offset = 0, mode = 'tree') => {
-    if (node.label === '') {
-      return;
-    }
-
-    const node_buildings = node.label.split(',');
-    stack.push(...node_buildings);
-    const probability = node.total.total / context.total;
-    const winrate = node.total.wins / node.total.total;
-
-    prefixes[prefixes.length - 1].push({
-      offset: prefix.split(',').length + offset,
-      build: node_buildings,
-      probability,
-      winrate,
-    });
-
-    node.children.forEach((child) => prefixDfs(child, prefix, [], stack.length + offset, mode));
-  };
-
-  if (queue.length === 0) {
-    return [];
-  }
-
-  prefixes = [...prefixes, ...queue];
-
-  return prefixes;
+  return queue;
 };
