@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Node, groupPrefixes, renderPrefixes, renderBuilds, winrateSort, playrateSort} from '../tree_utils';
+import {Node, groupPrefixes, renderPrefixes, renderBuilds, prefixWinrateSort, prefixPlayrateSort, nodeWinrateSort, nodePlayrateSort} from '../tree_utils';
 import './Tree.css';
 
 type SortBy = 'playrate' | 'winrate';
@@ -45,17 +45,17 @@ export function Tree({ race, opponentRace, tree }) {
       {MIN_TOTAL, MAX_BRANCHES},
     )
   )).flat();
-  queues.sort(playrateSort);
+  queues.sort(prefixPlayrateSort);
 
   const sortedPrefixes = groupPrefixes(queues, {total: tree.root.total.total});
   const renderedFragments: any[] = renderBuilds(sortedPrefixes);
-  renderedFragments.sort(winrateSort);
+  renderedFragments.sort(prefixWinrateSort);
   console.log('top winrate fragments', race, opponentRace, renderedFragments);
 
   if (sortBy === 'playrate') {
-    sortedPrefixes.sort(playrateSort);
+    sortedPrefixes.sort(prefixPlayrateSort);
   } else {
-    sortedPrefixes.sort(winrateSort);
+    sortedPrefixes.sort(prefixWinrateSort);
   }
 
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
@@ -69,9 +69,9 @@ export function Tree({ race, opponentRace, tree }) {
     newRoot.prefix = `,${prefixBuildings.join(',')}`;
 
     if (sortBy === 'playrate') {
-      node.children.sort((a, b) => b.total.total - a.total.total);
+      node.children.sort(nodePlayrateSort);
     } else {
-      node.children.sort((a, b) => (b.total.wins / b.total.total) - (a.total.wins / a.total.total));
+      node.children.sort(nodeWinrateSort);
     }
 
     const groupOpenings = node.children.map((child: Node) => {
@@ -137,9 +137,9 @@ export function Tree({ race, opponentRace, tree }) {
     const prefixBuildings = rootNode.prefix.split(',');
 
     if (sortBy === 'playrate') {
-      rootNode.nodes.sort((a, b) => b.total.total - a.total.total);
+      rootNode.nodes.sort(nodePlayrateSort);
     } else {
-      rootNode.nodes.sort((a, b) => (b.total.wins / b.total.total) - (a.total.wins / a.total.total));
+      rootNode.nodes.sort(nodeWinrateSort);
     }
 
     const groupOpenings = rootNode.nodes.map((node: Node) => {

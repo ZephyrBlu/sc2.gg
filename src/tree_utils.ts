@@ -193,5 +193,7 @@ export const renderBuilds = (
 };
 
 // type Sortable = ?
-export const winrateSort = (a, b) => b.winrate - a.winrate;
-export const playrateSort = (a, b) => b.probability - a.probability;
+export const prefixWinrateSort = (a, b) => b.winrate - a.winrate;
+export const prefixPlayrateSort = (a, b) => b.probability - a.probability;
+export const nodeWinrateSort = (a: Node, b: Node) => (b.total.wins / b.total.total) - (a.total.wins / a.total.total);
+export const nodePlayrateSort = (a: Node, b: Node) => b.total.total - a.total.total;
