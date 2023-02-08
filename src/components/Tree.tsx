@@ -25,7 +25,7 @@ interface Props {
 }
 
 export function Tree({ race, opponentRace, tree }: Props) {
-  // console.log('tree', race, opponentRace, tree);
+  console.log('tree', race, opponentRace, tree);
   const [sortBy, setSortBy] = useState<SortBy>('playrate');
   const [showSorting, setShowSorting] = useState<boolean>(false);
 
@@ -68,16 +68,17 @@ export function Tree({ race, opponentRace, tree }: Props) {
   const renderedFragments = renderBuilds(sortedPrefixes);
   renderedFragments.sort(winrateSort);
   console.log('top winrate fragments', race, opponentRace, renderedFragments);
+  console.log('matching prefixes', sortedPrefixes);
+
+  const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
+  const prefixGames = sortedPrefixes.reduce((total, current) => total + current.total, 0);
+  console.log('prefix coverage', prefixCoverage, prefixGames);
 
   if (sortBy === 'playrate') {
     sortedPrefixes.sort(playrateSort);
   } else {
     sortedPrefixes.sort(winrateSort);
   }
-
-  const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
-  console.log('prefix coverage', prefixCoverage);
-  console.log('matching prefixes', sortedPrefixes);
 
   const renderGroupedChildren = (rootNode: PrefixGroupNode, node: Node) => {
     const prefixBuildings = rootNode.prefix.split(',');
@@ -154,12 +155,12 @@ export function Tree({ race, opponentRace, tree }: Props) {
     const prefixBuildings: string[] = rootNode.prefix.split(',');
 
     if (sortBy === 'playrate') {
-      rootNode.nodes.sort(nodePlayrateSort);
+      rootNode.children.sort(nodePlayrateSort);
     } else {
-      rootNode.nodes.sort(nodeWinrateSort);
+      rootNode.children.sort(nodeWinrateSort);
     }
 
-    const groupOpenings = rootNode.nodes.map((node: Node) => {
+    const groupOpenings = rootNode.children.map((node: Node) => {
       const nodeBuildings = node.label.split(',');
       const buildings = [...prefixBuildings, ...nodeBuildings];
 

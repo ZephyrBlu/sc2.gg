@@ -4,19 +4,23 @@ export const prune = (node: Node) => {
 };
 
 export interface PrefixGroupNode extends PrefixNode {
-  nodes: Node[];
+  children: Node[];
 }
 
-export const mergePrefixNodes = (group: PrefixGroupNode) => {
-  if (group.nodes.length === 1) {
-    const nextNode = group.nodes[0];
+export const mergePrefixNodes = (group: PrefixGroupNode, context: TreeContext) => {
+  if (group.children.length === 1) {
+    const nextNode = group.children[0];
     if (group.prefix) {
       group.prefix += `,${nextNode.label}`;
     } else {
       group.prefix += nextNode.label;
     }
-    group.nodes = nextNode.children;
-    mergePrefixNodes(group);
+    group.total = nextNode.value.total;
+    group.wins = nextNode.value.wins;
+    group.probability = nextNode.value.total / context.total;
+    group.winrate = nextNode.value.wins / nextNode.value.total;
+    group.children = nextNode.children;
+    mergePrefixNodes(group, context);
   }
 };
 
@@ -24,6 +28,7 @@ export const mergeChildren = (node: Node) => {
   if (node.children.length === 1) {
     const nextNode = node.children[0];
     node.label += `,${nextNode.label}`;
+    node.value = nextNode.value;
     node.children = nextNode.children;
     mergeChildren(node);
   } else {
@@ -167,11 +172,14 @@ const MIN_PROBABILITY = 0.02;
 export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext) => {
   const prefixGroups: Record<string, any> = {};
   prefixes.forEach((node) => {
-    const prefix = node.prefix;
+    if (node.probability < MIN_PROBABILITY) {
+      return;
+    }
 
+    const prefix = node.prefix;
     if (!prefixGroups[prefix]) {
       prefixGroups[prefix] = {
-        nodes: [],
+        children: [],
         winrate: 0,
         probability: 0,
         total: 0,
@@ -183,20 +191,24 @@ export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext)
     prefixGroups[prefix].wins += node.wins;
     prefixGroups[prefix].winrate = prefixGroups[prefix].wins / prefixGroups[prefix].total;
     prefixGroups[prefix].probability = prefixGroups[prefix].total / context.total;
-    prefixGroups[prefix].nodes.push(node.node);
+    prefixGroups[prefix].children.push(node.node);
   });
+
+  console.log('prefix groups', prefixGroups);
 
   const sortedPrefixes = Object.entries(prefixGroups).map(([prefix, nodes]) => ({
     prefix,
     ...nodes,
   })).filter(prefix => prefix.probability >= MIN_PROBABILITY);
 
-  sortedPrefixes.forEach((prefix) => {
-    prefix.nodes = prefix.nodes.filter((node: Node) => node.value.total / context.total >= MIN_PROBABILITY);
-    prefix.nodes.forEach((node: Node) => prune(node));
+  console.log('sorted prefixes', sortedPrefixes);
 
-    mergePrefixNodes(prefix);
-    prefix.nodes.forEach((node: Node) => mergeChildren(node));
+  sortedPrefixes.forEach((prefix) => {
+    prefix.children = prefix.children.filter((node: Node) => node.value.total / context.total >= MIN_PROBABILITY);
+    prefix.children.forEach((node: Node) => prune(node));
+
+    mergePrefixNodes(prefix, context);
+    prefix.children.forEach((node: Node) => mergeChildren(node));
   });
 
   return sortedPrefixes;
@@ -215,7 +227,7 @@ export const renderBuilds = (
       wins: prefix.wins,
       winrate: prefix.winrate,
     });
-    prefix.nodes.forEach((node: Node) => dfs(node, prefixBuild, builds, captureType));
+    prefix.children.forEach((node: Node) => dfs(node, prefixBuild, builds, captureType));
   });
   return builds;
 };
