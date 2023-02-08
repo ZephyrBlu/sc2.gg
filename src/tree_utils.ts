@@ -10,7 +10,11 @@ export interface PrefixGroupNode extends PrefixNode {
 export const mergePrefixNodes = (group: PrefixGroupNode) => {
   if (group.nodes.length === 1) {
     const nextNode = group.nodes[0];
-    group.prefix += `,${nextNode.label}`;
+    if (group.prefix) {
+      group.prefix += `,${nextNode.label}`;
+    } else {
+      group.prefix += nextNode.label;
+    }
     group.nodes = nextNode.children;
     mergePrefixNodes(group);
   }
