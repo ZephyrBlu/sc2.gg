@@ -33,6 +33,7 @@ export function Tree({ race, opponentRace, tree }: Props) {
   // higher max branches makes openings too granular
   let MAX_BRANCHES = 15;
   let MIN_TOTAL = 10;
+  let MIN_PROBABILITY = 0.02;
 
   if (race === 'Protoss') {
     MIN_TOTAL = 25;
@@ -52,6 +53,7 @@ export function Tree({ race, opponentRace, tree }: Props) {
 
     if (opponentRace === 'Terran') {
       MAX_BRANCHES = 15;
+      MIN_PROBABILITY = 0.01;
     }
   }
 
@@ -64,7 +66,8 @@ export function Tree({ race, opponentRace, tree }: Props) {
   )).flat();
   queues.sort(playrateSort);
 
-  const sortedPrefixes = groupPrefixes(queues, {total: tree.root.value.total});
+  let prefixOpts = {MIN_PROBABILITY};
+  const sortedPrefixes = groupPrefixes(queues, {total: tree.root.value.total}, prefixOpts);
   const renderedFragments = renderBuilds(sortedPrefixes);
   renderedFragments.sort(winrateSort);
   console.log('top winrate fragments', race, opponentRace, renderedFragments);

@@ -167,9 +167,20 @@ export const renderPrefixes = (
   return queue;
 };
 
-const MIN_PROBABILITY = 0.02;
+interface InputPrefixOptions {
+  MIN_PROBABILITY?: number;
+}
 
-export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext) => {
+interface PrefixOptions {
+  MIN_PROBABILITY: number;
+}
+
+const defaultPrefixOpts = {MIN_PROBABILITY: 0.02};
+
+export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext, opts: InputPrefixOptions = {}) => {
+  const prefixOpts: PrefixOptions = {...defaultPrefixOpts, ...opts};
+  const {MIN_PROBABILITY} = prefixOpts;
+  
   const prefixGroups: Record<string, any> = {};
   prefixes.forEach((node) => {
     if (node.probability < MIN_PROBABILITY) {
