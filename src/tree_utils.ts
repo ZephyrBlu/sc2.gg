@@ -1,6 +1,6 @@
-export const prune = (node: Node) => {
-  node.children = node.children.filter(child => child.value.total >= 25);
-  node.children.forEach(child => prune(child));
+export const prune = (node: Node, minTotal: number) => {
+  node.children = node.children.filter(child => child.value.total >= minTotal);
+  node.children.forEach(child => prune(child, minTotal));
 };
 
 export interface PrefixGroupNode extends PrefixNode {
@@ -169,17 +169,19 @@ export const renderPrefixes = (
 
 interface InputPrefixOptions {
   MIN_PROBABILITY?: number;
+  MIN_TOTAL?: number;
 }
 
 interface PrefixOptions {
   MIN_PROBABILITY: number;
+  MIN_TOTAL: number;
 }
 
-const defaultPrefixOpts = {MIN_PROBABILITY: 0.02};
+const defaultPrefixOpts = {MIN_PROBABILITY: 0.02, MIN_TOTAL: 25};
 
 export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext, opts: InputPrefixOptions = {}) => {
   const prefixOpts: PrefixOptions = {...defaultPrefixOpts, ...opts};
-  const {MIN_PROBABILITY} = prefixOpts;
+  const {MIN_PROBABILITY, MIN_TOTAL} = prefixOpts;
   
   const prefixGroups: Record<string, any> = {};
   prefixes.forEach((node) => {
@@ -216,7 +218,7 @@ export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext,
 
   sortedPrefixes.forEach((prefix) => {
     prefix.children = prefix.children.filter((node: Node) => node.value.total / context.total >= MIN_PROBABILITY);
-    prefix.children.forEach((node: Node) => prune(node));
+    prefix.children.forEach((node: Node) => prune(node, MIN_TOTAL));
 
     mergePrefixNodes(prefix, context);
     prefix.children.forEach((node: Node) => mergeChildren(node));

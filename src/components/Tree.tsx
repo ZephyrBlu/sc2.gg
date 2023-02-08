@@ -52,8 +52,9 @@ export function Tree({ race, opponentRace, tree }: Props) {
     MIN_TOTAL = 25;
 
     if (opponentRace === 'Terran') {
-      MAX_BRANCHES = 15;
+      MAX_BRANCHES = 8;
       MIN_PROBABILITY = 0.01;
+      MIN_TOTAL = 10;
     }
   }
 
@@ -66,7 +67,7 @@ export function Tree({ race, opponentRace, tree }: Props) {
   )).flat();
   queues.sort(playrateSort);
 
-  let prefixOpts = {MIN_PROBABILITY};
+  let prefixOpts = {MIN_PROBABILITY, MIN_TOTAL};
   const sortedPrefixes = groupPrefixes(queues, {total: tree.root.value.total}, prefixOpts);
   const renderedFragments = renderBuilds(sortedPrefixes);
   renderedFragments.sort(winrateSort);
