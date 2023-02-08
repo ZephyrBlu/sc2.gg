@@ -1,5 +1,15 @@
 import {useState} from 'react';
-import {Node, groupPrefixes, renderPrefixes, renderBuilds, prefixWinrateSort, prefixPlayrateSort, nodeWinrateSort, nodePlayrateSort} from '../tree_utils';
+import {
+  Node,
+  PrefixGroupNode,
+  groupPrefixes,
+  renderPrefixes,
+  renderBuilds,
+  winrateSort,
+  playrateSort,
+  nodeWinrateSort,
+  nodePlayrateSort,
+} from '../tree_utils';
 import type { Race } from './BlockResults';
 import './Tree.css';
 
@@ -52,24 +62,24 @@ export function Tree({ race, opponentRace, tree }: Props) {
       {MIN_TOTAL, MAX_BRANCHES},
     )
   )).flat();
-  queues.sort(prefixPlayrateSort);
+  queues.sort(playrateSort);
 
   const sortedPrefixes = groupPrefixes(queues, {total: tree.root.value.total});
-  const renderedFragments: any[] = renderBuilds(sortedPrefixes);
-  renderedFragments.sort(prefixWinrateSort);
+  const renderedFragments = renderBuilds(sortedPrefixes);
+  renderedFragments.sort(winrateSort);
   console.log('top winrate fragments', race, opponentRace, renderedFragments);
 
   if (sortBy === 'playrate') {
-    sortedPrefixes.sort(prefixPlayrateSort);
+    sortedPrefixes.sort(playrateSort);
   } else {
-    sortedPrefixes.sort(prefixWinrateSort);
+    sortedPrefixes.sort(winrateSort);
   }
 
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
   console.log('prefix coverage', prefixCoverage);
   console.log('matching prefixes', sortedPrefixes);
 
-  const renderGroupedChildren = (rootNode: any, node: any) => {
+  const renderGroupedChildren = (rootNode: PrefixGroupNode, node: Node) => {
     const prefixBuildings = rootNode.prefix.split(',');
     prefixBuildings.push(...node.label.split(','));
     const newRoot = {...rootNode};

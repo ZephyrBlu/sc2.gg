@@ -3,12 +3,16 @@ export const prune = (node: Node) => {
   node.children.forEach(child => prune(child));
 };
 
-export const mergePrefixNodes = (node: any) => {
-  if (node.nodes.length === 1) {
-    const nextNode = node.nodes[0];
-    node.prefix += `,${nextNode.label}`;
-    node.nodes = nextNode.children;
-    mergePrefixNodes(node);
+export interface PrefixGroupNode extends PrefixNode {
+  nodes: Node[];
+}
+
+export const mergePrefixNodes = (group: PrefixGroupNode) => {
+  if (group.nodes.length === 1) {
+    const nextNode = group.nodes[0];
+    group.prefix += `,${nextNode.label}`;
+    group.nodes = nextNode.children;
+    mergePrefixNodes(group);
   }
 };
 
@@ -25,7 +29,14 @@ export const mergeChildren = (node: Node) => {
 
 type BuildCapture = 'fragment' | 'full';
 
-export const dfs = (node: Node, build: any[], results: any[], captureType: BuildCapture) => {
+interface RenderedBuild {
+  build: string[];
+  total: number;
+  wins: number;
+  winrate: number;
+}
+
+export const dfs = (node: Node, build: string[], results: RenderedBuild[], captureType: BuildCapture) => {
   const nodeBuildings = node.label.split(',');
   const newBuild = [...build, ...nodeBuildings];
 
@@ -68,12 +79,15 @@ export interface Node {
 }
 
 export interface PrefixNode {
-  node: Node;
   prefix: string;
   probability: number;
   winrate: number;
   total: number;
   wins: number;
+}
+
+interface PrefixQueueNode extends PrefixNode {
+  node: Node;
 }
 
 export interface TreeContext {
@@ -96,7 +110,7 @@ export const renderPrefixes = (
 
   const {MIN_TOTAL, MAX_BRANCHES} = renderOpts;
 
-  let queue: PrefixNode[] = [{
+  let queue: PrefixQueueNode[] = [{
     node: rootNode,
     prefix: '',
     probability: rootNode.value.total / context.total,
@@ -146,7 +160,7 @@ export const renderPrefixes = (
 
 const MIN_PROBABILITY = 0.02;
 
-export const groupPrefixes = (prefixes: PrefixNode[], context: TreeContext) => {
+export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext) => {
   const prefixGroups: Record<string, any> = {};
   prefixes.forEach((node) => {
     const prefix = node.prefix;
@@ -185,8 +199,8 @@ export const groupPrefixes = (prefixes: PrefixNode[], context: TreeContext) => {
 };
 
 export const renderBuilds = (
-  prefixes: any[],
-  builds: any[] = [],
+  prefixes: PrefixGroupNode[],
+  builds: RenderedBuild[] = [],
   captureType: BuildCapture = 'fragment',
 ) => {
   prefixes.forEach((prefix) => {
@@ -202,8 +216,10 @@ export const renderBuilds = (
   return builds;
 };
 
-// type Sortable = ?
-export const prefixWinrateSort = (a: PrefixNode, b: PrefixNode) => b.winrate - a.winrate;
-export const prefixPlayrateSort = (a: PrefixNode, b: PrefixNode) => b.probability - a.probability;
+type WinrateSortable = RenderedBuild | PrefixGroupNode | PrefixQueueNode;
+type PlayrateSortable = PrefixGroupNode | PrefixQueueNode;
+
+export const winrateSort = (a: WinrateSortable, b: WinrateSortable) => b.winrate - a.winrate;
+export const playrateSort = (a: PlayrateSortable, b: PlayrateSortable) => b.probability - a.probability;
 export const nodeWinrateSort = (a: Node, b: Node) => (b.value.wins / b.value.total) - (a.value.wins / a.value.total);
 export const nodePlayrateSort = (a: Node, b: Node) => b.value.total - a.value.total;
