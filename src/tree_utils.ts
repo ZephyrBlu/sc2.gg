@@ -1,5 +1,5 @@
 export const prune = (node: Node) => {
-  node.children = node.children.filter(child => child.total.total >= 25);
+  node.children = node.children.filter(child => child.value.total >= 25);
   node.children.forEach(child => prune(child));
 };
 
@@ -31,9 +31,9 @@ export const dfs = (node: Node, build: any[], results: any[], captureType: Build
 
   results.push({
     build: newBuild,
-    total: node.total.total,
-    wins: node.total.wins,
-    winrate: node.total.wins / node.total.total,
+    total: node.value.total,
+    wins: node.value.wins,
+    winrate: node.value.wins / node.value.total,
   });
 
   node.children.forEach((child: Node) => dfs(child, newBuild, results, captureType));
@@ -58,13 +58,22 @@ const defaultOpts = {
 export interface Count {
   total: number;
   wins: number;
+  losses: number;
 }
 
 export interface Node {
   label: string;
-  total: Count;
   value: Count;
   children: Node[];
+}
+
+export interface PrefixNode {
+  node: Node;
+  prefix: string;
+  probability: number;
+  winrate: number;
+  total: number;
+  wins: number;
 }
 
 export interface TreeContext {
@@ -87,42 +96,43 @@ export const renderPrefixes = (
 
   const {MIN_TOTAL, MAX_BRANCHES} = renderOpts;
 
-  let queue = [{
+  let queue: PrefixNode[] = [{
     node: rootNode,
     prefix: '',
-    probability: rootNode.total.total / context.total,
-    winrate: rootNode.total.wins / rootNode.total.total,
-    total: rootNode.total.total,
-    wins: rootNode.total.wins,
+    probability: rootNode.value.total / context.total,
+    winrate: rootNode.value.wins / rootNode.value.total,
+    total: rootNode.value.total,
+    wins: rootNode.value.wins,
   }];
   let branches = 0;
+
   while (queue.length > 0 && branches <= MAX_BRANCHES) {
     const {node, prefix} = queue[0];
 
     if (
       node.children.length === 0 ||
-      node.children.every(child => child.total.total < MIN_TOTAL)
+      node.children.every(child => child.value.total < MIN_TOTAL)
     ) {
       queue.push({
         node,
         prefix,
-        probability: node.total.total / context.total,
-        winrate: node.total.wins / node.total.total,
-        total: node.total.total,
-        wins: node.total.wins,
+        probability: node.value.total / context.total,
+        winrate: node.value.wins / node.value.total,
+        total: node.value.total,
+        wins: node.value.wins,
       });
       branches += 1;
     }
 
     node.children.forEach(child => {
-      if (child.total.total > MIN_TOTAL || child.children.length === 0) {
+      if (child.value.total > MIN_TOTAL || child.children.length === 0) {
         queue.push({
           node: child,
           prefix: prefix ? `${prefix},${node.label}` : node.label,
-          probability: child.total.total / context.total,
-          winrate: child.total.wins / child.total.total,
-          total: child.total.total,
-          wins: child.total.wins,
+          probability: child.value.total / context.total,
+          winrate: child.value.wins / child.value.total,
+          total: child.value.total,
+          wins: child.value.wins,
         });
         branches += 1;
       }
@@ -136,7 +146,7 @@ export const renderPrefixes = (
 
 const MIN_PROBABILITY = 0.02;
 
-export const groupPrefixes = (prefixes: any[], context: TreeContext) => {
+export const groupPrefixes = (prefixes: PrefixNode[], context: TreeContext) => {
   const prefixGroups: Record<string, any> = {};
   prefixes.forEach((node) => {
     const prefix = node.prefix;
@@ -164,7 +174,7 @@ export const groupPrefixes = (prefixes: any[], context: TreeContext) => {
   })).filter(prefix => prefix.probability >= MIN_PROBABILITY);
 
   sortedPrefixes.forEach((prefix) => {
-    prefix.nodes = prefix.nodes.filter((node: Node) => node.total.total / context.total >= MIN_PROBABILITY);
+    prefix.nodes = prefix.nodes.filter((node: Node) => node.value.total / context.total >= MIN_PROBABILITY);
     prefix.nodes.forEach((node: Node) => prune(node));
 
     mergePrefixNodes(prefix);
@@ -193,7 +203,7 @@ export const renderBuilds = (
 };
 
 // type Sortable = ?
-export const prefixWinrateSort = (a, b) => b.winrate - a.winrate;
-export const prefixPlayrateSort = (a, b) => b.probability - a.probability;
-export const nodeWinrateSort = (a: Node, b: Node) => (b.total.wins / b.total.total) - (a.total.wins / a.total.total);
-export const nodePlayrateSort = (a: Node, b: Node) => b.total.total - a.total.total;
+export const prefixWinrateSort = (a: PrefixNode, b: PrefixNode) => b.winrate - a.winrate;
+export const prefixPlayrateSort = (a: PrefixNode, b: PrefixNode) => b.probability - a.probability;
+export const nodeWinrateSort = (a: Node, b: Node) => (b.value.wins / b.value.total) - (a.value.wins / a.value.total);
+export const nodePlayrateSort = (a: Node, b: Node) => b.value.total - a.value.total;

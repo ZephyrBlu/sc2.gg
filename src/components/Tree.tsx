@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {Node, groupPrefixes, renderPrefixes, renderBuilds, prefixWinrateSort, prefixPlayrateSort, nodeWinrateSort, nodePlayrateSort} from '../tree_utils';
+import type { Race } from './BlockResults';
 import './Tree.css';
 
 type SortBy = 'playrate' | 'winrate';
@@ -7,7 +8,13 @@ const sortTypes: SortBy[] = ['playrate', 'winrate'];
 
 const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
 
-export function Tree({ race, opponentRace, tree }) {
+interface Props {
+  race: Race;
+  opponentRace: Race;
+  tree: any;
+}
+
+export function Tree({ race, opponentRace, tree }: Props) {
   // console.log('tree', race, opponentRace, tree);
   const [sortBy, setSortBy] = useState<SortBy>('playrate');
   const [showSorting, setShowSorting] = useState<boolean>(false);
@@ -41,13 +48,13 @@ export function Tree({ race, opponentRace, tree }) {
   let queues = tree.root.children.map((child: Node) => (
     renderPrefixes(
       child,
-      {total: tree.root.total.total},
+      {total: tree.root.value.total},
       {MIN_TOTAL, MAX_BRANCHES},
     )
   )).flat();
   queues.sort(prefixPlayrateSort);
 
-  const sortedPrefixes = groupPrefixes(queues, {total: tree.root.total.total});
+  const sortedPrefixes = groupPrefixes(queues, {total: tree.root.value.total});
   const renderedFragments: any[] = renderBuilds(sortedPrefixes);
   renderedFragments.sort(prefixWinrateSort);
   console.log('top winrate fragments', race, opponentRace, renderedFragments);
@@ -66,7 +73,7 @@ export function Tree({ race, opponentRace, tree }) {
     const prefixBuildings = rootNode.prefix.split(',');
     prefixBuildings.push(...node.label.split(','));
     const newRoot = {...rootNode};
-    newRoot.prefix = `,${prefixBuildings.join(',')}`;
+    newRoot.prefix = `${prefixBuildings.join(',')}`;
 
     if (sortBy === 'playrate') {
       node.children.sort(nodePlayrateSort);
@@ -84,13 +91,13 @@ export function Tree({ race, opponentRace, tree }) {
             <div className="Tree__header">
               <div className="Tree__modifiers Tree__modifiers--secondary">
                 <div className="Tree__modifier Tree__modifier--secondary">
-                  {Math.round((child.total.wins / child.total.total) * 1000) / 10}% winrate
+                  {Math.round((child.value.wins / child.value.total) * 1000) / 10}% winrate
                 </div>
                 <div className="Tree__modifier Tree__modifier--secondary">
-                  {Math.round((child.total.total / tree.root.total.total) * 1000) / 10}% playrate
+                  {Math.round((child.value.total / tree.root.value.total) * 1000) / 10}% playrate
                 </div>
                 <div className="Tree__modifier Tree__modifier--secondary">
-                  {child.total.total} games
+                  {child.value.total} games
                 </div>
               </div>
             </div>
@@ -134,7 +141,7 @@ export function Tree({ race, opponentRace, tree }) {
   };
 
   const grouped = sortedPrefixes.map((rootNode) => {
-    const prefixBuildings = rootNode.prefix.split(',');
+    const prefixBuildings: string[] = rootNode.prefix.split(',');
 
     if (sortBy === 'playrate') {
       rootNode.nodes.sort(nodePlayrateSort);
@@ -151,13 +158,13 @@ export function Tree({ race, opponentRace, tree }) {
           <div className="Tree__header">
             <div className="Tree__modifiers Tree__modifiers--secondary">
               <div className="Tree__modifier Tree__modifier--secondary">
-                {Math.round((node.total.wins / node.total.total) * 1000) / 10}% winrate
+                {Math.round((node.value.wins / node.value.total) * 1000) / 10}% winrate
               </div>
               <div className="Tree__modifier Tree__modifier--secondary">
-                {Math.round((node.total.total / tree.root.total.total) * 1000) / 10}% playrate
+                {Math.round((node.value.total / tree.root.value.total) * 1000) / 10}% playrate
               </div>
               <div className="Tree__modifier Tree__modifier--secondary">
-                {node.total.total} games
+                {node.value.total} games
               </div>
             </div>
           </div>
@@ -205,7 +212,7 @@ export function Tree({ race, opponentRace, tree }) {
                   {Math.round((rootNode.wins / rootNode.total) * 1000) / 10}% winrate
                 </div>
                 <div className="Tree__modifier Tree__modifier--secondary">
-                  {Math.round((rootNode.total / tree.root.total.total) * 1000) / 10}% playrate
+                  {Math.round((rootNode.total / tree.root.value.total) * 1000) / 10}% playrate
                 </div>
                 <div className="Tree__modifier Tree__modifier--secondary">
                   {rootNode.total} games
@@ -266,13 +273,13 @@ export function Tree({ race, opponentRace, tree }) {
       </div>
       <div className="Tree__modifiers">
         <span className="Tree__modifier">
-          {Math.round((tree.root.total.wins / tree.root.total.total) * 1000) / 10}% winrate
+          {Math.round((tree.root.value.wins / tree.root.value.total) * 1000) / 10}% winrate
         </span>
         <span className="Tree__modifier">
           {Math.ceil(prefixCoverage * 100)}% game coverage
         </span>
         <span className="Tree__modifier">
-          {tree.root.total.total} games
+          {tree.root.value.total} games
         </span>
       </div>
       <details open={showSorting}>
