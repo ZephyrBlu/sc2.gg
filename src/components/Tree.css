@@ -17,6 +17,10 @@
   display: flex;
 }
 
+.Tree__group {
+  overflow-x: auto;
+}
+
 .Tree__group-header {
   margin-bottom: 10px;
 }
