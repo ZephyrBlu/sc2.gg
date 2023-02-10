@@ -21,7 +21,7 @@ Sentry.init({
 type SelectionCategories = 'players' | 'maps' | 'events' | 'matchup';
 
 type SelectedResults = {
-  [key in SelectionCategories]: SelectedResult | null;
+  [key in keyof SelectionCategories]: SelectedResult | null;
 }
 
 export type Results = {

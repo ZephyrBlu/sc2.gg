@@ -1,21 +1,35 @@
 import {useState, useRef} from 'react';
-import type {Replay} from '../types';
+import type {Replay, Race} from '../types';
 
 export type SearchState = 'loading' | 'success' | 'cancelled' | 'error';
 
-export type SearchResult<T> = {
+export interface SearchResult<T> {
   query: string;
   value: T[];
   state: SearchState;
 }
 
-export type SearchOptions = {
-  fuzzy?: boolean;
+export interface BaseSearchOptions {
   player?: string | null;
+  opponent?: string | null;
   map?: string | null;
-  event?: string | null;
-  matchup?: string | null;
+  event?: string | null,
+  matchup?: string | null,
+}
+
+export interface SearchOptions extends BaseSearchOptions {
+  fuzzy?: boolean;
+  race?: string | null;
   build?: string | null;
+}
+
+export interface TimelineSearchOptions extends BaseSearchOptions {
+  playerRace?: Race;
+  opponentRace?: Race;
+  before?: string | null;
+  after?: string | null;
+  duration?: number | null;
+  win?: boolean | null;
 }
 
 export function useSearch() {
@@ -88,6 +102,16 @@ export function useSearch() {
       anySpecificOptions = true;
     }
 
+    if (opts.opponent) {
+      params.set('opponent_name', opts.opponent);
+      anySpecificOptions = true;
+    }
+
+    if (opts.race) {
+      params.set('race_name', opts.race);
+      anySpecificOptions = true;
+    }
+
     if (opts.map) {
       params.set('map_name', opts.map);
       anySpecificOptions = true;
@@ -111,6 +135,57 @@ export function useSearch() {
     // if there are specific search criteria, don't perform fuzzy search
     if (anySpecificOptions) {
       params.delete('q');
+    }
+
+    return params.toString();
+  };
+
+  const buildTimelineParams = (opts: TimelineSearchOptions = {}) => {
+    const params = new URLSearchParams();
+
+    if (opts.player) {
+      params.set('player_name', opts.player);
+    }
+
+    if (opts.opponent) {
+      params.set('opponent_name', opts.opponent);
+    }
+
+    if (opts.playerRace) {
+      params.set('player_race_name', opts.playerRace);
+    }
+
+    if (opts.opponentRace) {
+      params.set('opponent_race_name', opts.opponentRace);
+    }
+
+    if (opts.matchup) {
+      params.set('matchup_name', opts.matchup);
+    }
+
+    if (opts.map) {
+      params.set('map_name', opts.map);
+    }
+
+    if (opts.event) {
+      params.set('event_name', opts.event);
+    }
+
+    if (opts.before) {
+      params.set('before', opts.before);
+    }
+
+    if (opts.after) {
+      params.set('after', opts.after);
+    }
+
+    if (opts.duration) {
+      params.set('duration', opts.duration.toString());
+    }
+
+    if (opts.win) {
+      const winner = opts.win ? 1 : 0;
+      params.set('winner', winner.toString());
     }
 
     return params.toString();
@@ -152,5 +227,26 @@ export function useSearch() {
     return await search(query, `${endpoint}?${params}`, endpoint);
   };
 
-  return {searchGames, searchPlayers, searchMaps, searchEvents};
+  const searchPlayerBuilds = async (
+    opts: SearchOptions = {},
+  ): Promise<SearchResult<any>> => {
+    const endpoint = `${API_URL}/builds`;
+    const params = buildParams('', opts);
+    return await search('', `${endpoint}?${params}`, endpoint);
+  };
+
+  const searchTimelines = async (opts: TimelineSearchOptions = {}): Promise<SearchResult<any>> => {
+    const endpoint = `${API_URL}/timelines`;
+    const params = buildTimelineParams(opts);
+    return await search('', `${endpoint}?${params}`, endpoint);
+  }
+
+  return {
+    searchGames,
+    searchPlayers,
+    searchMaps,
+    searchEvents,
+    searchPlayerBuilds,
+    searchTimelines,
+  };
 }

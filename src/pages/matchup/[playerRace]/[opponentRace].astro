@@ -1,0 +1,444 @@
+---
+import type {Race} from '../../../components/types';
+import MatchupLayout from "../../../layouts/MatchupLayout.astro";
+import {MatchupDetails} from '../../../components/MatchupDetails';
+
+export function getStaticPaths() {
+  const races: Race[] = ['Protoss', 'Terran', 'Zerg'];
+
+  return races.map(playerRace => (
+    races.map(opponentRace => ({
+      params: {playerRace, opponentRace},
+      props: {playerRace, opponentRace},
+    }))
+  )).flat();
+}
+
+interface Props {
+  playerRace: Race;
+  opponentRace: Race;
+}
+
+const {playerRace, opponentRace} = Astro.props;
+
+const playersEndpoint = 'https://search.sc2.gg/players';
+const [playerRacePlayers, opponentRacePlayers] = await Promise.all([playerRace, opponentRace].map(async (race) => {
+  const raceUrl = new URL(playersEndpoint);
+  raceUrl.searchParams.set('race_name', race);
+  return await fetch(raceUrl).then(res => res.json());
+}));
+
+const timelineEndpoint = 'https://search.sc2.gg/timeline';
+const timelineSearchTypes = [
+  'game-length',
+  'collection-rate',
+  'army-value',
+  'workers-active',
+];
+
+const setMatchupUrlParams = (url: URL) => {
+  url.searchParams.set('player_race_name', playerRace);
+  url.searchParams.set('opponent_race_name', opponentRace);
+  url.searchParams.set('after', '2022-01-01');
+  url.searchParams.set('refresh', '');
+  return url;
+};
+
+const [
+  gameLengthSeries,
+  collectionRateSeries,
+  armyValueSeries,
+  workersActiveSeries,
+] = await Promise.all(timelineSearchTypes.map(async (searchType) => {
+  const timelineUrl = new URL(`${timelineEndpoint}/${searchType}`);
+  setMatchupUrlParams(timelineUrl);
+  return await fetch(timelineUrl).then(res => res.json());
+}));
+
+const [
+  collectionRateQuantilesSeries,
+  armyValueQuantilesSeries,
+  workersActiveQuantilesSeries,
+] = await Promise.all(timelineSearchTypes.filter(type => type !== 'game-length').map(async (searchType) => {
+  const timelineUrl = new URL(`${timelineEndpoint}/quantiles/${searchType}`);
+  setMatchupUrlParams(timelineUrl);
+  return await fetch(timelineUrl).then(res => res.json());
+}));
+
+const generateSerializedValues = (
+  series: any[],
+  xAccessor: string,
+  yAccessor: string,
+  dataType?: string,
+) => {
+  let seriesTime = Array.from(new Set(series.map(values => values[xAccessor])));
+  seriesTime.sort((a, b) => a - b);
+
+  const seriesValues = series.map(values => ({
+    win: values.win,
+    time: values[xAccessor],
+    value: values[yAccessor],
+    count: values.occurrences,
+    total: values.total,
+  })).filter(({count}) => count > 10);
+
+  let winValues = seriesValues.filter(({win}) => win === 1);
+  winValues.sort((a, b) => a.time - b.time);
+
+  let lossValues = seriesValues.filter(({win}) => win === 0);
+  lossValues.sort((a, b) => a.time - b.time);
+
+  const maxLength = Math.min(winValues.length, lossValues.length);
+  seriesTime = seriesTime.slice(0, maxLength);
+  winValues = winValues.slice(0, maxLength);
+  lossValues = lossValues.slice(0, maxLength);
+
+  let dataTypeValues: any[] = [];
+  if (dataType === 'winrate') {
+    dataTypeValues = [[], []];
+    for (let i = 0; i < seriesTime.length; i++) {
+      const winrate = winValues[i].count / (winValues[i].count + lossValues[i].count);
+      const lossrate = lossValues[i].count / (winValues[i].count + lossValues[i].count);
+
+      const total = winValues[0].total;
+      const timeTotal = winValues[i].count + lossValues[i].count;
+      const weight = timeTotal / total;
+
+      const weightedWinrate = winrate * weight;
+      const weightedLossrate = lossrate * weight;
+      dataTypeValues[0].push(Math.round(weightedWinrate * 1000) / 10);
+      dataTypeValues[1].push(Math.round(weightedLossrate * 1000) / 10);
+    }
+
+    return [
+      JSON.stringify(dataTypeValues[0]),
+      JSON.stringify(dataTypeValues[1]),
+    ];
+  } else if (dataType === 'quantiles') {
+    const QUANTILES = 5;
+    dataTypeValues = Array(QUANTILES);
+    for (let i = 0; i < QUANTILES; i++) {
+      dataTypeValues[i] = [];
+    }
+
+    winValues.forEach(({value}) => {
+      value.forEach((quantile: number, index: number) => {
+        dataTypeValues[index].push(Math.round(quantile));
+      });
+    });
+
+    return JSON.stringify(dataTypeValues);
+  }
+
+  winValues = winValues.map(({value}) => value);
+  lossValues = lossValues.map(({value}) => value);
+
+  return [
+    JSON.stringify(seriesTime),
+    JSON.stringify(winValues),
+    JSON.stringify(lossValues),
+  ];
+};
+
+const [
+  gameLengthTime,
+  gameLengthWin,
+  gameLengthLoss,
+] = generateSerializedValues(
+  gameLengthSeries,
+  'game_length_rounded',
+  'occurrences',
+);
+const [
+  gameLengthPlayerWinrate,
+  gameLengthOpponentWinrate,
+] = generateSerializedValues(
+  gameLengthSeries,
+  'game_length_rounded',
+  'occurrences',
+  'winrate',
+);
+
+const [
+  collectionRateTime,
+  collectionRateWin,
+  collectionRateLoss,
+] = generateSerializedValues(
+  collectionRateSeries,
+  'time_in_sec',
+  'avg_collection_rate',
+);
+const collectionRateDiffQuantiles = generateSerializedValues(
+  collectionRateQuantilesSeries,
+  'time_in_sec',
+  'avg_collection_rate',
+  'quantiles',
+);
+
+const [
+  workersActiveTime,
+  workersActiveWin,
+  workersActiveLoss,
+] = generateSerializedValues(
+  workersActiveSeries,
+  'time_in_sec',
+  'avg_workers_active',
+);
+const workersActiveDiffQuantiles = generateSerializedValues(
+  workersActiveQuantilesSeries,
+  'time_in_sec',
+  'avg_workers_active',
+  'quantiles',
+);
+
+const [
+  armyValueTime,
+  armyValueWin,
+  armyValueLoss,
+] = generateSerializedValues(
+  armyValueSeries,
+  'time_in_sec',
+  'avg_army_value',
+);
+const armyValueDiffQuantiles = generateSerializedValues(
+  armyValueQuantilesSeries,
+  'time_in_sec',
+  'avg_army_value',
+  'quantiles',
+);
+---
+<MatchupLayout race={playerRace} opponentRace={opponentRace}>
+  <MatchupDetails
+    client:only="preact"
+    playerRace={playerRace}
+    opponentRace={opponentRace}
+    matchupData={{
+      gameLength: gameLengthSeries,
+      collectionRate: collectionRateSeries,
+      armyValue: armyValueSeries,
+      workersActive: workersActiveSeries,
+    }}
+    players={{
+      [playerRace]: playerRacePlayers,
+      [opponentRace]: opponentRacePlayers,
+    }}
+  />
+  <div
+    class="game-length matchup-chart"
+    data-win={gameLengthWin}
+    data-loss={gameLengthLoss}
+    data-winrate-player={gameLengthPlayerWinrate}
+    data-winrate-opponent={gameLengthOpponentWinrate}
+    data-time={gameLengthTime}
+  />
+
+  <div
+    class="collection-rate matchup-chart"
+    data-win={collectionRateWin}
+    data-loss={collectionRateLoss}
+    data-time={collectionRateTime}
+  />
+  <div
+    class="collection-rate-quantiles matchup-chart quantiles"
+    data-quantiles={collectionRateDiffQuantiles}
+  />
+
+  <div
+    class="workers-active matchup-chart"
+    data-win={workersActiveWin}
+    data-loss={workersActiveLoss}
+    data-time={workersActiveTime}
+  />
+  <div
+    class="workers-active-quantiles matchup-chart quantiles"
+    data-quantiles={workersActiveDiffQuantiles}
+  />
+
+  <div
+    class="army-value matchup-chart"
+    data-win={armyValueWin}
+    data-loss={armyValueLoss}
+    data-time={armyValueTime}
+  />
+  <div
+    class="army-value-quantiles matchup-chart quantiles"
+    data-quantiles={armyValueDiffQuantiles}
+  />
+</MatchupLayout>
+
+<script>
+  import 'chartist/dist/index.css';
+  import {LineChart, BarChart, Interpolation} from 'chartist';
+
+  const charts = [
+    '.game-length',
+    '.collection-rate',
+    '.army-value',
+    '.workers-active',
+  ];
+
+  charts.forEach((chartClass) => {
+    const serializedData = document.querySelectorAll(chartClass)[0].dataset;
+    const timeValues = JSON.parse(serializedData.time);
+    
+    if (chartClass === '.game-length') {
+      // const winValues = JSON.parse(serializedData.win);
+      // const lossValues = JSON.parse(serializedData.loss);
+      const playerWinrate = JSON.parse(serializedData.winratePlayer);
+      const opponentWinrate = JSON.parse(serializedData.winrateOpponent);
+
+      const data = {
+        // A labels array that can contain any sort of values
+        labels: timeValues,
+        // Our series array that contains series objects or in this case series data arrays
+        series: [playerWinrate, opponentWinrate]
+        // series: [winValues, lossValues]
+      };
+
+      const winrateSum = playerWinrate.reduce((current, total) => total + current, 0);
+      const lossrateSum = opponentWinrate.reduce((current, total) => total + current, 0);
+
+      console.log('winrate/lossrate/sum', winrateSum, lossrateSum, winrateSum + lossrateSum);
+      console.log('winrate dta', data);
+
+      new LineChart(chartClass, data, {
+        // stackBars: true,
+      });
+    } else {
+      const winValues = JSON.parse(serializedData.win);
+      const lossValues = JSON.parse(serializedData.loss);
+
+      const quantileChartClass = `${chartClass}-quantiles`;
+      const quantileSeries = JSON.parse(document.querySelectorAll(quantileChartClass)[0].dataset.quantiles);
+
+      const data = {
+        labels: timeValues,
+        series: [winValues, lossValues],
+      };
+
+      const percentiles = [10, 25, 50, 75, 90];
+      const mappedSeries = quantileSeries.map((series, index) => ({
+        name: `percentile${percentiles[index]}`,
+        data: series,
+      }));
+      const quantileData = {
+        labels: timeValues,
+        series: [...mappedSeries],
+      }
+
+      console.log('quantiles', chartClass, quantileData);
+
+      new LineChart(chartClass, data, {
+        axisX: {
+          labelInterpolationFnc: (value, index) => (index % 10 === 0 ? value : null)
+        }
+      });
+
+      new LineChart(quantileChartClass, quantileData, {
+        axisX: {
+          labelInterpolationFnc: (value, index) => (index % 10 === 0 ? value : null)
+        },
+        series: {
+        'percentile90': {
+          showArea: true,
+          lineSmooth: Interpolation.simple()
+        },
+        'percentile75': {
+          showArea: true,
+          lineSmooth: Interpolation.simple(),
+        },
+        'percentile50': {},
+        'percentile25': {
+          showArea: true,
+          lineSmooth: Interpolation.simple()
+        },
+        'percentile10': {
+          showArea: true,
+          lineSmooth: Interpolation.simple(),
+        }, 
+      }
+      });
+    }
+  });
+
+</script>
+
+<style is:inline>
+  .ct-series-a .ct-line,
+  .ct-series-b .ct-line {
+    stroke-width: 2px;
+  }
+
+  .ct-series-a .ct-point,
+  .ct-series-b .ct-point {
+    stroke-width: 5px;
+  }
+
+  .ct-series-a .ct-line {
+    stroke: var(--green-desat);
+  }
+
+  .ct-series-a .ct-point {
+    stroke: var(--green);
+  }
+
+  .ct-series-b .ct-line {
+    stroke: var(--red-desat);
+  }
+
+  .ct-series-b .ct-point {
+    stroke: var(--red);
+  }
+
+  .quantiles .ct-line {
+    stroke: lightblue;
+    stroke-width: 1px;
+  }
+
+  .quantiles .ct-point {
+    stroke-width: 3px;
+  }
+
+  .quantiles .ct-series-a .ct-line,
+  .quantiles .ct-series-e .ct-line,
+  .quantiles .ct-series-a .ct-point,
+  .quantiles .ct-series-e .ct-point {
+    stroke: red;
+  }
+
+  .quantiles .ct-series-b .ct-line,
+  .quantiles .ct-series-d .ct-line,
+  .quantiles .ct-series-b .ct-point,
+  .quantiles .ct-series-d .ct-point {
+    stroke: pink;
+  }
+
+  .quantiles .ct-series-c .ct-line,
+  .quantiles .ct-series-c .ct-point {
+    stroke: green;
+  }
+
+  .quantiles .ct-series-a .ct-area,
+  .quantiles .ct-series-e .ct-area {
+    fill: pink;
+    fill-opacity: 0.3;
+  }
+
+  .quantiles .ct-series-b .ct-area,
+  .quantiles .ct-series-d .ct-area {
+    fill: green;
+    fill-opacity: 0.5;
+  }
+
+  .quantiles .ct-series-c .ct-area {
+  }
+
+  .ct-grid {
+    stroke: white;
+  }
+
+  .ct-label {
+    color: white;
+    fill: white;
+  }
+</style>

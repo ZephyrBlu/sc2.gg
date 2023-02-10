@@ -1,0 +1,75 @@
+---
+import type {Race} from '../components/types';
+import Header from '../components/Header.astro';
+import Nav from '../components/Nav.astro';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
+import '../components/index.css';
+
+interface Props {
+  race: Race;
+  opponentRace: Race;
+}
+
+const {race, opponentRace} = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={`https://sc2.gg/matchup/${race}/${opponentRace}/`} />
+    <title>sc2.gg - {race} vs {opponentRace} Advanced Statistics</title>
+    <meta name="description" content={`${race} vs ${opponentRace} advanced statistics. Matchup winrate and winrate by game length, map, event, collection rate, army value and workers active.`} />
+    <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
+    <script>
+      // @ts-ignore
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
+    </script>
+  </head>
+  <style>
+    .MatchupLayout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      align-content: center;
+      width: 60%;
+      max-width: 800px;
+      min-width: 620px;
+    }
+
+    .MatchupLayout__container {
+      width: 100%;
+    }
+
+    @media(max-width: 1300px) {
+      .MatchupLayout {
+        width: 80%;
+      }
+    }
+
+    @media(max-width: 650px) {
+      .MatchupLayout {
+        width: 90%;
+        min-width: 0;
+      }
+    }
+
+    .MatchupLayout__header {
+      margin: 15px 0;
+      font-weight: 700;
+      font-size: 24px;
+    }
+  </style>
+  <body>
+    <div class="MatchupLayout">
+      <Header title={`${race} vs ${opponentRace} Advanced Statistics`} link={`/matchup/${race}/${opponentRace}/`} />
+      <Nav />
+      <div class="MatchupLayout__container">
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>
