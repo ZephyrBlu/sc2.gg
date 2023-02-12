@@ -1,0 +1,84 @@
+---
+import ReportLayout from '../../../../layouts/TournamentTopPicksReportLayout.astro';
+import {MatchupTrees} from '../../../../components/MatchupTrees';
+import ReportDetails from '../../../../components/ReportDetails.astro';
+import type {Race} from '../../../../components/BlockResults';
+import { yearReportDefinitions } from '../../_definitions';
+import {TournamentTopPicksReportParams, Status} from '../../_types';
+
+export function getStaticPaths() {
+  const MATCHUPS: [Race, Race][] = [
+    ['Zerg', 'Protoss'],
+    ['Protoss', 'Terran'],
+    ['Terran', 'Zerg'],
+    ['Protoss', 'Protoss'],
+    ['Terran', 'Terran'],
+    ['Zerg', 'Zerg'],
+  ];
+
+  const matchupBuilds: Record<Race, Record<Race, string[]>> = {
+    Protoss: {
+      Protoss: [],
+      Terran: [],
+      Zerg: [],
+    },
+    Terran: {
+      Protoss: [],
+      Terran: [],
+      Zerg: [],
+    },
+    Zerg: {
+      Protoss: [],
+      Terran: [],
+      Zerg: [],
+    },
+  };
+
+  return MATCHUPS.map(([playerRace, opponentRace]) => {
+    const report = {
+      year: '2023',
+      tournament: 'IEM Katowice',
+      playerRace,
+      opponentRace,
+      builds: {
+        [playerRace]: matchupBuilds[playerRace][opponentRace],
+        [opponentRace]: matchupBuilds[opponentRace][playerRace],
+      },
+      publishedAt: '2023-01-27',
+      status: Status.WorkInProgress,
+      definitions: yearReportDefinitions,
+    };
+
+    return {
+      params: {playerRace: playerRace.toLowerCase(), opponentRace: opponentRace.toLowerCase()},
+      props: report,
+    };
+  });
+}
+
+interface Props extends TournamentTopPicksReportParams {};
+const {
+  year,
+  tournament,
+  playerRace,
+  opponentRace,
+  publishedAt,
+  updatedAt,
+  status,
+  definitions,
+  updates,
+  issues,
+  trees,
+} = Astro.props;
+---
+<ReportLayout tournament={tournament} year={year} race={race}>
+  <ReportDetails
+    publishedAt={publishedAt}
+    updatedAt={updatedAt}
+    status={status}
+    definitions={definitions}
+    updates={updates}
+    issues={issues}
+  />
+  <MatchupTrees race={race} trees={trees} client:load />
+</ReportLayout>

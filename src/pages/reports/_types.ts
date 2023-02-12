@@ -1,3 +1,5 @@
+import type { Race } from "../../components/BlockResults";
+
 export enum Status {
   WorkInProgress = 'Work In Progress',
   Released = 'Released',
@@ -21,4 +23,16 @@ export interface ReportDetailsProps {
 export interface ReportParams extends ReportDetailsProps {
   year: string;
   trees: any;
+}
+
+export interface TournamentReportParams extends ReportParams {
+  tournament: string;
+  race: Race;
+}
+
+export interface TournamentTopPicksReportParams extends ReportParams {
+  tournament: string;
+  playerRace: Race;
+  opponentRace: Race;
+  builds: Record<Race, string[]>;
 }

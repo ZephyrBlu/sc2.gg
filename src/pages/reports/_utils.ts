@@ -15,7 +15,7 @@ function findOpponentRace(identifier: string, race: string) {
 
 const RACES = ['Protoss', 'Terran', 'Zerg'];
 const generateRaceTree = (race: string, trees: any) => {
-  let raceTrees: {[key in Race]: any} = {};
+  let raceTrees: Partial<Record<Race, any>> = {};
   Object.entries(trees).forEach(([identifier, tree]) => {
     if (capitalize(race) === identifier.split('-')[0]) {
       const opponentRace = findOpponentRace(identifier, race) as Race;
