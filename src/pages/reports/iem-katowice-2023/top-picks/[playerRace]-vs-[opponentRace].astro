@@ -18,19 +18,19 @@ export function getStaticPaths() {
 
   const matchupBuilds: Record<Race, Record<Race, string[]>> = {
     Protoss: {
-      Protoss: ['Gateway,Gateway,CyberneticsCore'],
-      Terran: ['Gateway,Nexus,CyberneticsCore'],
-      Zerg: ['Gateway,Nexus,CyberneticsCore'],
+      Protoss: ['Gateway,CyberneticsCore,Stargate,Nexus'],
+      Terran: ['Gateway,Nexus,CyberneticsCore,TwilightCouncil'],
+      Zerg: ['Gateway,Nexus,CyberneticsCore,Stargate,Gateway,Gateway'],
     },
     Terran: {
-      Protoss: ['Barracks,OrbitalCommand,CommandCenter'],
-      Terran: ['Barracks,OrbitalCommand,CommandCenter'],
-      Zerg: ['Barracks,OrbitalCommand,CommandCenter'],
+      Protoss: ['Barracks,OrbitalCommand,Factory,CommandCenter'],
+      Terran: ['Barracks,OrbitalCommand,Factory,CommandCenter,Starport,OrbitalCommand,CommandCenter,Barracks,Barracks,EngineeringBay,EngineeringBay'],
+      Zerg: ['Barracks,Barracks,Barracks,OrbitalCommand'],
     },
     Zerg: {
-      Protoss: ['Hatchery,SpawningPool'],
-      Terran: ['Hatchery,SpawningPool'],
-      Zerg: ['Hatchery,SpawningPool'],
+      Protoss: ['SpawningPool,Hatchery,Hatchery,Lair,RoachWarren'],
+      Terran: ['Hatchery,SpawningPool,Hatchery,EvolutionChamber,EvolutionChamber'],
+      Zerg: ['SpawningPool,Hatchery'],
     },
   };
 
@@ -84,10 +84,13 @@ const [playerBuilds, opponentBuilds] = await Promise.all(
       url.searchParams.set('build_name', build);
       url.searchParams.set('matchup_name', matchup);
       url.searchParams.set('event_name', tournament);
-      // url.searchParams.set('after', '2023-02-6');
-      console.log('fetching URL', url.toString());
+      url.searchParams.set('after', '2022-01-01');
+      url.searchParams.set('refresh', '');
       const results = await fetch(url).then(res => res.json());
-      return results;
+      return {
+        build,
+        players: results,
+      };
     }));
   })
 );
@@ -105,14 +108,9 @@ const [playerBuilds, opponentBuilds] = await Promise.all(
   <BuildPlayers
     client:only="preact"
     builds={{
-      [playerRace]: {
-        build: builds[playerRace],
-        players: playerBuilds,
-      },
-      [opponentRace]: {
-        build: builds[opponentRace],
-        players: opponentBuilds,
-      },
+      [playerRace]: playerBuilds,
+      [opponentRace]: opponentBuilds,
     }}
+    race={playerRace}
   />
 </ReportLayout>
