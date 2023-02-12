@@ -5,6 +5,8 @@ interface Props {
 }
 
 export function BuildPlayers({builds}: Props) {
+  console.log('builds', builds);
+
   return (
     <div className="BuildPlayers">
       Build player stuff goes here

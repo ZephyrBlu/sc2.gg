@@ -18,14 +18,14 @@ export function getStaticPaths() {
 
   const matchupBuilds: Record<Race, Record<Race, string[]>> = {
     Protoss: {
-      Protoss: ['Gateway,Gatway,CyberneticsCore'],
+      Protoss: ['Gateway,Gateway,CyberneticsCore'],
       Terran: ['Gateway,Nexus,CyberneticsCore'],
       Zerg: ['Gateway,Nexus,CyberneticsCore'],
     },
     Terran: {
-      Protoss: ['Barracks', 'OrbitalCommand', 'CommandCenter'],
-      Terran: ['Barracks', 'OrbitalCommand', 'CommandCenter'],
-      Zerg: ['Barracks', 'OrbitalCommand', 'CommandCenter'],
+      Protoss: ['Barracks,OrbitalCommand,CommandCenter'],
+      Terran: ['Barracks,OrbitalCommand,CommandCenter'],
+      Zerg: ['Barracks,OrbitalCommand,CommandCenter'],
     },
     Zerg: {
       Protoss: ['Hatchery,SpawningPool'],
@@ -84,7 +84,8 @@ const [playerBuilds, opponentBuilds] = await Promise.all(
       url.searchParams.set('build_name', build);
       url.searchParams.set('matchup_name', matchup);
       url.searchParams.set('event_name', tournament);
-      url.searchParams.set('after', '2023-02-6');
+      // url.searchParams.set('after', '2023-02-6');
+      console.log('fetching URL', url.toString());
       const results = await fetch(url).then(res => res.json());
       return results;
     }));
@@ -101,8 +102,17 @@ const [playerBuilds, opponentBuilds] = await Promise.all(
     updates={updates}
     issues={issues}
   />
-  <BuildPlayers builds={{
-    [playerRace]: playerBuilds,
-    [opponentRace]: opponentBuilds,
-  }} />
+  <BuildPlayers
+    client:only="preact"
+    builds={{
+      [playerRace]: {
+        build: builds[playerRace],
+        players: playerBuilds,
+      },
+      [opponentRace]: {
+        build: builds[opponentRace],
+        players: opponentBuilds,
+      },
+    }}
+  />
 </ReportLayout>
