@@ -6,34 +6,34 @@ import type {Race} from '../../../../components/BlockResults';
 import { yearReportDefinitions } from '../../_definitions';
 import {TournamentTopPicksReportParams, Status} from '../../_types';
 
-const MATCHUPS: [Race, Race][] = [
-  ['Zerg', 'Protoss'],
-  ['Protoss', 'Terran'],
-  ['Terran', 'Zerg'],
-  ['Protoss', 'Protoss'],
-  ['Terran', 'Terran'],
-  ['Zerg', 'Zerg'],
-];
+export function getStaticPaths() {
+  const MATCHUPS: [Race, Race][] = [
+    ['Zerg', 'Protoss'],
+    ['Protoss', 'Terran'],
+    ['Terran', 'Zerg'],
+    ['Protoss', 'Protoss'],
+    ['Terran', 'Terran'],
+    ['Zerg', 'Zerg'],
+  ];
 
-const matchupBuilds: Record<Race, Record<Race, string[]>> = {
+  const matchupBuilds: Record<Race, Record<Race, string[]>> = {
     Protoss: {
-      Protoss: [],
-      Terran: [],
-      Zerg: [],
+      Protoss: ['Gateway,Gatway,CyberneticsCore'],
+      Terran: ['Gateway,Nexus,CyberneticsCore'],
+      Zerg: ['Gateway,Nexus,CyberneticsCore'],
     },
     Terran: {
-      Protoss: [],
-      Terran: [],
-      Zerg: [],
+      Protoss: ['Barracks', 'OrbitalCommand', 'CommandCenter'],
+      Terran: ['Barracks', 'OrbitalCommand', 'CommandCenter'],
+      Zerg: ['Barracks', 'OrbitalCommand', 'CommandCenter'],
     },
     Zerg: {
-      Protoss: [],
-      Terran: [],
-      Zerg: [],
+      Protoss: ['Hatchery,SpawningPool'],
+      Terran: ['Hatchery,SpawningPool'],
+      Zerg: ['Hatchery,SpawningPool'],
     },
   };
 
-export function getStaticPaths() {
   return MATCHUPS.map(([playerRace, opponentRace]) => {
     const matchup: Race[] = [playerRace, opponentRace];
     matchup.sort();
