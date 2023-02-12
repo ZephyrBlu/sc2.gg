@@ -32,6 +32,7 @@ export interface TournamentReportParams extends ReportParams {
 
 export interface TournamentTopPicksReportParams extends ReportParams {
   tournament: string;
+  matchup: string;
   playerRace: Race;
   opponentRace: Race;
   builds: Record<Race, string[]>;

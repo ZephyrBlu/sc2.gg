@@ -6,17 +6,16 @@ import type {Race} from '../../../../components/BlockResults';
 import { yearReportDefinitions } from '../../_definitions';
 import {TournamentTopPicksReportParams, Status} from '../../_types';
 
-export function getStaticPaths() {
-  const MATCHUPS: [Race, Race][] = [
-    ['Zerg', 'Protoss'],
-    ['Protoss', 'Terran'],
-    ['Terran', 'Zerg'],
-    ['Protoss', 'Protoss'],
-    ['Terran', 'Terran'],
-    ['Zerg', 'Zerg'],
-  ];
+const MATCHUPS: [Race, Race][] = [
+  ['Zerg', 'Protoss'],
+  ['Protoss', 'Terran'],
+  ['Terran', 'Zerg'],
+  ['Protoss', 'Protoss'],
+  ['Terran', 'Terran'],
+  ['Zerg', 'Zerg'],
+];
 
-  const matchupBuilds: Record<Race, Record<Race, string[]>> = {
+const matchupBuilds: Record<Race, Record<Race, string[]>> = {
     Protoss: {
       Protoss: [],
       Terran: [],
@@ -34,10 +33,15 @@ export function getStaticPaths() {
     },
   };
 
+export function getStaticPaths() {
   return MATCHUPS.map(([playerRace, opponentRace]) => {
+    const matchup: Race[] = [playerRace, opponentRace];
+    matchup.sort();
+
     const report = {
       year: '2023',
       tournament: 'IEM Katowice',
+      matchup: matchup.join(''),
       playerRace,
       opponentRace,
       builds: {
@@ -60,6 +64,7 @@ interface Props extends TournamentTopPicksReportParams {};
 const {
   year,
   tournament,
+  matchup,
   playerRace,
   opponentRace,
   publishedAt,
@@ -70,6 +75,22 @@ const {
   issues,
   builds,
 } = Astro.props;
+
+const endpoint = 'https://search.sc2.gg/build-players';
+const [playerBuilds, opponentBuilds] = await Promise.all(
+  Object.values(builds).map(async (matchupBuilds) => {
+    return await Promise.all(matchupBuilds.map(async (build) => {
+      const url = new URL(endpoint);
+      url.searchParams.set('build_name', build);
+      url.searchParams.set('matchup_name', matchup);
+      url.searchParams.set('event_name', tournament);
+      url.searchParams.set('after', '2023-02-6');
+      const results = await fetch(url).then(res => res.json());
+      return results;
+    }));
+  })
+);
+
 ---
 <ReportLayout tournament={tournament} year={year} playerRace={playerRace} opponentRace={opponentRace}>
   <ReportDetails
@@ -80,5 +101,8 @@ const {
     updates={updates}
     issues={issues}
   />
-  <BuildPlayers builds={builds} />
+  <BuildPlayers builds={{
+    [playerRace]: playerBuilds,
+    [opponentRace]: opponentBuilds,
+  }} />
 </ReportLayout>

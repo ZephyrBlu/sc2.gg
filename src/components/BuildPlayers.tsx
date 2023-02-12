@@ -1,7 +1,7 @@
 import type {Race} from "./BlockResults";
 
 interface Props {
-  builds: Record<Race, string[]>;
+  builds: Partial<Record<Race, any[]>>;
 }
 
 export function BuildPlayers({builds}: Props) {
