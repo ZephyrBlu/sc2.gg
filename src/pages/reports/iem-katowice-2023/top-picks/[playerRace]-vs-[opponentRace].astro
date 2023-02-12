@@ -1,6 +1,6 @@
 ---
 import ReportLayout from '../../../../layouts/TournamentTopPicksReportLayout.astro';
-import {MatchupTrees} from '../../../../components/MatchupTrees';
+import {BuildPlayers} from '../../../../components/BuildPlayers';
 import ReportDetails from '../../../../components/ReportDetails.astro';
 import type {Race} from '../../../../components/BlockResults';
 import { yearReportDefinitions } from '../../_definitions';
@@ -68,10 +68,10 @@ const {
   definitions,
   updates,
   issues,
-  trees,
+  builds,
 } = Astro.props;
 ---
-<ReportLayout tournament={tournament} year={year} race={race}>
+<ReportLayout tournament={tournament} year={year} playerRace={playerRace} opponentRace={opponentRace}>
   <ReportDetails
     publishedAt={publishedAt}
     updatedAt={updatedAt}
@@ -80,5 +80,5 @@ const {
     updates={updates}
     issues={issues}
   />
-  <MatchupTrees race={race} trees={trees} client:load />
+  <BuildPlayers builds={builds} />
 </ReportLayout>
