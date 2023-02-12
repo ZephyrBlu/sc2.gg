@@ -1,11 +1,22 @@
+import type {
+  Node,
+  PrefixGroupNode,
+  PrefixQueueNode,
+  TreeContext,
+  RenderedBuild,
+  BuildCapture,
+  InputBfsOptions,
+  BfsOptions,
+  InputPrefixOptions,
+  PrefixOptions,
+  WinrateSortable,
+  PlayrateSortable,
+} from './types';
+
 export const prune = (node: Node, minTotal: number) => {
   node.children = node.children.filter(child => child.value.total >= minTotal);
   node.children.forEach(child => prune(child, minTotal));
 };
-
-export interface PrefixGroupNode extends PrefixNode {
-  children: Node[];
-}
 
 export const mergePrefixNodes = (group: PrefixGroupNode, context: TreeContext) => {
   if (group.children.length === 1) {
@@ -36,15 +47,6 @@ export const mergeChildren = (node: Node) => {
   }
 };
 
-type BuildCapture = 'fragment' | 'full';
-
-interface RenderedBuild {
-  build: string[];
-  total: number;
-  wins: number;
-  winrate: number;
-}
-
 export const dfs = (node: Node, build: string[], results: RenderedBuild[], captureType: BuildCapture) => {
   const nodeBuildings = node.label.split(',');
   const newBuild = [...build, ...nodeBuildings];
@@ -60,48 +62,10 @@ export const dfs = (node: Node, build: string[], results: RenderedBuild[], captu
   return results;
 };
 
-interface InputBfsOptions {
-  MIN_TOTAL?: number;
-  MAX_BRANCHES?: number;
-}
-
-interface BfsOptions {
-  MIN_TOTAL: number;
-  MAX_BRANCHES: number;
-}
-
 const defaultOpts = {
   MIN_TOTAL: 10,
   MAX_BRANCHES: 10,
 };
-
-export interface Count {
-  total: number;
-  wins: number;
-  losses: number;
-}
-
-export interface Node {
-  label: string;
-  value: Count;
-  children: Node[];
-}
-
-export interface PrefixNode {
-  prefix: string;
-  probability: number;
-  winrate: number;
-  total: number;
-  wins: number;
-}
-
-interface PrefixQueueNode extends PrefixNode {
-  node: Node;
-}
-
-export interface TreeContext {
-  total: number;
-}
 
 export const renderPrefixes = (
   rootNode: Node,
@@ -166,16 +130,6 @@ export const renderPrefixes = (
 
   return queue;
 };
-
-interface InputPrefixOptions {
-  MIN_PROBABILITY?: number;
-  MIN_TOTAL?: number;
-}
-
-interface PrefixOptions {
-  MIN_PROBABILITY: number;
-  MIN_TOTAL: number;
-}
 
 const defaultPrefixOpts = {MIN_PROBABILITY: 0.02, MIN_TOTAL: 25};
 
@@ -244,9 +198,6 @@ export const renderBuilds = (
   });
   return builds;
 };
-
-type WinrateSortable = RenderedBuild | PrefixGroupNode | PrefixQueueNode;
-type PlayrateSortable = PrefixGroupNode | PrefixQueueNode;
 
 export const winrateSort = (a: WinrateSortable, b: WinrateSortable) => b.winrate - a.winrate;
 export const playrateSort = (a: PlayrateSortable, b: PlayrateSortable) => b.probability - a.probability;

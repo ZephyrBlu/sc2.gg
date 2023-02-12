@@ -9,7 +9,7 @@ import {
   playrateSort,
   nodeWinrateSort,
   nodePlayrateSort,
-} from '../tree_utils';
+} from '../zephyrus-search/tree';
 import type { Race } from './BlockResults';
 import './Tree.css';
 
