@@ -46,11 +46,15 @@ export interface BfsOptions {
 }
 
 export interface InputPrefixOptions {
+  MIN_PREFIX_PROBABILITY?: number;
+  MIN_PREFIX_TOTAL?: number;
   MIN_PROBABILITY?: number;
   MIN_TOTAL?: number;
 }
 
 export interface PrefixOptions {
+  MIN_PREFIX_PROBABILITY: number;
+  MIN_PREFIX_TOTAL: number;
   MIN_PROBABILITY: number;
   MIN_TOTAL: number;
 }

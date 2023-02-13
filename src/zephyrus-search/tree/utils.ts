@@ -131,15 +131,23 @@ export const renderPrefixes = (
   return queue;
 };
 
-const defaultPrefixOpts = {MIN_PROBABILITY: 0.02, MIN_TOTAL: 25};
+const defaultPrefixOpts = {
+  MIN_PREFIX_PROBABILITY: 0.02,
+  MIN_PREFIX_TOTAL: 25,
+  MIN_PROBABILITY: 0.02,
+  MIN_TOTAL: 25,
+};
 
 export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext, opts: InputPrefixOptions = {}) => {
   const prefixOpts: PrefixOptions = {...defaultPrefixOpts, ...opts};
-  const {MIN_PROBABILITY, MIN_TOTAL} = prefixOpts;
+  const {MIN_PREFIX_PROBABILITY, MIN_PREFIX_TOTAL, MIN_PROBABILITY, MIN_TOTAL} = prefixOpts;
   
   const prefixGroups: Record<string, any> = {};
   prefixes.forEach((node) => {
-    if (node.probability < MIN_PROBABILITY) {
+    if (
+      node.probability < MIN_PREFIX_PROBABILITY ||
+      node.total < MIN_PREFIX_TOTAL
+    ) {
       return;
     }
 
@@ -166,12 +174,14 @@ export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext,
   const sortedPrefixes = Object.entries(prefixGroups).map(([prefix, nodes]) => ({
     prefix,
     ...nodes,
-  })).filter(prefix => prefix.probability >= MIN_PROBABILITY);
+  })).filter(prefix => prefix.probability >= MIN_PREFIX_PROBABILITY);
 
   console.log('sorted prefixes', sortedPrefixes);
 
   sortedPrefixes.forEach((prefix) => {
-    prefix.children = prefix.children.filter((node: Node) => node.value.total / context.total >= MIN_PROBABILITY);
+    prefix.children = prefix.children.filter((node: Node) => (
+      node.value.total / context.total >= MIN_PROBABILITY
+    ));
     prefix.children.forEach((node: Node) => prune(node, MIN_TOTAL));
 
     mergePrefixNodes(prefix, context);

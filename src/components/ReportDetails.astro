@@ -8,7 +8,7 @@ const Descriptions: {[key in Status]: string} = {
 };
 
 interface Props extends ReportDetailsProps {};
-const {publishedAt, updatedAt, status, updates, definitions, issues} = Astro.props;
+const {publishedAt, updatedAt, description, status, updates, definitions, issues} = Astro.props;
 
 const definitionsPresent = definitions && definitions.length > 0;
 const updatesPresent = updates && updates.length > 0;
@@ -41,6 +41,10 @@ const selectGridLayout = () => {
         Last updated: <time datetime={updatedAt}>{updatedAt}</time>
       </span>}
   </div>
+  {description &&
+    <p class="ReportDetails__description">
+      {description}
+    </p>}
   <details class="ReportDetails__details">
     <summary class="ReportDetails__toggle">
       Show details

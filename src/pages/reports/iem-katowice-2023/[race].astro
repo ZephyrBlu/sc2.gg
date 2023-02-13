@@ -6,7 +6,7 @@ import type {Race} from '../../../components/BlockResults';
 import { yearReportDefinitions } from '../_definitions';
 import {TournamentReportParams, Status} from '../_types';
 import { generateMatchupTrees } from '../_utils';
-import treesKatowice2023 from '../_data/optimized_unpruned_2022_build_trees.json' assert {type: "json"};
+import treesKatowice2023 from './_build_trees.json' assert {type: "json"};
 
 export function getStaticPaths() {
   const RACES: Race[] = ['Protoss', 'Terran', 'Zerg'];
@@ -33,6 +33,7 @@ const {year, tournament, race, publishedAt, updatedAt, status, definitions, upda
 ---
 <ReportLayout tournament={tournament} year={year} race={race}>
   <ReportDetails
+    description={`${race} builds from all matchups played at ${tournament} ${year}.`}
     publishedAt={publishedAt}
     updatedAt={updatedAt}
     status={status}

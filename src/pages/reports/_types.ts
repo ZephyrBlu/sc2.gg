@@ -12,6 +12,7 @@ export interface DetailsItem {
 };
 
 export interface ReportDetailsProps {
+  description?: string;
   publishedAt: string;
   updatedAt?: string;
   status: Status;

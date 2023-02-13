@@ -22,7 +22,7 @@ const canonicalUrl = `https://sc2.gg/reports/${tournamentSlug}-${year}/${race}/`
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="canonical" href={canonicalUrl} />
-    <title>sc2.gg - {tournament} {year} Top {race} Builds</title>
+    <title>sc2.gg - {tournament} {year} {race} Builds</title>
     <meta name="description" content={`Most played and highest winrate pro ${race} StarCraft 2 builds of ${tournament} ${year}`} />
     <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
     <script>
@@ -67,7 +67,7 @@ const canonicalUrl = `https://sc2.gg/reports/${tournamentSlug}-${year}/${race}/`
   </style>
   <body>
     <div class="ReportLayout">
-      <Header title={`${tournament} ${year} Top ${race} Builds`} link={canonicalUrl} />
+      <Header title={`${tournament} ${year} ${race} Builds`} link={canonicalUrl} />
       <Nav />
       <div class="ReportLayout__container">
         <slot />

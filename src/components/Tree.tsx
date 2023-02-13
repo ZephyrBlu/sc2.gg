@@ -33,7 +33,7 @@ export function Tree({ race, opponentRace, tree }: Props) {
   // higher max branches makes openings too granular
   let MAX_BRANCHES = 15;
   let MIN_TOTAL = 10;
-  let MIN_PROBABILITY = 0.02;
+  let MIN_PREFIX_PROBABILITY = 0.02;
 
   if (race === 'Protoss') {
     MIN_TOTAL = 25;
@@ -53,10 +53,15 @@ export function Tree({ race, opponentRace, tree }: Props) {
 
     if (opponentRace === 'Terran') {
       MAX_BRANCHES = 8;
-      MIN_PROBABILITY = 0.01;
+      MIN_PREFIX_PROBABILITY = 0.01;
       MIN_TOTAL = 10;
     }
   }
+
+  MIN_TOTAL = 0;
+  let MIN_PROBABILITY = 0;
+  let MIN_PREFIX_TOTAL = 0;
+  MIN_PREFIX_PROBABILITY = 0.0;
 
   let queues = tree.root.children.map((child: Node) => (
     renderPrefixes(
@@ -67,7 +72,7 @@ export function Tree({ race, opponentRace, tree }: Props) {
   )).flat();
   queues.sort(playrateSort);
 
-  let prefixOpts = {MIN_PROBABILITY, MIN_TOTAL};
+  let prefixOpts = {MIN_PREFIX_PROBABILITY, MIN_PREFIX_TOTAL, MIN_PROBABILITY, MIN_TOTAL};
   const sortedPrefixes = groupPrefixes(queues, {total: tree.root.value.total}, prefixOpts);
   const renderedFragments = renderBuilds(sortedPrefixes);
   renderedFragments.sort(winrateSort);
