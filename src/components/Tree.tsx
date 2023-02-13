@@ -22,66 +22,68 @@ interface Props {
   race: Race;
   opponentRace: Race;
   tree: any;
+  opts: {
+    MAX_BRANCHES?: number;
+    MIN_TOTAL?: number;
+    MIN_PROBABILITY?: number;
+    MIN_PREFIX_TOTAL?: number;
+    MIN_PREFIX_PROBABILITY?: number;
+  }
 }
 
-export function Tree({ race, opponentRace, tree }: Props) {
-  console.log('tree', race, opponentRace, tree);
+export function Tree({
+  race,
+  opponentRace,
+  tree,
+  opts,
+}: Props) {
+  console.log('tree', race, opponentRace, tree, opts);
   const [sortBy, setSortBy] = useState<SortBy>('playrate');
   const [showSorting, setShowSorting] = useState<boolean>(false);
 
-  // Zerg has less branching in their builds than other races
-  // higher max branches makes openings too granular
-  let MAX_BRANCHES = 15;
-  let MIN_TOTAL = 10;
-  let MIN_PREFIX_PROBABILITY = 0.02;
+  const renderOpts: any = {};
 
-  if (race === 'Protoss') {
-    MIN_TOTAL = 25;
-
-    if (opponentRace !== 'Protoss') {
-      MAX_BRANCHES = 25;
-    }
+  if (typeof opts.MIN_TOTAL === 'number') {
+    renderOpts.MIN_TOTAL = opts.MIN_TOTAL;
   }
 
-  if (race === 'Zerg') {
-    MAX_BRANCHES = 10;
+  if (typeof opts.MAX_BRANCHES === 'number') {
+    renderOpts.MAX_BRANCHES = opts.MAX_BRANCHES;
   }
-
-  if (race === 'Terran') {
-    MAX_BRANCHES = 30;
-    MIN_TOTAL = 25;
-
-    if (opponentRace === 'Terran') {
-      MAX_BRANCHES = 8;
-      MIN_PREFIX_PROBABILITY = 0.01;
-      MIN_TOTAL = 10;
-    }
-  }
-
-  MIN_TOTAL = 0;
-  let MIN_PROBABILITY = 0;
-  let MIN_PREFIX_TOTAL = 0;
-  MIN_PREFIX_PROBABILITY = 0.0;
 
   let queues = tree.root.children.map((child: Node) => (
     renderPrefixes(
       child,
       {total: tree.root.value.total},
-      {MIN_TOTAL, MAX_BRANCHES},
+      renderOpts,
     )
   )).flat();
   queues.sort(playrateSort);
 
-  let prefixOpts = {MIN_PREFIX_PROBABILITY, MIN_PREFIX_TOTAL, MIN_PROBABILITY, MIN_TOTAL};
+  const prefixOpts: any = {};
+
+  if (typeof opts.MIN_PREFIX_PROBABILITY === 'number') {
+    prefixOpts.MIN_PREFIX_PROBABILITY = opts.MIN_PREFIX_PROBABILITY;
+  }
+
+  if (typeof opts.MIN_PREFIX_TOTAL === 'number') {
+    prefixOpts.MIN_PREFIX_TOTAL = opts.MIN_PREFIX_TOTAL;
+  }
+
+  if (typeof opts.MIN_PROBABILITY === 'number') {
+    prefixOpts.MIN_PROBABILITY = opts.MIN_PROBABILITY;
+  }
+
+  if (typeof opts.MIN_TOTAL === 'number') {
+    prefixOpts.MIN_TOTAL = opts.MIN_TOTAL;
+  }
+
   const sortedPrefixes = groupPrefixes(queues, {total: tree.root.value.total}, prefixOpts);
   const renderedFragments = renderBuilds(sortedPrefixes);
   renderedFragments.sort(winrateSort);
-  console.log('top winrate fragments', race, opponentRace, renderedFragments);
-  console.log('matching prefixes', sortedPrefixes);
 
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
   const prefixGames = sortedPrefixes.reduce((total, current) => total + current.total, 0);
-  console.log('prefix coverage', prefixCoverage, prefixGames);
 
   if (sortBy === 'playrate') {
     sortedPrefixes.sort(playrateSort);

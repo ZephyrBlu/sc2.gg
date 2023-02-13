@@ -77,7 +77,7 @@ export const renderPrefixes = (
   // should move this out of function
   // tree has much less branching for pool-first builds
   // lower max branches captures the openings much better
-  if (rootNode.label === 'SpawningPool') {
+  if (renderOpts.MAX_BRANCHES > 10 && rootNode.label === 'SpawningPool') {
     renderOpts.MAX_BRANCHES = 5;
   }
 
@@ -141,12 +141,12 @@ const defaultPrefixOpts = {
 export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext, opts: InputPrefixOptions = {}) => {
   const prefixOpts: PrefixOptions = {...defaultPrefixOpts, ...opts};
   const {MIN_PREFIX_PROBABILITY, MIN_PREFIX_TOTAL, MIN_PROBABILITY, MIN_TOTAL} = prefixOpts;
-  
+
   const prefixGroups: Record<string, any> = {};
   prefixes.forEach((node) => {
     if (
-      node.probability < MIN_PREFIX_PROBABILITY ||
-      node.total < MIN_PREFIX_TOTAL
+      node.probability < MIN_PROBABILITY ||
+      node.total < MIN_TOTAL
     ) {
       return;
     }
@@ -174,9 +174,10 @@ export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext,
   const sortedPrefixes = Object.entries(prefixGroups).map(([prefix, nodes]) => ({
     prefix,
     ...nodes,
-  })).filter(prefix => prefix.probability >= MIN_PREFIX_PROBABILITY);
-
-  console.log('sorted prefixes', sortedPrefixes);
+  })).filter(prefix => (
+    prefix.probability >= MIN_PREFIX_PROBABILITY &&
+    prefix.total >= MIN_PREFIX_TOTAL 
+  ));
 
   sortedPrefixes.forEach((prefix) => {
     prefix.children = prefix.children.filter((node: Node) => (
