@@ -16,8 +16,8 @@ export function getStaticPaths() {
       tournament: 'IEM Katowice',
       race: race,
       trees: generateMatchupTrees(treesKatowice2023)[race],
-      publishedAt: '2023-01-27',
-      status: Status.WorkInProgress,
+      publishedAt: '2023-02-14',
+      status: Status.Finalized,
       definitions: yearReportDefinitions,
     };
 
@@ -33,7 +33,7 @@ const {year, tournament, race, publishedAt, updatedAt, status, definitions, upda
 ---
 <ReportLayout tournament={tournament} year={year} race={race}>
   <ReportDetails
-    description={`${race} builds from all matchups played at ${tournament} ${year}.`}
+    description={`${race} builds played at ${tournament} ${year} from all matchups. Explore the tree of builds all the way down to individual games through the follow-up buttons.`}
     publishedAt={publishedAt}
     updatedAt={updatedAt}
     status={status}

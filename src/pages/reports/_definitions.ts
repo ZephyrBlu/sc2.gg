@@ -7,6 +7,6 @@ export const yearReportDefinitions: DetailsItem[] = [
   },
   {
     title: 'Game Coverage',
-    description: 'The percentage of games that use an opening from the top 10 openings. Target coverage is ~80%.',
+    description: 'The percentage of games which use an opening listed under the matchup. Target coverage is ~80%.',
   },
 ];

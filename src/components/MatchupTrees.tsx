@@ -39,7 +39,7 @@ export function MatchupTrees({ race, trees }: Props) {
             }
 
             if (opponentRace === 'Terran') {
-              MAX_BRANCHES = 25;
+              MAX_BRANCHES = 30;
             }
 
             if (opponentRace === 'Zerg') {
