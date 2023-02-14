@@ -14,7 +14,7 @@ interface Props {
 
 const {tournament, race, year} = Astro.props;
 const tournamentSlug = tournament.toLowerCase().split(' ').join('-');
-const canonicalUrl = `https://sc2.gg/reports/${tournamentSlug}-${year}/${race}/`;
+const canonicalUrl = `https://sc2.gg/reports/${tournamentSlug}-${year}/${race.toLowerCase()}/`;
 ---
 <html lang="en">
   <head>
