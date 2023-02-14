@@ -150,7 +150,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
 
   useLayoutEffect(() => {
     const updateSearchInput = () => {
-      if (typeof window === 'undefined' || historyStack.current === 0) {
+      if (typeof window === 'undefined' || historyStack.current <= 1) {
         return;
       }
 
