@@ -33,7 +33,11 @@ const {year, tournament, race, publishedAt, updatedAt, status, definitions, upda
 ---
 <ReportLayout tournament={tournament} year={year} race={race}>
   <ReportDetails
-    description={`${race} builds played at ${tournament} ${year} from all matchups. Explore the tree of builds all the way down to individual games through the follow-up buttons.`}
+    description={`
+      ${race} builds played at ${tournament} ${year} from all matchups.
+      Explore the tree of builds all the way down to individual games through the follow-up buttons.
+      Gasses are excluded from builds because their variations tends to make it hard to capture good groupings.
+    `}
     publishedAt={publishedAt}
     updatedAt={updatedAt}
     status={status}
