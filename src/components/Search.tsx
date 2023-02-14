@@ -147,33 +147,6 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(buildInitialBuildRaceSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
 
-  useLayoutEffect(() => {
-    const updateSearchInput = () => {
-      if (typeof window === 'undefined') {
-        return;
-      }
-
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('q')) {
-        setSearchInput(params.get('q')!.split('+').join(' '));
-      }
-
-      const initialSelection = buildInitialResultSelection();
-      setSelectedResults(initialSelection);
-
-      const initialBuildSelection = buildInitialBuildSelection();
-      setSelectedBuild(initialBuildSelection)
-
-      const initialBuildRaceSelection = buildInitialBuildRaceSelection();
-      setSelectedBuildRace(initialBuildRaceSelection);
-    };
-
-    updateSearchInput();
-
-    window.addEventListener('popstate', updateSearchInput);
-    return () => window.removeEventListener('popstate', updateSearchInput);
-  }, []);
-
   const anyResultsSelected = (
     selectedResults.players ||
     selectedResults.maps ||
