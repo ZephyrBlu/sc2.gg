@@ -67,7 +67,11 @@ const canonicalUrl = `https://sc2.gg/reports/${tournamentSlug}-${year}/${race}/`
   </style>
   <body>
     <div class="ReportLayout">
-      <Header title={`${tournament} ${year} ${race} Builds`} link={canonicalUrl} />
+      <Header
+        title={`${tournament} ${year} ${race} Builds`}
+        link={canonicalUrl}
+        modifier="tournament"
+      />
       <Nav />
       <div class="ReportLayout__container">
         <slot />
