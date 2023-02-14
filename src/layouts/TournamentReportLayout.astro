@@ -1,0 +1,81 @@
+---
+import Header from '../components/Header.astro';
+import Nav from '../components/Nav.astro';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
+import '../components/index.css';
+
+interface Props {
+  tournament: string;
+  race: string;
+  year: string;
+}
+
+const {tournament, race, year} = Astro.props;
+const tournamentSlug = tournament.toLowerCase().split(' ').join('-');
+const canonicalUrl = `https://sc2.gg/reports/${tournamentSlug}-${year}/${race}/`;
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={canonicalUrl} />
+    <title>sc2.gg - {tournament} {year} {race} Builds</title>
+    <meta name="description" content={`Most played and highest winrate pro ${race} StarCraft 2 builds of ${tournament} ${year}`} />
+    <script defer data-domain="sc2.gg" src="https://plausible.io/js/script.js"></script>
+    <script>
+      // @ts-ignore
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
+    </script>
+  </head>
+  <style>
+    .ReportLayout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      align-content: center;
+      width: 60%;
+      max-width: 800px;
+      min-width: 620px;
+    }
+
+    .ReportLayout__container {
+      width: 100%;
+    }
+
+    @media(max-width: 1300px) {
+      .ReportLayout {
+        width: 80%;
+      }
+    }
+
+    @media(max-width: 650px) {
+      .ReportLayout {
+        width: 90%;
+        min-width: 0;
+      }
+    }
+
+    .ReportLayout__header {
+      margin: 15px 0;
+      font-weight: 700;
+      font-size: 24px;
+    }
+  </style>
+  <body>
+    <div class="ReportLayout">
+      <Header
+        title={`${tournament} ${year} ${race} Builds`}
+        link={canonicalUrl}
+        modifier="tournament"
+      />
+      <Nav />
+      <div class="ReportLayout__container">
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>

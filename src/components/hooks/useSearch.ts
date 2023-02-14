@@ -1,5 +1,5 @@
 import {useState, useRef} from 'react';
-import type {Replay} from '../types';
+import type {Replay} from '../../types';
 
 export type SearchState = 'loading' | 'success' | 'cancelled' | 'error';
 

@@ -1,5 +1,5 @@
 // import {Image} from '@astrojs/image/components';
-import type {Replay} from './types';
+import type {Replay} from '../types';
 import './ReplayRecord.css';
 
 type Props = {

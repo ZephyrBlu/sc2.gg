@@ -1,0 +1,116 @@
+---
+import ReportLayout from '../../../../layouts/TournamentTopPicksReportLayout.astro';
+import {BuildPlayers} from '../../../../components/BuildPlayers';
+import ReportDetails from '../../../../components/ReportDetails.astro';
+import type {Race} from '../../../../components/BlockResults';
+import { yearReportDefinitions } from '../../_definitions';
+import {TournamentTopPicksReportParams, Status} from '../../_types';
+
+export function getStaticPaths() {
+  const MATCHUPS: [Race, Race][] = [
+    ['Zerg', 'Protoss'],
+    ['Protoss', 'Terran'],
+    ['Terran', 'Zerg'],
+    ['Protoss', 'Protoss'],
+    ['Terran', 'Terran'],
+    ['Zerg', 'Zerg'],
+  ];
+
+  const matchupBuilds: Record<Race, Record<Race, string[]>> = {
+    Protoss: {
+      Protoss: ['Gateway,CyberneticsCore,Stargate,Nexus'],
+      Terran: ['Gateway,Nexus,CyberneticsCore,TwilightCouncil'],
+      Zerg: ['Gateway,Nexus,CyberneticsCore,Stargate,Gateway,Gateway'],
+    },
+    Terran: {
+      Protoss: ['Barracks,OrbitalCommand,Factory,CommandCenter'],
+      Terran: ['Barracks,OrbitalCommand,Factory,CommandCenter,Starport,OrbitalCommand,CommandCenter,Barracks,Barracks,EngineeringBay,EngineeringBay'],
+      Zerg: ['Barracks,Barracks,Barracks,OrbitalCommand'],
+    },
+    Zerg: {
+      Protoss: ['SpawningPool,Hatchery,Hatchery,Lair,RoachWarren'],
+      Terran: ['Hatchery,SpawningPool,Hatchery,EvolutionChamber,EvolutionChamber'],
+      Zerg: ['SpawningPool,Hatchery'],
+    },
+  };
+
+  return MATCHUPS.map(([playerRace, opponentRace]) => {
+    const matchup: Race[] = [playerRace, opponentRace];
+    matchup.sort();
+
+    const report = {
+      year: '2023',
+      tournament: 'IEM Katowice',
+      matchup: matchup.join(''),
+      playerRace,
+      opponentRace,
+      builds: {
+        [playerRace]: matchupBuilds[playerRace][opponentRace],
+        [opponentRace]: matchupBuilds[opponentRace][playerRace],
+      },
+      publishedAt: '2023-01-27',
+      status: Status.WorkInProgress,
+      definitions: yearReportDefinitions,
+    };
+
+    return {
+      params: {playerRace: playerRace.toLowerCase(), opponentRace: opponentRace.toLowerCase()},
+      props: report,
+    };
+  });
+}
+
+interface Props extends TournamentTopPicksReportParams {};
+const {
+  year,
+  tournament,
+  matchup,
+  playerRace,
+  opponentRace,
+  publishedAt,
+  updatedAt,
+  status,
+  definitions,
+  updates,
+  issues,
+  builds,
+} = Astro.props;
+
+const endpoint = 'https://search.sc2.gg/build-players';
+const [playerBuilds, opponentBuilds] = await Promise.all(
+  Object.values(builds).map(async (matchupBuilds) => {
+    return await Promise.all(matchupBuilds.map(async (build) => {
+      const url = new URL(endpoint);
+      url.searchParams.set('build_name', build);
+      url.searchParams.set('matchup_name', matchup);
+      url.searchParams.set('event_name', tournament);
+      url.searchParams.set('after', '2022-01-01');
+      url.searchParams.set('refresh', '');
+      const results = await fetch(url).then(res => res.json());
+      return {
+        build,
+        players: results,
+      };
+    }));
+  })
+);
+
+---
+<ReportLayout tournament={tournament} year={year} playerRace={playerRace} opponentRace={opponentRace}>
+  <ReportDetails
+    publishedAt={publishedAt}
+    updatedAt={updatedAt}
+    status={status}
+    definitions={definitions}
+    updates={updates}
+    issues={issues}
+  />
+  <BuildPlayers
+    client:only="preact"
+    builds={{
+      [playerRace]: playerBuilds,
+      [opponentRace]: opponentBuilds,
+    }}
+    race={playerRace}
+  />
+</ReportLayout>

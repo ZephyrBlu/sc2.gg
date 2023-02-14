@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { SearchResult, SearchOptions, useSearch } from './hooks';
-import type { Replay } from "./types";
+import type { Replay } from "../types";
 import './Search.css';
-import { compare } from './utils';
+import { compare } from '../utils';
 import { InlineResults, SelectedResult } from './InlineResults';
 import { BlockResults, Race } from './BlockResults';
 import * as Sentry from "@sentry/browser";
@@ -146,33 +146,6 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [selectedBuild, setSelectedBuild] = useState<string[]>(buildInitialBuildSelection);
   const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(buildInitialBuildRaceSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
-
-  useLayoutEffect(() => {
-    const updateSearchInput = () => {
-      if (typeof window === 'undefined') {
-        return;
-      }
-
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('q')) {
-        setSearchInput(params.get('q')!.split('+').join(' '));
-      }
-
-      const initialSelection = buildInitialResultSelection();
-      setSelectedResults(initialSelection);
-
-      const initialBuildSelection = buildInitialBuildSelection();
-      setSelectedBuild(initialBuildSelection)
-
-      const initialBuildRaceSelection = buildInitialBuildRaceSelection();
-      setSelectedBuildRace(initialBuildRaceSelection);
-    };
-
-    updateSearchInput();
-
-    window.addEventListener('popstate', updateSearchInput);
-    return () => window.removeEventListener('popstate', updateSearchInput);
-  }, []);
 
   const anyResultsSelected = (
     selectedResults.players ||
@@ -367,8 +340,11 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           url.searchParams.delete('build_race');
         }
 
-        if (url.toString() !== window.location.toString()) {
-          window.history.pushState({}, '', url);
+        // commas are by default parsed as '%2C'
+        const formattedUrl = url.toString().replaceAll(/%2C/g, ',');
+
+        if (formattedUrl !== window.location.toString()) {
+          window.history.replaceState({}, '', formattedUrl);
 
           const searchOptions: any = {};
           for (const [key, value] of url.searchParams.entries()) {

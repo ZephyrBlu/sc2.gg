@@ -4,7 +4,7 @@ import {
   MatchupBuildTree,
   RaceBuildCluster,
   RaceBuildTree,
-} from '../types';
+} from '../../types';
 
 type BuildClusters = {
   [race: string]: MatchupBuildCluster | RaceBuildCluster,

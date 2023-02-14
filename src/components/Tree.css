@@ -1,8 +1,37 @@
-.Tree {
+.Tree--grouped {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  margin-left: 20px;
+  overflow-x: auto;
+}
+
+.Tree--grouped .Builds__cluster-divider--tree {
+  display: none;
+}
+
+.Tree--grouped .Builds__cluster-divider--tree:last-child {
+  display: block;
 }
 
 .Tree__branch, .Tree__prefix, .Tree__branch-parent {
   display: flex;
+}
+
+.Tree__group {
+  overflow-x: auto;
+}
+
+.Tree__group-toggle {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.Tree__group-toggle:hover {
+  cursor: pointer;
+}
+
+.Tree__grouped-children .Builds__cluster-divider--tree {
+  margin-bottom: 0;
 }
 
 .Tree__prefix {
@@ -61,11 +90,6 @@
   cursor: pointer;
 }
 
-/* .Tree__branch-children[open] .Tree__branch-summary {
-  display: none;
-} */
-
-
 .Tree__building {
   display: flex;
   align-items: center;
@@ -87,6 +111,7 @@
 }
 
 .Tree__search-opening {
+  margin-bottom: 10px;
   font-size: 12px;
   font-weight: 400;
 }
