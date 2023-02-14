@@ -8,6 +8,7 @@ import {TournamentReportParams, Status} from '../_types';
 import { generateMatchupTrees } from '../_utils';
 import treesKatowice2023 from './_build_trees.json' assert {type: "json"};
 
+
 export function getStaticPaths() {
   const RACES: Race[] = ['Protoss', 'Terran', 'Zerg'];
   return RACES.map(race => {
@@ -19,6 +20,7 @@ export function getStaticPaths() {
       publishedAt: '2023-02-14',
       status: Status.Finalized,
       definitions: yearReportDefinitions,
+      updates: ['Regenerated data with gasses included in builds'],
     };
 
     return {
@@ -36,7 +38,6 @@ const {year, tournament, race, publishedAt, updatedAt, status, definitions, upda
     description={`
       ${race} builds played at ${tournament} ${year} from all matchups.
       Explore the tree of builds all the way down to individual games through the follow-up buttons.
-      Gasses are excluded from builds because their variations tends to make it hard to capture good groupings.
     `}
     publishedAt={publishedAt}
     updatedAt={updatedAt}
