@@ -562,11 +562,6 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
             {buildResultsText()}
           </span>
         </div>
-        {historyChanges.map(change => (
-          <p style={{lineBreak: 'anywhere'}}>
-            {change}
-          </p>
-        ))}
         <details className="Search__search-options">
           <summary className="Search__search-options-toggle">
             Search by build
