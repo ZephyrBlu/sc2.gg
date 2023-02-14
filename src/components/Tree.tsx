@@ -98,14 +98,11 @@ export function Tree({
     <a
       className="Tree__search-opening"
       href={`/search/?matchup=${matchup}&build=${buildings}&build_race=${race}`}
-      target="_blank"
       onClick={(event) => {
         event.preventDefault();
 
         const redirectToBuildSearch = () => {
-          // window.location.href = (event.target as HTMLAnchorElement).href;
-          const url = (event.target as HTMLAnchorElement).href;
-          window.open(url, '_blank');
+          window.location.href = (event.target as HTMLAnchorElement).href;
         };
 
         // @ts-ignore
