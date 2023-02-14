@@ -31,28 +31,53 @@ export function Trees({ trees }: Props) {
               // higher max branches makes openings too granular
               let MAX_BRANCHES = 15;
               let MIN_TOTAL = 10;
+              let MIN_PROBABILITY = 0.02;
+              let MIN_PREFIX_TOTAL = 25;
               let MIN_PREFIX_PROBABILITY = 0.02;
 
               if (race === 'Protoss') {
                 MIN_TOTAL = 25;
 
-                if (opponentRace !== 'Protoss') {
-                  MAX_BRANCHES = 25;
+                if (opponentRace === 'Terran') {
+                  MAX_BRANCHES = 30;
                 }
-              }
 
-              if (race === 'Zerg') {
-                MAX_BRANCHES = 10;
+                if (opponentRace === 'Zerg') {
+                  MAX_BRANCHES = 38;
+                }
               }
 
               if (race === 'Terran') {
                 MAX_BRANCHES = 30;
                 MIN_TOTAL = 25;
 
+                if (opponentRace === 'Protoss') {
+                  MAX_BRANCHES = 25;
+                }
+
                 if (opponentRace === 'Terran') {
-                  MAX_BRANCHES = 8;
+                  MAX_BRANCHES = 10;
                   MIN_PREFIX_PROBABILITY = 0.01;
                   MIN_TOTAL = 10;
+                }
+
+                if (opponentRace === 'Zerg') {
+                  MAX_BRANCHES = 35;
+                }
+              }
+
+              if (race === 'Zerg') {
+                MAX_BRANCHES = 5;
+
+                if (opponentRace === 'Protoss') {
+                  MAX_BRANCHES = 20;
+                }
+
+                if (opponentRace === 'Zerg') {
+                  MAX_BRANCHES = 10;
+                  MIN_PROBABILITY = 0;
+                  MIN_TOTAL = 5;
+                  MIN_PREFIX_TOTAL = 10;
                 }
               }
 
@@ -65,6 +90,8 @@ export function Trees({ trees }: Props) {
                     opts={{
                       MAX_BRANCHES,
                       MIN_TOTAL,
+                      MIN_PROBABILITY,
+                      MIN_PREFIX_TOTAL,
                       MIN_PREFIX_PROBABILITY,
                     }}
                   />
