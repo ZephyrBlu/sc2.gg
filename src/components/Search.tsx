@@ -146,11 +146,16 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [selectedBuild, setSelectedBuild] = useState<string[]>(buildInitialBuildSelection);
   const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(buildInitialBuildRaceSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
+  const historyStack = useRef(0);
 
   useLayoutEffect(() => {
     const updateSearchInput = () => {
-      if (typeof window === 'undefined') {
+      if (typeof window === 'undefined' || historyStack.current === 0) {
         return;
+      }
+
+      if (historyStack.current > 0) {
+        historyStack.current -= 1;
       }
 
       const params = new URLSearchParams(window.location.search);
@@ -371,6 +376,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         const formattedUrl = url.toString().replaceAll(/%2C/g, ',');
 
         if (formattedUrl !== window.location.toString()) {
+          historyStack.current += 1;
           window.history.pushState({}, '', formattedUrl);
 
           const searchOptions: any = {};
