@@ -146,11 +146,10 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [selectedBuild, setSelectedBuild] = useState<string[]>(buildInitialBuildSelection);
   const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(buildInitialBuildRaceSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
-  const [historyChanges, setHistoryChanges] = useState<string[]>([]);
 
   useLayoutEffect(() => {
     const updateSearchInput = () => {
-      if (typeof window === 'undefined' || historyChanges.length === 0) {
+      if (typeof window === 'undefined') {
         return;
       }
 
@@ -368,13 +367,11 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
           url.searchParams.delete('build_race');
         }
 
-        if (url.toString() !== window.location.toString()) {
-          setHistoryChanges(prevState => ([
-            ...prevState,
-            `pushing state. built url: ${url.toString()}, current url: ${window.location.toString()}`,
-          ]));
+        // commas are by default parsed as '%2C'
+        const formattedUrl = url.toString().replaceAll(/%2C/g, ',');
 
-          window.history.pushState({}, '', url);
+        if (formattedUrl !== window.location.toString()) {
+          window.history.pushState({}, '', formattedUrl);
 
           const searchOptions: any = {};
           for (const [key, value] of url.searchParams.entries()) {
