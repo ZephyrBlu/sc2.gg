@@ -169,8 +169,6 @@ export const groupPrefixes = (prefixes: PrefixQueueNode[], context: TreeContext,
     prefixGroups[prefix].children.push(node.node);
   });
 
-  console.log('prefix groups', prefixGroups);
-
   const sortedPrefixes = Object.entries(prefixGroups).map(([prefix, nodes]) => ({
     prefix,
     ...nodes,

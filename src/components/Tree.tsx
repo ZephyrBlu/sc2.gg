@@ -37,7 +37,6 @@ export function Tree({
   tree,
   opts,
 }: Props) {
-  console.log('tree', race, opponentRace, tree, opts);
   const [sortBy, setSortBy] = useState<SortBy>('playrate');
   const [showSorting, setShowSorting] = useState<boolean>(false);
 

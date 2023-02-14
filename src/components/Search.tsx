@@ -146,6 +146,7 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
   const [selectedBuild, setSelectedBuild] = useState<string[]>(buildInitialBuildSelection);
   const [selectedBuildRace, setSelectedBuildRace] = useState<Race | null>(buildInitialBuildRaceSelection);
   const {searchGames, searchPlayers, searchMaps, searchEvents} = useSearch();
+  const [historyChanges, setHistoryChanges] = useState<string[]>([]);
 
   useLayoutEffect(() => {
     const updateSearchInput = () => {
@@ -368,6 +369,11 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
         }
 
         if (url.toString() !== window.location.toString()) {
+          setHistoryChanges(prevState => ([
+            ...prevState,
+            `pushing state. built url: ${url.toString()}, current url: ${window.location.toString()}`,
+          ]));
+
           window.history.pushState({}, '', url);
 
           const searchOptions: any = {};
@@ -559,6 +565,11 @@ export function Search({ initialResults, resultsDescriptions }: Props) {
             {buildResultsText()}
           </span>
         </div>
+        {historyChanges.map(change => (
+          <p style={{lineBreak: 'anywhere'}}>
+            {change}
+          </p>
+        ))}
         <details className="Search__search-options">
           <summary className="Search__search-options-toggle">
             Search by build
