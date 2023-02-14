@@ -83,13 +83,47 @@ export function Tree({
   renderedFragments.sort(winrateSort);
 
   const prefixCoverage = sortedPrefixes.reduce((total, current) => total + current.probability, 0)
-  const prefixGames = sortedPrefixes.reduce((total, current) => total + current.total, 0);
 
   if (sortBy === 'playrate') {
     sortedPrefixes.sort(playrateSort);
   } else {
     sortedPrefixes.sort(winrateSort);
   }
+
+  const matchupRaces = [race, opponentRace];
+  matchupRaces.sort();
+  const matchup = matchupRaces.join('');
+
+  const searchBuild = (matchup: string, buildings: string) => (
+    <a
+      className="Tree__search-opening"
+      href={`/search/?matchup=${matchup}&build=${buildings}&build_race=${race}`}
+      target="_blank"
+      onClick={(event) => {
+        event.preventDefault();
+
+        const redirectToBuildSearch = () => {
+          // window.location.href = (event.target as HTMLAnchorElement).href;
+          const url = (event.target as HTMLAnchorElement).href;
+          window.open(url, '_blank');
+        };
+
+        // @ts-ignore
+        plausible('Report Build Search', {
+          props: {
+            race,
+            matchup: matchup,
+            build: buildings,
+          },
+          callback: redirectToBuildSearch,
+        });
+
+        setTimeout(redirectToBuildSearch, 1000);
+      }}
+    >
+      Search for {race.slice(0, 1)}v{opponentRace.slice(0, 1)} games with this opening
+    </a>
+  );
 
   const renderGroupedChildren = (rootNode: PrefixGroupNode, node: Node) => {
     const prefixBuildings = rootNode.prefix.split(',');
@@ -146,6 +180,7 @@ export function Tree({
                 </div>
               ))}
             </div>
+            {searchBuild(matchup, buildings.join(','))}
             {child.children.length > 0 &&
               <details className="Tree__grouped-children">
                 <summary className="Tree__group-toggle">
@@ -213,6 +248,7 @@ export function Tree({
               </div>
             ))}
           </div>
+          {searchBuild(matchup, buildings.join(','))}
           {node.children.length > 0 &&
             <details className="Tree__grouped-children">
               <summary className="Tree__group-toggle">
@@ -265,6 +301,7 @@ export function Tree({
               ))}
             </div>
           </div>
+          {searchBuild(matchup, prefixBuildings.join(','))}
           {groupOpenings.length > 0 &&
             <details className="Tree__openings">
               <summary className="Tree__group-toggle">

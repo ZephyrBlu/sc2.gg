@@ -21,10 +21,6 @@
   overflow-x: auto;
 }
 
-.Tree__group-header {
-  margin-bottom: 10px;
-}
-
 .Tree__group-toggle {
   font-size: 14px;
   margin-top: 10px;
@@ -115,6 +111,7 @@
 }
 
 .Tree__search-opening {
+  margin-bottom: 10px;
   font-size: 12px;
   font-weight: 400;
 }
